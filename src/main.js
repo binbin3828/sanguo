@@ -8,12 +8,32 @@ import { GameEngine } from './core/GameEngine.js';
 import { EventBus } from './core/EventBus.js';
 import { StateManager } from './core/StateManager.js';
 
+// 导入UI屏幕
+import { MainMenuScreen } from './ui/screens/MainMenuScreen.js';
+import { PeriodSelectScreen } from './ui/screens/PeriodSelectScreen.js';
+import { KingSelectScreen } from './ui/screens/KingSelectScreen.js';
+import { StrategyMapScreen } from './ui/screens/StrategyMapScreen.js';
+import { CityScreen } from './ui/screens/CityScreen.js';
+import { BattleScreen } from './ui/screens/BattleScreen.js';
+import { SaveLoadScreen } from './ui/screens/SaveLoadScreen.js';
+
 // 游戏配置
 const GAME_CONFIG = {
     canvasId: 'game-canvas',
     width: 1024,
     height: 768,
     targetFPS: 60
+};
+
+// 屏幕映射
+const SCREENS = {
+    'MainMenu': MainMenuScreen,
+    'PeriodSelect': PeriodSelectScreen,
+    'KingSelect': KingSelectScreen,
+    'StrategyMap': StrategyMapScreen,
+    'City': CityScreen,
+    'Battle': BattleScreen,
+    'SaveLoad': SaveLoadScreen
 };
 
 // 初始化游戏
@@ -47,6 +67,25 @@ async function initGame() {
     
     // 启动游戏
     await gameEngine.init();
+    
+    // 注册所有屏幕
+    Object.keys(SCREENS).forEach(name => {
+        const ScreenClass = SCREENS[name];
+        gameEngine.registerSystem(name, new ScreenClass(gameEngine));
+    });
+    
+    // 设置初始屏幕为主菜单
+    const mainMenu = new MainMenuScreen(gameEngine);
+    gameEngine.setScreen(mainMenu);
+    
+    // 监听屏幕切换事件
+    eventBus.on('screen.change', (screenName) => {
+        if (SCREENS[screenName]) {
+            const newScreen = new SCREENS[screenName](gameEngine);
+            gameEngine.setScreen(newScreen);
+        }
+    });
+    
     gameEngine.start();
     
     console.log('游戏初始化完成！');
