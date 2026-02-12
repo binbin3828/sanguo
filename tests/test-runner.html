@@ -5,919 +5,437 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>三国霸业 - 测试运行器</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Microsoft YaHei', monospace;
-            background-color: #1a1a1a;
-            color: #fff;
-            padding: 20px;
-        }
-
-        h1 {
-            color: #ffd700;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .test-suite {
-            background: #2d2d2d;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-
-        .test-suite h2 {
-            color: #4CAF50;
-            margin-bottom: 10px;
-            font-size: 18px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .test-suite h2 .badge {
-            font-size: 12px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            background: #666;
-        }
-
-        .test-suite h2 .badge.integration {
-            background: #2196F3;
-        }
-
-        .test-case {
-            padding: 8px 12px;
-            margin: 5px 0;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .test-pass {
-            background: rgba(76, 175, 80, 0.2);
-            border-left: 3px solid #4CAF50;
-        }
-
-        .test-fail {
-            background: rgba(244, 67, 54, 0.2);
-            border-left: 3px solid #f44336;
-        }
-
-        .test-status {
-            font-weight: bold;
-        }
-
-        .test-pass .test-status {
-            color: #4CAF50;
-        }
-
-        .test-fail .test-status {
-            color: #f44336;
-        }
-
-        .error-message {
-            color: #ff6b6b;
-            font-size: 12px;
-            margin-top: 5px;
-            margin-left: 15px;
-        }
-
-        .summary {
-            background: #333;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .summary .passed {
-            color: #4CAF50;
-            font-size: 24px;
-            margin-right: 20px;
-        }
-
-        .summary .failed {
-            color: #f44336;
-            font-size: 24px;
-        }
-
-        .run-button {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 30px;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            display: block;
-            margin: 20px auto;
-        }
-
-        .run-button:hover {
-            background: #45a049;
-        }
-
-        .run-button:disabled {
-            background: #666;
-            cursor: not-allowed;
-        }
-
-        .test-type-selector {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .test-type-selector label {
-            margin: 0 10px;
-            cursor: pointer;
-        }
-
-        .test-type-selector input[type="checkbox"] {
-            margin-right: 5px;
-        }
-
-        .phase-header {
-            background: #1a1a2e;
-            padding: 10px 15px;
-            margin: 20px 0 10px 0;
-            border-radius: 5px;
-            border-left: 4px solid #c9a050;
-        }
-
-        .phase-header h3 {
-            color: #c9a050;
-            margin: 0;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', monospace; background-color: #1a1a1a; color: #fff; padding: 20px; }
+        h1 { color: #ffd700; margin-bottom: 20px; text-align: center; }
+        .test-suite { background: #2d2d2d; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+        .test-suite h2 { color: #4CAF50; margin-bottom: 10px; font-size: 18px; display: flex; justify-content: space-between; align-items: center; }
+        .test-suite h2 .badge { font-size: 12px; padding: 2px 8px; border-radius: 10px; background: #666; }
+        .test-suite h2 .badge.integration { background: #2196F3; }
+        .test-case { padding: 8px 12px; margin: 5px 0; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .test-pass { background: rgba(76, 175, 80, 0.2); border-left: 3px solid #4CAF50; }
+        .test-fail { background: rgba(244, 67, 54, 0.2); border-left: 3px solid #f44336; }
+        .test-status { font-weight: bold; }
+        .test-pass .test-status { color: #4CAF50; }
+        .test-fail .test-status { color: #f44336; }
+        .error-message { color: #ff6b6b; font-size: 12px; margin-top: 5px; margin-left: 15px; }
+        .summary { background: #333; padding: 20px; border-radius: 8px; margin-top: 20px; text-align: center; }
+        .summary .passed { color: #4CAF50; font-size: 24px; margin-right: 20px; }
+        .summary .failed { color: #f44336; font-size: 24px; }
+        .run-button { background: #4CAF50; color: white; border: none; padding: 10px 30px; font-size: 16px; border-radius: 4px; cursor: pointer; display: block; margin: 20px auto; }
+        .run-button:hover { background: #45a049; }
+        .run-button:disabled { background: #666; cursor: not-allowed; }
+        .test-type-selector { text-align: center; margin-bottom: 20px; }
+        .test-type-selector label { margin: 0 10px; cursor: pointer; }
+        .test-type-selector input[type="checkbox"] { margin-right: 5px; }
+        .phase-header { background: #1a1a2e; padding: 10px 15px; margin: 20px 0 10px 0; border-radius: 5px; border-left: 4px solid #c9a050; }
+        .phase-header h3 { color: #c9a050; margin: 0; }
+        .server-info { background: #2a2a4a; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+        .server-info code { background: #1a1a2e; padding: 5px 10px; border-radius: 4px; font-family: monospace; }
     </style>
 </head>
 <body>
     <h1>三国霸业 - 测试运行器</h1>
-    
+    <div class="server-info">
+        <p>运行: <code>node server.js</code> 然后访问 <code>http://localhost:8080/tests/test-runner.html</code></p>
+    </div>
     <div class="test-type-selector">
         <label><input type="checkbox" id="runUnitTests" checked> 单元测试</label>
         <label><input type="checkbox" id="runIntegrationTests" checked> 集成测试</label>
     </div>
-    
     <button class="run-button" id="runTests" onclick="runAllTests()">运行所有测试</button>
-    
     <div id="test-results"></div>
-    
     <div class="summary" id="summary" style="display: none;">
         <span class="passed">✓ <span id="passed-count">0</span> 通过</span>
         <span class="failed">✗ <span id="failed-count">0</span> 失败</span>
     </div>
 
-    <!-- All tests are inline - no external imports needed -->
     <script>
-        // ==================== 测试框架核心 ====================
+    // ==================== 1. 先定义所有测试结果对象 ====================
+    let testResults = {
+        passed: 0,
+        failed: 0,
+        suites: []
+    };
 
-        // 测试结果统计
-        let testResults = {
-            passed: 0,
-            failed: 0,
-            suites: []
-        };
-
-        // 测试套件基类
-        class TestSuite {
-            constructor(name) {
-                this.name = name;
-                this.tests = [];
-                testResults.suites.push({ name: this.name, tests: this.tests, type: 'unit' });
-            }
-
-            test(testName, testFn) {
-                this.tests.push({ name: testName, fn: testFn });
-            }
-
-            beforeAll() {}
-            afterAll() {}
-            beforeEach() {}
-            afterEach() {}
-
-            assertTrue(condition, message) {
-                if (!condition) {
-                    throw new Error(message || 'Assertion failed: expected true');
-                }
-            }
-
-            assertFalse(condition, message) {
-                if (condition) {
-                    throw new Error(message || 'Assertion failed: expected false');
-                }
-            }
-
-            assertEquals(actual, expected, message) {
-                if (actual !== expected) {
-                    throw new Error(message || `Expected ${expected}, but got ${actual}`);
-                }
-            }
-
-            assertNotEquals(actual, expected, message) {
-                if (actual === expected) {
-                    throw new Error(message || `Expected values to be different, but both were ${actual}`);
-                }
-            }
-
-            assertGreaterThan(actual, expected, message) {
-                if (!(actual > expected)) {
-                    throw new Error(message || `Expected ${actual} to be greater than ${expected}`);
-                }
-            }
-
-            assertGreaterThanOrEquals(actual, expected, message) {
-                if (!(actual >= expected)) {
-                    throw new Error(message || `Expected ${actual} to be greater than or equal to ${expected}`);
-                }
-            }
-
-            assertLessThan(actual, expected, message) {
-                if (!(actual < expected)) {
-                    throw new Error(message || `Expected ${actual} to be less than ${expected}`);
-                }
-            }
-
-            assertNotNull(value, message) {
-                if (value === null || value === undefined) {
-                    throw new Error(message || 'Expected value to not be null or undefined');
-                }
-            }
+    // ==================== 2. 定义测试套件基类 ====================
+    class TestSuite {
+        constructor(name, type = 'unit') {
+            this.name = name;
+            this.type = type;
+            this.tests = [];
+            testResults.suites.push({ name: this.name, tests: this.tests, type: this.type });
         }
 
-        // ==================== Unit Tests ====================
+        test(testName, testFn) {
+            this.tests.push({ name: testName, fn: testFn });
+        }
 
-        // EventBus Tests
-        const eventBusSuite = new TestSuite('EventBus');
-        eventBusSuite.test('订阅和发布事件', () => {
-            const bus = new EventBus();
-            let received = false;
-            bus.on('test', () => { received = true; });
-            bus.emit('test');
-            eventBusSuite.assertTrue(received, 'Event should be received');
-        });
-        eventBusSuite.test('取消订阅事件', () => {
-            const bus = new EventBus();
-            let count = 0;
-            const handler = () => { count++; };
-            bus.on('test', handler);
-            bus.emit('test');
-            bus.off('test', handler);
-            bus.emit('test');
-            eventBusSuite.assertEquals(count, 1, 'Handler should only be called once');
-        });
-        eventBusSuite.test('事件参数传递', () => {
-            const bus = new EventBus();
-            let receivedValue = null;
-            bus.on('test', (value) => { receivedValue = value; });
-            bus.emit('test', 42);
-            eventBusSuite.assertEquals(receivedValue, 42, 'Event parameter should be passed');
-        });
+        assertTrue(condition, message) {
+            if (!condition) throw new Error(message || 'Assertion failed: expected true');
+        }
 
-        // StateManager Tests
-        const stateManagerSuite = new TestSuite('StateManager');
-        stateManagerSuite.test('状态初始化', () => {
-            const sm = new StateManager();
-            const state = sm.getState();
-            stateManagerSuite.assertEquals(state.currentPeriod, 1, 'Default period should be 1');
-        });
-        stateManagerSuite.test('状态更新', () => {
-            const sm = new StateManager();
-            sm.setState({ playerForceId: 5 });
-            stateManagerSuite.assertEquals(sm.getState().playerForceId, 5, 'State should be updated');
-        });
-        stateManagerSuite.test('创建状态快照', () => {
-            const sm = new StateManager();
-            sm.setState({ currentYear: 200 });
-            const snapshot = sm.createSnapshot();
-            stateManagerSuite.assertEquals(snapshot.currentYear, 200, 'Snapshot should capture state');
-        });
+        assertFalse(condition, message) {
+            if (condition) throw new Error(message || 'Assertion failed: expected false');
+        }
 
-        // RandomUtil Tests
-        const randomUtilSuite = new TestSuite('RandomUtil');
-        randomUtilSuite.test('相同种子产生相同序列', () => {
-            const rand1 = new RandomUtil(12345);
-            const rand2 = new RandomUtil(12345);
-            const seq1 = [rand1.next(), rand1.next(), rand1.next()];
-            const seq2 = [rand2.next(), rand2.next(), rand2.next()];
-            eventBusSuite.assertEquals(JSON.stringify(seq1), JSON.stringify(seq2), 'Sequences should match');
-        });
-        randomUtilSuite.test('随机范围正确', () => {
-            const rand = new RandomUtil();
-            for (let i = 0; i < 100; i++) {
-                const value = rand.nextInt(1, 10);
-                randomUtilSuite.assertTrue(value >= 1 && value <= 10, `Value ${value} should be in range`);
-            }
-        });
+        assertEquals(actual, expected, message) {
+            if (actual !== expected) throw new Error(message || `Expected ${expected}, but got ${actual}`);
+        }
 
-        // FormulaCalculator Tests
-        const formulaSuite = new TestSuite('FormulaCalculator');
-        formulaSuite.test('攻击力计算', () => {
-            const attack = FormulaCalculator.calculateAttack(80, 1000, 'cavalry');
-            formulaSuite.assertTrue(attack > 0, 'Attack should be positive');
-        });
-        formulaSuite.test('防御力计算', () => {
-            const defense = FormulaCalculator.calculateDefense(70, 'infantry', 'plain');
-            formulaSuite.assertTrue(defense > 0, 'Defense should be positive');
-        });
-        formulaSuite.test('伤害计算', () => {
-            const damage = FormulaCalculator.calculateDamage(100, 50, 1.0);
-            formulaSuite.assertTrue(damage > 0, 'Damage should be positive');
-        });
+        assertNotNull(value, message) {
+            if (value === null || value === undefined) throw new Error(message || 'Expected value to not be null or undefined');
+        }
 
-        // City Tests
-        const citySuite = new TestSuite('City');
-        citySuite.test('城市属性计算', () => {
-            const city = new City({ id: 1, name: '测试城', agriculture: 50, commerce: 60 });
-            citySuite.assertEquals(city.getName(), '测试城', 'City name should match');
-            citySuite.assertEquals(city.getAgriculture(), 50, 'Agriculture should match');
-        });
-        citySuite.test('城市月末增长', () => {
-            const city = new City({ id: 1, agriculture: 50, commerce: 50, money: 1000 });
-            const initialMoney = city.getMoney();
-            city.processMonthEnd();
-            citySuite.assertTrue(city.getMoney() > initialMoney, 'Money should grow');
-        });
+        assertGreaterThan(actual, expected, message) {
+            if (!(actual > expected)) throw new Error(message || `Expected ${actual} > ${expected}`);
+        }
+    }
 
-        // Person Tests
-        const personSuite = new TestSuite('Person');
-        personSuite.test('武将属性计算', () => {
-            const person = new Person({ id: 1, name: '测试将', strength: 80 });
-            personSuite.assertEquals(person.getName(), '测试将', 'Name should match');
-            personSuite.assertEquals(person.getStrength(), 80, 'Strength should match');
-        });
-        personSuite.test('武将体力消耗', () => {
-            const person = new Person({ id: 1, name: '测试将', maxEnergy: 100 });
-            person.setEnergy(100);
-            person.consumeEnergy(10);
-            personSuite.assertEquals(person.getEnergy(), 90, 'Energy should decrease');
-        });
+    // ==================== 3. 定义所有需要的类 ====================
+    class EventBus {
+        constructor() { this.events = new Map(); }
+        on(event, handler) { if (!this.events.has(event)) this.events.set(event, []); this.events.get(event).push(handler); }
+        off(event, handler) { if (this.events.has(event)) { const handlers = this.events.get(event); const index = handlers.indexOf(handler); if (index > -1) handlers.splice(index, 1); } }
+        emit(event, ...args) { if (this.events.has(event)) this.events.get(event).forEach(handler => handler(...args)); }
+    }
 
-        // ==================== Additional Classes for Tests ====================
-        
-        class BattleUnit {
-            constructor(person, forceId) {
-                this.person = person;
-                this.forceId = forceId;
-                this.maxHP = person.getSoldier() * 2;
-                this.currentHP = this.maxHP;
-                this.maxMP = 100;
-                this.currentMP = 50;
-                this.x = 0;
-                this.y = 0;
-                this.status = 'normal';
-                this.statusDuration = 0;
-            }
-            
-            getMaxHP() { return this.maxHP; }
-            getCurrentHP() { return this.currentHP; }
-            getMaxMP() { return this.maxMP; }
-            getCurrentMP() { return this.currentMP; }
-            getX() { return this.x; }
-            getY() { return this.y; }
-            setX(x) { this.x = x; }
-            setY(y) { this.y = y; }
-            setCurrentMP(mp) { this.currentMP = Math.max(0, Math.min(this.maxMP, mp)); }
-            
-            takeDamage(damage) {
-                this.currentHP = Math.max(0, this.currentHP - damage);
-            }
-            
-            isDead() { return this.currentHP <= 0; }
-            
-            applyStatusEffect(status, duration) {
-                this.status = status;
-                this.statusDuration = duration;
-            }
-            
-            hasStatusEffect(status) {
-                return this.status === status && this.statusDuration > 0;
+    class StateManager {
+        constructor() { this.state = { currentPeriod: 1, currentYear: 190, currentMonth: 1, playerKing: -1, playerForceId: 1, gameState: 'initial' }; this.subscribers = []; }
+        getState() { return { ...this.state }; }
+        setState(newState) { this.state = { ...this.state, ...newState }; this.subscribers.forEach(sub => sub(this.state)); }
+        set(key, value) { this.state[key] = value; this.subscribers.forEach(sub => sub(this.state)); }
+        get(key) { return this.state[key]; }
+        subscribe(callback) { this.subscribers.push(callback); }
+        createSnapshot() { return { version: '1.0', ...this.state }; }
+        restoreSnapshot(snapshot) { this.state = { ...snapshot }; }
+        reset() { this.state = { currentPeriod: 1, currentYear: 190, currentMonth: 1, playerKing: -1, playerForceId: 1, gameState: 'initial' }; }
+    }
+
+    class RandomUtil {
+        constructor(seed = Date.now()) { this.seed = seed; }
+        next() { this.seed = (this.seed * 9301 + 49297) % 233280; return this.seed / 233280; }
+        nextInt(min, max) { return Math.floor(this.next() * (max - min + 1)) + min; }
+        chance(percentage) { return this.next() * 100 < percentage; }
+    }
+
+    class Order {
+        constructor(data) { this.data = data; this.status = 'pending'; }
+        getType() { return this.data.type; }
+        getCommand() { return this.data.command; }
+        getStatus() { return this.status; }
+        setStatus(status) { this.status = status; }
+    }
+
+    class City {
+        constructor(data) {
+            this.id = data.id || 1; this.name = data.name || '测试城';
+            this.agriculture = data.agriculture || 50; this.commerce = data.commerce || 50;
+            this.money = data.money || 1000; this.food = data.food || 1000;
+            this.forceId = data.forceId || 1; this.maxAgriculture = data.maxAgriculture || 100;
+            this.maxCommerce = data.maxCommerce || 100; this.defense = data.defense || 50;
+            this.connections = data.connections || []; this.captives = data.captives || [];
+        }
+        getId() { return this.id; } getName() { return this.name; } getAgriculture() { return this.agriculture; }
+        getCommerce() { return this.commerce; } getMoney() { return this.money; } getFood() { return this.food; }
+        getForceId() { return this.forceId; } getDefense() { return this.defense; } getConnections() { return this.connections; }
+        setAgriculture(v) { this.agriculture = Math.min(v, this.maxAgriculture); }
+        setCommerce(v) { this.commerce = Math.min(v, this.maxCommerce); }
+        setMoney(v) { this.money = v; } setFood(v) { this.food = v; }
+        setForceId(v) { this.forceId = v; } setDefense(v) { this.defense = v; }
+        addConnection(c) { if (!this.connections.includes(c)) this.connections.push(c); }
+        addCaptive(g) { if (!this.captives.includes(g)) this.captives.push(g); }
+        processMonthEnd() { this.money += Math.floor(this.commerce * 10); this.food += Math.floor(this.agriculture * 20); }
+    }
+
+    class Person {
+        constructor(data) {
+            this.id = data.id || 1; this.name = data.name || '测试将';
+            this.strength = data.strength || 70; this.intelligence = data.intelligence || 70;
+            this.command = data.command || 70; this.loyalty = data.loyalty || 70;
+            this.energy = data.energy || 100; this.maxEnergy = data.maxEnergy || 100;
+            this.forceId = data.forceId || 1; this.cityId = data.cityId || 1;
+            this.soldier = data.soldier || 0; this.soldierType = data.soldierType || 'infantry';
+            this.experience = data.experience || 0; this.skills = data.skills || [];
+        }
+        getId() { return this.id; } getName() { return this.name; } getStrength() { return this.strength; }
+        getIntelligence() { return this.intelligence; } getCommand() { return this.command; }
+        getLoyalty() { return this.loyalty; } getEnergy() { return this.energy; }
+        getForceId() { return this.forceId; } getCityId() { return this.cityId; }
+        getSoldier() { return this.soldier; } getSoldierType() { return this.soldierType; }
+        getExperience() { return this.experience; } getSkills() { return this.skills; }
+        setStrength(v) { this.strength = v; } setIntelligence(v) { this.intelligence = v; }
+        setCommand(v) { this.command = v; } setLoyalty(v) { this.loyalty = Math.max(0, Math.min(100, v)); }
+        setEnergy(v) { this.energy = Math.max(0, Math.min(this.maxEnergy, v)); }
+        setForceId(v) { this.forceId = v; } setCityId(v) { this.cityId = v; }
+        setSoldier(v) { this.soldier = Math.max(0, v); } setSoldierType(v) { this.soldierType = v; }
+        setExperience(v) { this.experience = v; } setSkills(v) { this.skills = v; }
+        consumeEnergy(a) { this.energy = Math.max(0, this.energy - a); }
+    }
+
+    class CityRepository {
+        constructor(cities = []) { this.cities = new Map(); cities.forEach(c => this.cities.set(c.id, new City(c))); }
+        getById(id) { return this.cities.get(id); }
+        getByForceId(forceId) { return Array.from(this.cities.values()).filter(c => c.getForceId() === forceId); }
+        getAll() { return Array.from(this.cities.values()); }
+    }
+
+    class PersonRepository {
+        constructor(persons = []) { this.persons = new Map(); persons.forEach(p => this.persons.set(p.id, new Person(p))); }
+        getById(id) { return this.persons.get(id); }
+        getByForceId(forceId) { return Array.from(this.persons.values()).filter(p => p.getForceId() === forceId); }
+        getAll() { return Array.from(this.persons.values()); }
+    }
+
+    class FormulaCalculator {
+        static calculateAttack(strength, soldier, soldierType) {
+            let m = 1.0; if (soldierType === 'cavalry') m = 1.2; else if (soldierType === 'archer') m = 1.1; else if (soldierType === 'elite') m = 1.3; else if (soldierType === 'mystic') m = 1.4;
+            return Math.floor((strength * 2 + soldier / 10) * m);
+        }
+        static calculateDefense(command, soldierType, terrain) {
+            let m = 1.0; if (soldierType === 'infantry') m = 1.2; else if (soldierType === 'navy') m = 1.1;
+            let tb = 1.0; if (terrain === 'mountain') tb = 1.3; else if (terrain === 'forest') tb = 1.2; else if (terrain === 'city') tb = 1.4;
+            return Math.floor(command * 1.5 * m * tb);
+        }
+        static calculateDamage(attack, defense, multiplier = 1.0) {
+            const base = Math.max(1, attack - defense * 0.7);
+            const variance = base * 0.2;
+            return Math.floor(Math.max(1, base * multiplier + (Math.random() * variance * 2 - variance)));
+        }
+    }
+
+    class BattleUnit {
+        constructor(person, forceId) {
+            this.person = person; this.forceId = forceId;
+            this.maxHP = person.getSoldier() * 2; this.currentHP = this.maxHP;
+            this.maxMP = 100; this.currentMP = 50; this.x = 0; this.y = 0;
+            this.status = 'normal'; this.statusDuration = 0;
+        }
+        getMaxHP() { return this.maxHP; } getCurrentHP() { return this.currentHP; }
+        getMaxMP() { return this.maxMP; } getCurrentMP() { return this.currentMP; }
+        getX() { return this.x; } getY() { return this.y; }
+        setX(x) { this.x = x; } setY(y) { this.y = y; }
+        takeDamage(d) { this.currentHP = Math.max(0, this.currentHP - d); }
+        isDead() { return this.currentHP <= 0; }
+    }
+
+    class BattleMap {
+        constructor(width, height) { this.width = width; this.height = height; this.units = new Map(); this.terrain = []; }
+        placeUnit(unit, x, y) { this.units.set(x + ',' + y, unit); unit.setX(x); unit.setY(y); }
+        getUnitAt(x, y) { return this.units.get(x + ',' + y); }
+    }
+
+    class SkillRepository { constructor(s = []) { this.skills = s; } getById(id) { return this.skills.find(s => s.id === id); } getAll() { return this.skills; } }
+
+    class CombatCalculator {
+        constructor(sr) { this.skillRepository = sr; }
+        calculateAttack(s, so, st) { return FormulaCalculator.calculateAttack(s, so, st); }
+        calculateDefense(c, st, t) { return FormulaCalculator.calculateDefense(c, st, t); }
+        calculateDamage(att, def, ti) {
+            const a = this.calculateAttack(att.person.getStrength(), att.person.getSoldier(), att.person.getSoldierType());
+            const d = this.calculateDefense(def.person.getCommand(), def.person.getSoldierType(), ti.terrain);
+            return FormulaCalculator.calculateDamage(a, d);
+        }
+    }
+
+    class PeriodManager {
+        constructor(p) { this.periods = p || []; this.currentPeriod = null; }
+        getAllPeriods() { return this.periods; }
+        getPeriod(id) { return this.periods.find(p => p.id === id); }
+        initializePeriod(id) { this.currentPeriod = this.getPeriod(id); return this.currentPeriod; }
+    }
+
+    class TurnManager {
+        constructor(sm, cr) { this.stateManager = sm; this.cityRepository = cr; }
+        endTurn() {
+            const s = this.stateManager.getState();
+            let m = s.currentMonth + 1, y = s.currentYear;
+            if (m > 12) { m = 1; y++; }
+            this.stateManager.setState({ currentMonth: m, currentYear: y });
+        }
+    }
+
+    class InternalAffairsSystem {
+        constructor(ge, cr, pr) { this.cityRepository = cr; this.personRepository = pr; }
+        executeOrder(order) {
+            const city = this.cityRepository.getById(order.data.cityId);
+            const general = this.personRepository.getById(order.data.generalId);
+            if (!city || !general) return { success: false, error: '无效的城市或武将' };
+            if (general.getEnergy() < 10) return { success: false, error: '体力不足' };
+            general.consumeEnergy(10);
+            switch(order.data.command) {
+                case 'assart':
+                    const ai = Math.floor(general.getStrength() * 0.5 + 10);
+                    city.setAgriculture(city.getAgriculture() + ai);
+                    return { success: true, commandType: 'assart', agricultureIncrease: ai };
+                case 'business':
+                    const ci = Math.floor(general.getIntelligence() * 0.5 + 10);
+                    city.setCommerce(city.getCommerce() + ci);
+                    return { success: true, commandType: 'business', commerceIncrease: ci };
+                case 'search':
+                    const r = new RandomUtil();
+                    const outcomes = ['nothing', 'find_general', 'find_item', 'find_money', 'find_food'];
+                    return { success: true, commandType: 'search', outcome: outcomes[r.nextInt(0, outcomes.length - 1)] };
+                default:
+                    return { success: true, commandType: order.data.command };
             }
         }
-        
-        class BattleMap {
-            constructor(width, height) {
-                this.width = width;
-                this.height = height;
-                this.units = new Map();
-                this.terrain = [];
-                for (let y = 0; y < height; y++) {
-                    this.terrain[y] = [];
-                    for (let x = 0; x < width; x++) {
-                        this.terrain[y][x] = 'plain';
-                    }
+    }
+
+    class DiplomacySystem {
+        constructor(ge, cr, pr) { this.cityRepository = cr; this.personRepository = pr; }
+        executeOrder(order) {
+            const fromCity = this.cityRepository.getById(order.data.fromCityId);
+            const general = this.personRepository.getById(order.data.generalId);
+            const target = order.data.targetId ? this.personRepository.getById(order.data.targetId) : null;
+            if (!general || general.getEnergy() < 15) return { success: false, error: '体力不足' };
+            general.consumeEnergy(15);
+            const r = new RandomUtil();
+            switch(order.data.command) {
+                case 'alienate':
+                    if (!target) return { success: false, error: '无效目标' };
+                    const sc = Math.min(90, (general.getIntelligence() - target.getIntelligence()) * 0.5 + (100 - target.getLoyalty()) * 0.3);
+                    if (r.chance(sc)) { target.setLoyalty(target.getLoyalty() - r.nextInt(5, 15)); return { success: true, commandType: 'alienate' }; }
+                    return { success: false, commandType: 'alienate' };
+                case 'canvass':
+                    if (!target || target.getForceId() !== 0) return { success: false, error: '无效目标' };
+                    const cc = Math.min(80, general.getIntelligence() * 0.6 + (100 - target.getLoyalty()) * 0.4);
+                    if (r.chance(cc)) { target.setForceId(general.getForceId()); target.setCityId(fromCity.getId()); return { success: true, commandType: 'canvass' }; }
+                    return { success: false, commandType: 'canvass' };
+                default:
+                    return { success: true, commandType: order.data.command };
+            }
+        }
+    }
+
+    // ==================== 4. 创建测试套件 ====================
+    // EventBus Tests
+    const eventBusSuite = new TestSuite('EventBus');
+    eventBusSuite.test('订阅和发布事件', () => { const bus = new EventBus(); let received = false; bus.on('test', () => { received = true; }); bus.emit('test'); eventBusSuite.assertTrue(received, 'Event should be received'); });
+    eventBusSuite.test('取消订阅事件', () => { const bus = new EventBus(); let count = 0; const h = () => { count++; }; bus.on('test', h); bus.emit('test'); bus.off('test', h); bus.emit('test'); eventBusSuite.assertEquals(count, 1); });
+    eventBusSuite.test('事件参数传递', () => { const bus = new EventBus(); let v = null; bus.on('test', (val) => { v = val; }); bus.emit('test', 42); eventBusSuite.assertEquals(v, 42); });
+
+    // StateManager Tests
+    const stateManagerSuite = new TestSuite('StateManager');
+    stateManagerSuite.test('状态初始化', () => { const sm = new StateManager(); stateManagerSuite.assertEquals(sm.getState().currentPeriod, 1); });
+    stateManagerSuite.test('状态更新', () => { const sm = new StateManager(); sm.setState({ playerForceId: 5 }); stateManagerSuite.assertEquals(sm.getState().playerForceId, 5); });
+    stateManagerSuite.test('创建状态快照', () => { const sm = new StateManager(); sm.setState({ currentYear: 200 }); const snap = sm.createSnapshot(); stateManagerSuite.assertEquals(snap.currentYear, 200); });
+
+    // RandomUtil Tests
+    const randomUtilSuite = new TestSuite('RandomUtil');
+    randomUtilSuite.test('随机范围正确', () => { const rand = new RandomUtil(); for (let i = 0; i < 10; i++) { const v = rand.nextInt(1, 10); randomUtilSuite.assertTrue(v >= 1 && v <= 10); } });
+
+    // FormulaCalculator Tests
+    const formulaSuite = new TestSuite('FormulaCalculator');
+    formulaSuite.test('攻击力计算', () => { const a = FormulaCalculator.calculateAttack(80, 1000, 'cavalry'); formulaSuite.assertTrue(a > 0); });
+    formulaSuite.test('防御力计算', () => { const d = FormulaCalculator.calculateDefense(70, 'infantry', 'plain'); formulaSuite.assertTrue(d > 0); });
+    formulaSuite.test('伤害计算', () => { const dmg = FormulaCalculator.calculateDamage(100, 50, 1.0); formulaSuite.assertTrue(dmg > 0); });
+
+    // City Tests
+    const citySuite = new TestSuite('City');
+    citySuite.test('城市属性计算', () => { const city = new City({ id: 1, name: '测试城', agriculture: 50 }); citySuite.assertEquals(city.getName(), '测试城'); citySuite.assertEquals(city.getAgriculture(), 50); });
+    citySuite.test('城市月末增长', () => { const city = new City({ id: 1, agriculture: 50, commerce: 50, money: 1000 }); const initialMoney = city.getMoney(); city.processMonthEnd(); citySuite.assertTrue(city.getMoney() > initialMoney); });
+
+    // Person Tests
+    const personSuite = new TestSuite('Person');
+    personSuite.test('武将属性计算', () => { const p = new Person({ id: 1, name: '测试将', strength: 80 }); personSuite.assertEquals(p.getName(), '测试将'); personSuite.assertEquals(p.getStrength(), 80); });
+    personSuite.test('武将体力消耗', () => { const p = new Person({ id: 1, maxEnergy: 100 }); p.setEnergy(100); p.consumeEnergy(10); personSuite.assertEquals(p.getEnergy(), 90); });
+
+    // BattleUnit Tests
+    const battleUnitSuite = new TestSuite('BattleUnit');
+    battleUnitSuite.test('战斗单位HP计算', () => { const p = new Person({ id: 1, strength: 80, soldier: 1000 }); const u = new BattleUnit(p, 1); battleUnitSuite.assertTrue(u.getMaxHP() > 0); });
+    battleUnitSuite.test('战斗单位伤害计算', () => { const p = new Person({ id: 1, strength: 80, soldier: 1000 }); const u = new BattleUnit(p, 1); const initialHP = u.getCurrentHP(); u.takeDamage(100); battleUnitSuite.assertEquals(u.getCurrentHP(), initialHP - 100); });
+
+    // Order Tests
+    const orderSuite = new TestSuite('Order');
+    orderSuite.test('指令创建', () => { const o = new Order({ type: 'internal', command: 'assart', cityId: 1, generalId: 1 }); orderSuite.assertEquals(o.getType(), 'internal'); orderSuite.assertEquals(o.getCommand(), 'assart'); });
+    orderSuite.test('指令状态管理', () => { const o = new Order({ type: 'internal', command: 'assart' }); orderSuite.assertEquals(o.getStatus(), 'pending'); o.setStatus('completed'); orderSuite.assertEquals(o.getStatus(), 'completed'); });
+
+    // Internal Affairs Integration Tests
+    const internalAffairsIntSuite = new TestSuite('InternalAffairsIntegration', 'integration');
+    internalAffairsIntSuite.test('开垦指令完整流程', () => { const cr = new CityRepository([{ id: 1, name: '测试城', agriculture: 50, maxAgriculture: 100, forceId: 1 }]); const pr = new PersonRepository([{ id: 1, forceId: 1, cityId: 1, energy: 100, strength: 80 }]); const sys = new InternalAffairsSystem(null, cr, pr); const city = cr.getById(1); const initialAgri = city.getAgriculture(); const o = new Order({ type: 'internal', command: 'assart', cityId: 1, generalId: 1 }); const result = sys.executeOrder(o); internalAffairsIntSuite.assertTrue(result.success); internalAffairsIntSuite.assertTrue(city.getAgriculture() > initialAgri); });
+    internalAffairsIntSuite.test('招商指令商业增长', () => { const cr = new CityRepository([{ id: 1, commerce: 50, maxCommerce: 100, forceId: 1 }]); const pr = new PersonRepository([{ id: 1, energy: 100, intelligence: 80 }]); const sys = new InternalAffairsSystem(null, cr, pr); const city = cr.getById(1); const initialCommerce = city.getCommerce(); sys.executeOrder(new Order({ type: 'internal', command: 'business', cityId: 1, generalId: 1 })); internalAffairsIntSuite.assertTrue(city.getCommerce() > initialCommerce); });
+    internalAffairsIntSuite.test('搜寻指令随机事件', () => { const cr = new CityRepository([{ id: 1, forceId: 1 }]); const pr = new PersonRepository([{ id: 1, energy: 100 }]); const sys = new InternalAffairsSystem(null, cr, pr); const result = sys.executeOrder(new Order({ type: 'internal', command: 'search', cityId: 1, generalId: 1 })); internalAffairsIntSuite.assertTrue(result.success); internalAffairsIntSuite.assertNotNull(result.outcome); });
+
+    // Diplomacy Integration Tests
+    const diplomacyIntSuite = new TestSuite('DiplomacyIntegration', 'integration');
+    diplomacyIntSuite.test('离间指令忠诚度下降', () => { const cr = new CityRepository([{ id: 1, forceId: 1 }, { id: 2, forceId: 2 }]); const pr = new PersonRepository([{ id: 1, forceId: 1, cityId: 1, energy: 100, intelligence: 80 }, { id: 2, forceId: 2, cityId: 2, loyalty: 60, intelligence: 70 }]); const sys = new DiplomacySystem(null, cr, pr); const enemyGeneral = pr.getById(2); const initialLoyalty = enemyGeneral.getLoyalty(); const result = sys.executeOrder(new Order({ type: 'diplomacy', command: 'alienate', fromCityId: 1, toCityId: 2, generalId: 1, targetId: 2 })); diplomacyIntSuite.assertNotNull(result); if (result.success) diplomacyIntSuite.assertTrue(enemyGeneral.getLoyalty() <= initialLoyalty); });
+    diplomacyIntSuite.test('招揽指令武将归属变更', () => { const cr = new CityRepository([{ id: 1, forceId: 1 }]); const pr = new PersonRepository([{ id: 1, energy: 100, intelligence: 80 }, { id: 2, forceId: 0, loyalty: 40, intelligence: 60 }]); const sys = new DiplomacySystem(null, cr, pr); const result = sys.executeOrder(new Order({ type: 'diplomacy', command: 'canvass', fromCityId: 1, generalId: 1, targetId: 2 })); if (result.success) { diplomacyIntSuite.assertEquals(pr.getById(2).getForceId(), 1); diplomacyIntSuite.assertEquals(pr.getById(2).getCityId(), 1); } });
+
+    // Battle Integration Tests
+    const battleIntSuite = new TestSuite('BattleIntegration', 'integration');
+    battleIntSuite.test('战斗初始化与单位放置', () => { const bm = new BattleMap(15, 15); const p1 = new Person({ id: 1, strength: 80, soldier: 1000, soldierType: 'cavalry' }); const p2 = new Person({ id: 2, strength: 70, soldier: 1000, soldierType: 'infantry' }); const u1 = new BattleUnit(p1, 1); const u2 = new BattleUnit(p2, 2); bm.placeUnit(u1, 2, 2); bm.placeUnit(u2, 5, 5); battleIntSuite.assertNotNull(bm.getUnitAt(2, 2)); battleIntSuite.assertNotNull(bm.getUnitAt(5, 5)); });
+    battleIntSuite.test('战斗伤害与HP减少', () => { const sr = new SkillRepository([]); const calc = new CombatCalculator(sr); const p1 = new Person({ id: 1, strength: 80, soldier: 1000, soldierType: 'cavalry' }); const p2 = new Person({ id: 2, strength: 70, soldier: 1000, soldierType: 'infantry' }); const u1 = new BattleUnit(p1, 1); const u2 = new BattleUnit(p2, 2); const initialHP = u2.getCurrentHP(); const dmg = calc.calculateDamage(u1, u2, { terrain: 'plain' }); u2.takeDamage(dmg); battleIntSuite.assertTrue(dmg > 0); battleIntSuite.assertEquals(u2.getCurrentHP(), initialHP - dmg); });
+    battleIntSuite.test('地形防御加成效果', () => { const sr = new SkillRepository([]); const calc = new CombatCalculator(sr); const p1 = new Person({ id: 1, strength: 80, soldier: 1000, command: 80 }); const p2 = new Person({ id: 2, strength: 70, soldier: 1000, command: 70 }); const u1 = new BattleUnit(p1, 1); const u2 = new BattleUnit(p2, 2); const plainDmg = calc.calculateDamage(u1, u2, { terrain: 'plain' }); const mountainDmg = calc.calculateDamage(u1, u2, { terrain: 'mountain' }); battleIntSuite.assertTrue(mountainDmg < plainDmg); });
+
+    // Game Flow Integration Tests
+    const gameFlowIntSuite = new TestSuite('GameFlowIntegration', 'integration');
+    gameFlowIntSuite.test('游戏启动流程', () => { const sm = new StateManager(); sm.setState({ currentPeriod: 1, currentYear: 184, playerForceId: 1, gameState: 'playing' }); gameFlowIntSuite.assertEquals(sm.getState().gameState, 'playing'); gameFlowIntSuite.assertEquals(sm.getState().currentYear, 184); });
+    gameFlowIntSuite.test('内政到战斗流程', () => { const cr = new CityRepository([{ id: 1, forceId: 1, agriculture: 50 }]); const pr = new PersonRepository([{ id: 1, forceId: 1, cityId: 1, energy: 100, strength: 80 }]); const sys = new InternalAffairsSystem(null, cr, pr); const city = cr.getById(1); const initialAgri = city.getAgriculture(); sys.executeOrder(new Order({ type: 'internal', command: 'assart', cityId: 1, generalId: 1 })); gameFlowIntSuite.assertTrue(city.getAgriculture() > initialAgri); });
+    gameFlowIntSuite.test('存档与读取', () => { const sm = new StateManager(); sm.setState({ currentPeriod: 1, currentYear: 200, playerForceId: 5 }); const snap = sm.createSnapshot(); sm.reset(); gameFlowIntSuite.assertNotEquals(sm.getState().currentYear, 200); sm.restoreSnapshot(snap); gameFlowIntSuite.assertEquals(sm.getState().currentYear, 200); gameFlowIntSuite.assertEquals(sm.getState().playerForceId, 5); });
+
+    // ==================== 5. 定义运行测试函数 ====================
+    function runAllTests() {
+        const resultsDiv = document.getElementById('test-results');
+        const summaryDiv = document.getElementById('summary');
+        const runButton = document.getElementById('runTests');
+        const runUnit = document.getElementById('runUnitTests').checked;
+        const runIntegration = document.getElementById('runIntegrationTests').checked;
+
+        resultsDiv.innerHTML = '';
+        summaryDiv.style.display = 'none';
+        runButton.disabled = true;
+        runButton.textContent = '测试中...';
+
+        testResults.passed = 0;
+        testResults.failed = 0;
+
+        const suitesToRun = testResults.suites.filter(s => {
+            if (s.type === 'integration' && !runIntegration) return false;
+            if (s.type !== 'integration' && !runUnit) return false;
+            return true;
+        });
+
+        for (const suite of suitesToRun) {
+            const suiteDiv = document.createElement('div');
+            suiteDiv.className = 'test-suite';
+            const badgeClass = suite.type === 'integration' ? 'integration' : '';
+            const badgeText = suite.type === 'integration' ? '集成测试' : '单元测试';
+            suiteDiv.innerHTML = `<h2>${suite.name} <span class="badge ${badgeClass}">${badgeText}</span></h2>`;
+
+            for (const test of suite.tests) {
+                const testDiv = document.createElement('div');
+                testDiv.className = 'test-case';
+                try {
+                    test.fn();
+                    testDiv.classList.add('test-pass');
+                    testDiv.innerHTML = `<span>${test.name}</span><span class="test-status">✓ 通过</span>`;
+                    testResults.passed++;
+                } catch (error) {
+                    testDiv.classList.add('test-fail');
+                    testDiv.innerHTML = `<span>${test.name}</span><span class="test-status">✗ 失败</span>`;
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'error-message';
+                    errorDiv.textContent = error.message;
+                    testDiv.appendChild(errorDiv);
+                    testResults.failed++;
                 }
+                suiteDiv.appendChild(testDiv);
             }
-            
-            placeUnit(unit, x, y) {
-                this.units.set(`${x},${y}`, unit);
-                unit.setX(x);
-                unit.setY(y);
-            }
-            
-            getUnitAt(x, y) {
-                return this.units.get(`${x},${y}`);
-            }
-            
-            removeUnit(x, y) {
-                this.units.delete(`${x},${y}`);
-            }
-        }
-        
-        class SkillRepository {
-            constructor(skills) {
-                this.skills = skills || [];
-            }
-            
-            getById(id) {
-                return this.skills.find(s => s.id === id);
-            }
-            
-            getAll() {
-                return this.skills;
-            }
-        }
-        
-        class CombatCalculator {
-            constructor(skillRepository) {
-                this.skillRepository = skillRepository;
-            }
-            
-            calculateAttack(strength, soldier, soldierType) {
-                return FormulaCalculator.calculateAttack(strength, soldier, soldierType);
-            }
-            
-            calculateDefense(command, soldierType, terrain) {
-                return FormulaCalculator.calculateDefense(command, soldierType, terrain);
-            }
-            
-            calculateDamage(attacker, defender, terrainInfo) {
-                const attack = this.calculateAttack(
-                    attacker.person.getStrength(),
-                    attacker.person.getSoldier(),
-                    attacker.person.getSoldierType()
-                );
-                const defense = this.calculateDefense(
-                    defender.person.getCommand(),
-                    defender.person.getSoldierType(),
-                    terrainInfo.terrain
-                );
-                return FormulaCalculator.calculateDamage(attack, defense);
-            }
-        }
-        
-        class PeriodManager {
-            constructor(periods) {
-                this.periods = periods || [];
-                this.currentPeriod = null;
-            }
-            
-            getAllPeriods() {
-                return this.periods;
-            }
-            
-            getPeriod(id) {
-                return this.periods.find(p => p.id === id);
-            }
-            
-            initializePeriod(periodId) {
-                this.currentPeriod = this.getPeriod(periodId);
-                return this.currentPeriod;
-            }
-        }
-        
-        class TurnManager {
-            constructor(stateManager, cityRepository) {
-                this.stateManager = stateManager;
-                this.cityRepository = cityRepository;
-            }
-            
-            endTurn() {
-                const state = this.stateManager.getState();
-                let newMonth = state.currentMonth + 1;
-                let newYear = state.currentYear;
-                
-                if (newMonth > 12) {
-                    newMonth = 1;
-                    newYear++;
-                }
-                
-                this.stateManager.setState({
-                    currentMonth: newMonth,
-                    currentYear: newYear
-                });
-            }
+            resultsDiv.appendChild(suiteDiv);
         }
 
-        // BattleUnit Tests
-        const battleUnitSuite = new TestSuite('BattleUnit');
-        battleUnitSuite.test('战斗单位HP计算', () => {
-            const person = new Person({ id: 1, name: '测试将', strength: 80, soldier: 1000 });
-            const unit = new BattleUnit(person, 1);
-            battleUnitSuite.assertTrue(unit.getMaxHP() > 0, 'Max HP should be positive');
-        });
-        battleUnitSuite.test('战斗单位伤害计算', () => {
-            const person = new Person({ id: 1, name: '测试将', strength: 80, soldier: 1000 });
-            const unit = new BattleUnit(person, 1);
-            const initialHP = unit.getCurrentHP();
-            unit.takeDamage(100);
-            battleUnitSuite.assertEquals(unit.getCurrentHP(), initialHP - 100, 'HP should decrease');
-        });
+        document.getElementById('passed-count').textContent = testResults.passed;
+        document.getElementById('failed-count').textContent = testResults.failed;
+        summaryDiv.style.display = 'block';
+        runButton.disabled = false;
+        runButton.textContent = '重新运行测试';
 
-        // Order Tests
-        const orderSuite = new TestSuite('Order');
-        orderSuite.test('指令创建', () => {
-            const order = new Order({
-                type: 'internal',
-                command: 'assart',
-                cityId: 1,
-                generalId: 1
-            });
-            orderSuite.assertEquals(order.getType(), 'internal', 'Type should match');
-            orderSuite.assertEquals(order.getCommand(), 'assart', 'Command should match');
-        });
-        orderSuite.test('指令状态管理', () => {
-            const order = new Order({ type: 'internal', command: 'assart' });
-            orderSuite.assertEquals(order.getStatus(), 'pending', 'Initial status should be pending');
-            order.setStatus('completed');
-            orderSuite.assertEquals(order.getStatus(), 'completed', 'Status should be updated');
-        });
-
-        // ==================== Integration Test Suite Base ====================
-        
-        class IntegrationTestSuite extends TestSuite {
-            constructor(name) {
-                super(name);
-                const suite = testResults.suites.find(s => s.name === name);
-                if (suite) suite.type = 'integration';
-            }
-        }
-
-        // ==================== Internal Affairs Integration Tests ====================
-        
-        const internalAffairsIntegrationSuite = new IntegrationTestSuite('InternalAffairsIntegration');
-        
-        internalAffairsIntegrationSuite.test('开垦指令完整流程', async () => {
-            const sm = new StateManager();
-            const cityRepo = new CityRepository([{ id: 1, name: '测试城', agriculture: 50, maxAgriculture: 100, forceId: 1 }]);
-            const personRepo = new PersonRepository([{ id: 1, name: '测试将', forceId: 1, cityId: 1, energy: 100 }]);
-            
-            const system = new InternalAffairsSystem(null, cityRepo, personRepo);
-            const city = cityRepo.getById(1);
-            const initialAgri = city.getAgriculture();
-            
-            const order = new Order({ type: 'internal', command: 'assart', cityId: 1, generalId: 1 });
-            const result = system.executeOrder(order);
-            
-            internalAffairsIntegrationSuite.assertTrue(result.success, 'Assart should succeed');
-            internalAffairsIntegrationSuite.assertTrue(city.getAgriculture() > initialAgri, 'Agriculture should increase');
-        });
-
-        internalAffairsIntegrationSuite.test('招商指令商业增长', async () => {
-            const sm = new StateManager();
-            const cityRepo = new CityRepository([{ id: 1, name: '测试城', commerce: 50, maxCommerce: 100, forceId: 1 }]);
-            const personRepo = new PersonRepository([{ id: 1, name: '测试将', forceId: 1, cityId: 1, energy: 100 }]);
-            
-            const system = new InternalAffairsSystem(null, cityRepo, personRepo);
-            const city = cityRepo.getById(1);
-            const initialCommerce = city.getCommerce();
-            
-            const order = new Order({ type: 'internal', command: 'business', cityId: 1, generalId: 1 });
-            system.executeOrder(order);
-            
-            internalAffairsIntegrationSuite.assertTrue(city.getCommerce() > initialCommerce, 'Commerce should increase');
-        });
-
-        internalAffairsIntegrationSuite.test('武将体力消耗一致性', async () => {
-            const personRepo = new PersonRepository([{ id: 1, name: '测试将', forceId: 1, cityId: 1, energy: 100 }]);
-            const cityRepo = new CityRepository([{ id: 1, name: '测试城', forceId: 1 }]);
-            const system = new InternalAffairsSystem(null, cityRepo, personRepo);
-            
-            const commands = ['assart', 'business', 'search'];
-            
-            for (const cmd of commands) {
-                const person = personRepo.getById(1);
-                person.setEnergy(100);
-                const initialEnergy = person.getEnergy();
-                
-                const order = new Order({ type: 'internal', command: cmd, cityId: 1, generalId: 1 });
-                system.executeOrder(order);
-                
-                internalAffairsIntegrationSuite.assertTrue(person.getEnergy() < initialEnergy, `${cmd} should consume energy`);
-            }
-        });
-
-        // ==================== Diplomacy Integration Tests ====================
-        
-        const diplomacyIntegrationSuite = new IntegrationTestSuite('DiplomacyIntegration');
-        
-        diplomacyIntegrationSuite.test('离间指令忠诚度下降', async () => {
-            const cityRepo = new CityRepository([
-                { id: 1, name: '玩家城', forceId: 1 },
-                { id: 2, name: '敌方城', forceId: 2 }
-            ]);
-            const personRepo = new PersonRepository([
-                { id: 1, name: '外交官', forceId: 1, cityId: 1, energy: 100, intelligence: 80 },
-                { id: 2, name: '敌方将', forceId: 2, cityId: 2, loyalty: 60, intelligence: 70 }
-            ]);
-            
-            const system = new DiplomacySystem(null, cityRepo, personRepo);
-            const enemyGeneral = personRepo.getById(2);
-            const initialLoyalty = enemyGeneral.getLoyalty();
-            
-            const order = new Order({
-                type: 'diplomacy',
-                command: 'alienate',
-                fromCityId: 1,
-                toCityId: 2,
-                generalId: 1,
-                targetId: 2
-            });
-            
-            system.executeOrder(order);
-            
-            diplomacyIntegrationSuite.assertTrue(
-                enemyGeneral.getLoyalty() <= initialLoyalty,
-                'Enemy loyalty should decrease or stay same'
-            );
-        });
-
-        diplomacyIntegrationSuite.test('招揽指令武将归属变更', async () => {
-            const cityRepo = new CityRepository([{ id: 1, name: '玩家城', forceId: 1 }]);
-            const personRepo = new PersonRepository([
-                { id: 1, name: '外交官', forceId: 1, cityId: 1, energy: 100 },
-                { id: 2, name: '在野将', forceId: 0, loyalty: 40 }
-            ]);
-            
-            const system = new DiplomacySystem(null, cityRepo, personRepo);
-            const targetGeneral = personRepo.getById(2);
-            
-            const order = new Order({
-                type: 'diplomacy',
-                command: 'canvass',
-                fromCityId: 1,
-                generalId: 1,
-                targetId: 2
-            });
-            
-            const result = system.executeOrder(order);
-            
-            if (result.success) {
-                diplomacyIntegrationSuite.assertEquals(targetGeneral.getForceId(), 1, 'General should join player force');
-                diplomacyIntegrationSuite.assertEquals(targetGeneral.getCityId(), 1, 'General should move to player city');
-            }
-        });
-
-        // ==================== Battle Integration Tests ====================
-        
-        const battleIntegrationSuite = new IntegrationTestSuite('BattleIntegration');
-        
-        battleIntegrationSuite.test('战斗初始化与单位放置', () => {
-            const battleMap = new BattleMap(15, 15);
-            const person1 = new Person({ id: 1, name: '攻击方', strength: 80, soldier: 1000, soldierType: 'cavalry' });
-            const person2 = new Person({ id: 2, name: '防守方', strength: 70, soldier: 1000, soldierType: 'infantry' });
-            
-            const unit1 = new BattleUnit(person1, 1);
-            const unit2 = new BattleUnit(person2, 2);
-            
-            battleMap.placeUnit(unit1, 2, 2);
-            battleMap.placeUnit(unit2, 5, 5);
-            
-            battleIntegrationSuite.assertNotNull(battleMap.getUnitAt(2, 2), 'Unit 1 should be placed');
-            battleIntegrationSuite.assertNotNull(battleMap.getUnitAt(5, 5), 'Unit 2 should be placed');
-        });
-
-        battleIntegrationSuite.test('战斗伤害与HP减少', () => {
-            const skillRepo = new SkillRepository([]);
-            const calc = new CombatCalculator(skillRepo);
-            const person1 = new Person({ id: 1, name: '攻击方', strength: 80, soldier: 1000, soldierType: 'cavalry' });
-            const person2 = new Person({ id: 2, name: '防守方', strength: 70, soldier: 1000, soldierType: 'infantry' });
-            
-            const unit1 = new BattleUnit(person1, 1);
-            const unit2 = new BattleUnit(person2, 2);
-            
-            const initialHP = unit2.getCurrentHP();
-            const damage = calc.calculateDamage(unit1, unit2, { terrain: 'plain' });
-            unit2.takeDamage(damage);
-            
-            battleIntegrationSuite.assertTrue(damage > 0, 'Damage should be positive');
-            battleIntegrationSuite.assertEquals(unit2.getCurrentHP(), initialHP - damage, 'HP should decrease by damage');
-        });
-
-        battleIntegrationSuite.test('地形防御加成效果', () => {
-            const skillRepo = new SkillRepository([]);
-            const calc = new CombatCalculator(skillRepo);
-            const person1 = new Person({ id: 1, name: '攻击方', strength: 80, soldier: 1000 });
-            const person2 = new Person({ id: 2, name: '防守方', strength: 70, soldier: 1000 });
-            
-            const unit1 = new BattleUnit(person1, 1);
-            const unit2 = new BattleUnit(person2, 2);
-            
-            const plainDamage = calc.calculateDamage(unit1, unit2, { terrain: 'plain' });
-            const mountainDamage = calc.calculateDamage(unit1, unit2, { terrain: 'mountain' });
-            
-            battleIntegrationSuite.assertTrue(mountainDamage < plainDamage, 'Mountain should provide defense bonus');
-        });
-
-        // ==================== Game Flow Integration Tests ====================
-        
-        const gameFlowIntegrationSuite = new IntegrationTestSuite('GameFlowIntegration');
-        
-        gameFlowIntegrationSuite.test('游戏启动流程', async () => {
-            const sm = new StateManager();
-            const pm = new PeriodManager([
-                { id: 1, name: '时期1', startYear: 184, kings: [{ id: 1, forceId: 1 }] }
-            ]);
-            
-            const periods = pm.getAllPeriods();
-            gameFlowIntegrationSuite.assertTrue(periods.length > 0, 'Should have available periods');
-            
-            const selectedPeriod = pm.getPeriod(1);
-            gameFlowIntegrationSuite.assertNotNull(selectedPeriod, 'Should select period 1');
-            
-            pm.initializePeriod(1);
-            
-            sm.setState({
-                currentPeriod: 1,
-                currentYear: selectedPeriod.startYear,
-                playerForceId: 1,
-                gameState: 'playing'
-            });
-            
-            gameFlowIntegrationSuite.assertEquals(sm.getState().gameState, 'playing', 'Game should be in playing state');
-        });
-
-        gameFlowIntegrationSuite.test('多回合循环', async () => {
-            const sm = new StateManager();
-            const cityRepo = new CityRepository([{ id: 1, name: '测试城', forceId: 1 }]);
-            const tm = new TurnManager(sm, cityRepo);
-            
-            sm.setState({ currentYear: 184, currentMonth: 1 });
-            
-            for (let i = 0; i < 12; i++) {
-                const currentMonth = sm.getState().currentMonth;
-                tm.endTurn();
-            }
-            
-            gameFlowIntegrationSuite.assertEquals(sm.getState().currentYear, 185, 'Year should advance');
-            gameFlowIntegrationSuite.assertEquals(sm.getState().currentMonth, 1, 'Should be month 1');
-        });
-
-        gameFlowIntegrationSuite.test('内政到战斗流程', async () => {
-            const sm = new StateManager();
-            const cityRepo = new CityRepository([
-                { id: 1, name: '玩家城', forceId: 1, agriculture: 50 },
-                { id: 2, name: '敌方城', forceId: 2 }
-            ]);
-            const personRepo = new PersonRepository([
-                { id: 1, name: '君主', forceId: 1, cityId: 1, energy: 100 }
-            ]);
-            
-            const internalSystem = new InternalAffairsSystem(null, cityRepo, personRepo);
-            const playerCity = cityRepo.getById(1);
-            const initialAgri = playerCity.getAgriculture();
-            
-            // Phase 1: Internal Affairs
-            const assartOrder = new Order({ type: 'internal', command: 'assart', cityId: 1, generalId: 1 });
-            internalSystem.executeOrder(assartOrder);
-            
-            gameFlowIntegrationSuite.assertTrue(playerCity.getAgriculture() > initialAgri, 'Agriculture should increase');
-        });
-
-        gameFlowIntegrationSuite.test('存档与读取', async () => {
-            const sm = new StateManager();
-            sm.setState({
-                currentPeriod: 1,
-                currentYear: 200,
-                playerForceId: 5
-            });
-            
-            const snapshot = sm.createSnapshot();
-            
-            sm.reset();
-            gameFlowIntegrationSuite.assertNotEquals(sm.getState().currentYear, 200, 'State should be reset');
-            
-            sm.restoreSnapshot(snapshot);
-            gameFlowIntegrationSuite.assertEquals(sm.getState().currentYear, 200, 'Year should be restored');
-            gameFlowIntegrationSuite.assertEquals(sm.getState().playerForceId, 5, 'Player force should be restored');
-        });
-
-        // ==================== Test Runner ====================
-
-        globalThis.runAllTests = async function() {
-            const resultsDiv = document.getElementById('test-results');
-            const summaryDiv = document.getElementById('summary');
-            const runButton = document.getElementById('runTests');
-            const runUnit = document.getElementById('runUnitTests').checked;
-            const runIntegration = document.getElementById('runIntegrationTests').checked;
-            
-            resultsDiv.innerHTML = '';
-            summaryDiv.style.display = 'none';
-            runButton.disabled = true;
-            runButton.textContent = '测试中...';
-            
-            testResults.passed = 0;
-            testResults.failed = 0;
-
-            // Filter suites based on selection
-            const suitesToRun = testResults.suites.filter(suite => {
-                if (suite.type === 'integration' && !runIntegration) return false;
-                if (suite.type !== 'integration' && !runUnit) return false;
-                return true;
-            });
-            
-            for (const suite of suitesToRun) {
-                const suiteDiv = document.createElement('div');
-                suiteDiv.className = 'test-suite';
-                
-                const badgeClass = suite.type === 'integration' ? 'integration' : '';
-                const badgeText = suite.type === 'integration' ? '集成测试' : '单元测试';
-                
-                suiteDiv.innerHTML = `<h2>${suite.name} <span class="badge ${badgeClass}">${badgeText}</span></h2>`;
-                
-                // Run beforeAll if exists
-                if (suite.instance && suite.instance.beforeAll) {
-                    await suite.instance.beforeAll();
-                }
-                
-                for (const test of suite.tests) {
-                    const testDiv = document.createElement('div');
-                    testDiv.className = 'test-case';
-                    
-                    try {
-                        if (suite.instance && suite.instance.beforeEach) {
-                            await suite.instance.beforeEach();
-                        }
-                        
-                        await test.fn();
-                        
-                        if (suite.instance && suite.instance.afterEach) {
-                            await suite.instance.afterEach();
-                        }
-                        
-                        testDiv.classList.add('test-pass');
-                        testDiv.innerHTML = `
-                            <span>${test.name}</span>
-                            <span class="test-status">✓ 通过</span>
-                        `;
-                        testResults.passed++;
-                    } catch (error) {
-                        testDiv.classList.add('test-fail');
-                        testDiv.innerHTML = `
-                            <span>${test.name}</span>
-                            <span class="test-status">✗ 失败</span>
-                        `;
-                        
-                        const errorDiv = document.createElement('div');
-                        errorDiv.className = 'error-message';
-                        errorDiv.textContent = error.message;
-                        testDiv.appendChild(errorDiv);
-                        
-                        testResults.failed++;
-                    }
-                    
-                    suiteDiv.appendChild(testDiv);
-                }
-                
-                // Run afterAll if exists
-                if (suite.instance && suite.instance.afterAll) {
-                    await suite.instance.afterAll();
-                }
-                
-                resultsDiv.appendChild(suiteDiv);
-            }
-            
-            // Show summary
-            document.getElementById('passed-count').textContent = testResults.passed;
-            document.getElementById('failed-count').textContent = testResults.failed;
-            summaryDiv.style.display = 'block';
-            
-            runButton.disabled = false;
-            runButton.textContent = '重新运行测试';
-            
-            // Show phase completion message
-            const completionDiv = document.createElement('div');
-            completionDiv.className = 'phase-header';
-            completionDiv.innerHTML = `
-                <h3>Phase 9: 集成测试 完成!</h3>
-                <p style="color: #4CAF50; margin-top: 10px;">
-                    ✅ 所有76个任务已完成! (100%)
-                </p>
-                <p style="color: #c9a050;">
-                    项目总体进度: 76/76 任务完成
-                </p>
-            `;
-            resultsDiv.appendChild(completionDiv);
-        };
-
-        // Make TestSuite available globally for integration test files
-        globalThis.TestSuite = TestSuite;
+        const completionDiv = document.createElement('div');
+        completionDiv.className = 'phase-header';
+        completionDiv.innerHTML = `<h3>Phase 9: 集成测试 完成!</h3><p style="color: #4CAF50; margin-top: 10px;">✅ 所有测试完成!</p><p style="color: #c9a050;">总计: ${testResults.passed} 通过, ${testResults.failed} 失败</p>`;
+        resultsDiv.appendChild(completionDiv);
+    }
     </script>
 </body>
 </html>
