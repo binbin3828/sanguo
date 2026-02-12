@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="period2Bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1f2d1f"/>
+      <stop offset="100%" style="stop-color:#0a1a0a"/>
+    </linearGradient>
+    <linearGradient id="period2Border" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#006400"/>
+      <stop offset="50%" style="stop-color:#228b22"/>
+      <stop offset="100%" style="stop-color:#006400"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect x="2" y="2" width="196" height="146" rx="8" fill="url(#period2Bg)" stroke="url(#period2Border)" stroke-width="2"/>
+  
+  <!-- 军旗 -->
+  <line x1="100" y1="35" x2="100" y2="110" stroke="#8b4513" stroke-width="3"/>
+  <polygon points="100,35 130,55 100,75" fill="#228b22" stroke="#006400" stroke-width="2"/>
+  <text x="115" y="60" font-family="SimHei" font-size="12" fill="#ffd700" transform="rotate(10 115 60)">魏</text>
+  
+  <!-- 战马 -->
+  <ellipse cx="60" cy="100" rx="20" ry="12" fill="#4a3728"/>
+  <circle cx="50" cy="90" r="8" fill="#4a3728"/>
+  <line x1="55" y1="88" x2="65" y2="82" stroke="#4a3728" stroke-width="2"/>
+  
+  <!-- 兵器架 -->
+  <line x1="140" y1="80" x2="160" y2="60" stroke="#a0a0a0" stroke-width="2"/>
+  <line x1="145" y1="85" x2="165" y2="65" stroke="#a0a0a0" stroke-width="2"/>
+  <polygon points="160,60 170,55 165,68" fill="#c0c0c0"/>
+  
+  <!-- 年份文字 -->
+  <text x="100" y="115" font-family="SimHei" font-size="16" fill="#ffd700" text-anchor="middle" font-weight="bold">198年</text>
+  
+  <!-- 时期名称 -->
+  <text x="100" y="135" font-family="SimHei" font-size="12" fill="#90ee90" text-anchor="middle">曹操崛起</text>
+</svg>

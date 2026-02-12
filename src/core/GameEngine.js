@@ -67,28 +67,46 @@ export class GameEngine {
         // 鼠标事件
         this.canvas.addEventListener('mousedown', (e) => {
             const pos = this._getMousePosition(e);
-            this.eventBus.emit('input.mousedown', {
+            const mouseData = {
                 x: pos.x,
                 y: pos.y,
                 button: e.button
-            });
+            };
+            this.eventBus.emit('input.mousedown', mouseData);
+            
+            // 同时传递给当前屏幕
+            if (this.currentScreen && this.currentScreen.onMouseDown) {
+                this.currentScreen.onMouseDown(pos.x, pos.y);
+            }
         });
 
         this.canvas.addEventListener('mousemove', (e) => {
             const pos = this._getMousePosition(e);
-            this.eventBus.emit('input.mousemove', {
+            const mouseData = {
                 x: pos.x,
                 y: pos.y
-            });
+            };
+            this.eventBus.emit('input.mousemove', mouseData);
+            
+            // 同时传递给当前屏幕
+            if (this.currentScreen && this.currentScreen.onMouseMove) {
+                this.currentScreen.onMouseMove(pos.x, pos.y);
+            }
         });
 
         this.canvas.addEventListener('mouseup', (e) => {
             const pos = this._getMousePosition(e);
-            this.eventBus.emit('input.mouseup', {
+            const mouseData = {
                 x: pos.x,
                 y: pos.y,
                 button: e.button
-            });
+            };
+            this.eventBus.emit('input.mouseup', mouseData);
+            
+            // 同时传递给当前屏幕
+            if (this.currentScreen && this.currentScreen.onMouseUp) {
+                this.currentScreen.onMouseUp(pos.x, pos.y);
+            }
         });
 
         // 键盘事件
@@ -157,8 +175,6 @@ export class GameEngine {
         if (screen && screen.onEnter) {
             screen.onEnter();
         }
-
-        this.eventBus.emit('screen.change', screen);
     }
 
     /**

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="period3Bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1f2a3f"/>
+      <stop offset="100%" style="stop-color:#0a1520"/>
+    </linearGradient>
+    <linearGradient id="period3Border" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00008b"/>
+      <stop offset="50%" style="stop-color:#4169e1"/>
+      <stop offset="100%" style="stop-color:#00008b"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect x="2" y="2" width="196" height="146" rx="8" fill="url(#period3Bg)" stroke="url(#period3Border)" stroke-width="2"/>
+  
+  <!-- 水波纹 -->
+  <g opacity="0.5">
+    <path d="M10 100 Q30 90 50 100 T90 100 T130 100 T170 100" fill="none" stroke="#4169e1" stroke-width="2"/>
+    <path d="M20 110 Q40 100 60 110 T100 110 T140 110 T180 110" fill="none" stroke="#4169e1" stroke-width="2"/>
+    <path d="M10 120 Q30 110 50 120 T90 120 T130 120 T170 120" fill="none" stroke="#4169e1" stroke-width="2"/>
+  </g>
+  
+  <!-- 战船 -->
+  <rect x="60" y="55" width="35" height="25" fill="#5c4033" stroke="#8b4513" stroke-width="1"/>
+  <rect x="65" y="40" width="4" height="20" fill="#4a3728"/>
+  <rect x="85" y="40" width="4" height="20" fill="#4a3728"/>
+  <polygon points="62,55 74,40 87,55" fill="#d2b48c"/>
+  
+  <!-- 火焰/烽火 -->
+  <g>
+    <ellipse cx="120" cy="50" rx="8" ry="12" fill="#ff4500" opacity="0.8"/>
+    <ellipse cx="120" cy="45" rx="5" ry="8" fill="#ffa500" opacity="0.9"/>
+    <ellipse cx="120" cy="42" rx="2" ry="4" fill="#ffff00"/>
+  </g>
+  
+  <!-- 统帅剪影 -->
+  <circle cx="155" cy="65" r="10" fill="#2a2a2a"/>
+  <ellipse cx="155" cy="80" rx="12" ry="15" fill="#2a2a2a"/>
+  
+  <!-- 年份文字 -->
+  <text x="100" y="115" font-family="SimHei" font-size="16" fill="#ffd700" text-anchor="middle" font-weight="bold">208年</text>
+  
+  <!-- 时期名称 -->
+  <text x="100" y="135" font-family="SimHei" font-size="12" fill="#87ceeb" text-anchor="middle">赤壁之战</text>
+</svg>

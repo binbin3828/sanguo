@@ -60,7 +60,7 @@ export class MainMenuScreen {
             {
                 text: '退出游戏',
                 y: startY + (buttonHeight + spacing) * 2,
-                onClick: () => this.onExit(),
+                onClick: () => this.onQuit(),
                 icon: '🚪'
             }
         ];
@@ -116,7 +116,7 @@ export class MainMenuScreen {
     /**
      * 退出游戏
      */
-    onExit() {
+    onQuit() {
         if (confirm('确定要退出游戏吗？')) {
             window.close();
         }

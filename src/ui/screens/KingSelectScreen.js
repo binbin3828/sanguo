@@ -1,9 +1,6 @@
 /**
- * 君主选择界面
+ * 君主选择界面 - 商业级设计
  */
-
-import { Button } from '../components/Button.js';
-import { ListView } from '../components/ListView.js';
 
 export class KingSelectScreen {
     constructor(engine) {
@@ -12,195 +9,497 @@ export class KingSelectScreen {
         
         this.selectedKing = null;
         this.availableKings = [];
+        this.animationTime = 0;
+        this.particles = [];
         
-        this._initUI();
+        this._initParticles();
     }
 
-    /**
-     * 初始化UI
-     */
-    _initUI() {
-        // 君主列表
-        this.kingList = new ListView({
-            x: 100,
-            y: 150,
-            width: 300,
-            height: 400,
-            onSelect: (item) => this.onSelectKing(item)
-        });
-
-        // 返回按钮
-        this.backButton = new Button({
-            x: 50,
-            y: 700,
-            width: 100,
-            height: 40,
-            text: '返回',
-            backgroundColor: '#666666',
-            onClick: () => this.onBack()
-        });
-
-        // 确认按钮
-        this.confirmButton = new Button({
-            x: 874,
-            y: 700,
-            width: 100,
-            height: 40,
-            text: '确定',
-            onClick: () => this.onConfirm()
-        });
-    }
-
-    /**
-     * 设置可用君主列表
-     */
-    setAvailableKings(kings) {
-        this.availableKings = kings;
-        this.kingList.setItems(kings.map(k => ({
-            id: k.id,
-            text: k.name,
-            data: k
-        })));
-    }
-
-    /**
-     * 选择君主
-     */
-    onSelectKing(item) {
-        this.selectedKing = item.data;
-        
-        if (this.eventBus) {
-            this.eventBus.emit('king.selected', this.selectedKing);
+    _initParticles() {
+        for (let i = 0; i < 15; i++) {
+            this.particles.push({
+                x: Math.random() * 1024,
+                y: Math.random() * 768,
+                size: Math.random() * 2 + 1,
+                speedX: (Math.random() - 0.5) * 0.2,
+                speedY: (Math.random() - 0.5) * 0.2,
+                opacity: Math.random() * 0.3 + 0.1
+            });
         }
     }
 
-    /**
-     * 确认选择
-     */
+    onEnter() {
+        this.animationTime = 0;
+    }
+
+    setAvailableKings(kings) {
+        this.availableKings = kings || [];
+    }
+
+    onSelectKing(king) {
+        this.selectedKing = king;
+    }
+
     onConfirm() {
         if (!this.selectedKing) {
-            alert('请选择一位君主');
             return;
         }
 
         if (this.eventBus) {
-            this.eventBus.emit('king.confirm', this.selectedKing);
+            this.eventBus.emit('king.selected', this.selectedKing);
             this.eventBus.emit('screen.change', 'StrategyMap');
         }
     }
 
-    /**
-     * 返回
-     */
     onBack() {
         if (this.eventBus) {
             this.eventBus.emit('screen.change', 'PeriodSelect');
         }
     }
 
-    /**
-     * 渲染
-     */
-    render(ctx) {
-        // 背景
-        ctx.fillStyle = '#1a1a1a';
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-        // 标题
-        ctx.fillStyle = '#ffd700';
-        ctx.font = 'bold 36px Microsoft YaHei';
-        ctx.textAlign = 'center';
-        ctx.fillText('选择君主', ctx.canvas.width / 2, 80);
-
-        // 君主列表
-        this.kingList.render(ctx);
-
-        // 绘制选中君主的详细信息
-        if (this.selectedKing) {
-            this.renderKingInfo(ctx);
-        }
-
-        // 按钮
-        this.backButton.render(ctx);
-        this.confirmButton.render(ctx);
-    }
-
-    /**
-     * 绘制君主信息
-     */
-    renderKingInfo(ctx) {
-        const infoX = 450;
-        const infoY = 150;
-        const infoWidth = 500;
-        const infoHeight = 450;
-
-        // 面板背景
-        ctx.fillStyle = 'rgba(45, 45, 45, 0.9)';
-        ctx.fillRect(infoX, infoY, infoWidth, infoHeight);
-        ctx.strokeStyle = '#4a4a4a';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(infoX, infoY, infoWidth, infoHeight);
-
-        // 君主名称
-        ctx.fillStyle = '#ffd700';
-        ctx.font = 'bold 32px Microsoft YaHei';
-        ctx.textAlign = 'center';
-        ctx.fillText(this.selectedKing.name, infoX + infoWidth / 2, infoY + 50);
-
-        // 属性
-        ctx.textAlign = 'left';
-        ctx.font = '18px Microsoft YaHei';
+    update(deltaTime) {
+        this.animationTime += deltaTime * 0.001;
         
-        const stats = [
-            { label: '武力', value: this.selectedKing.force },
-            { label: '智力', value: this.selectedKing.iq },
-            { label: '兵种', value: this.getArmyTypeName(this.selectedKing.armsType) }
-        ];
-
-        let y = infoY + 120;
-        stats.forEach(stat => {
-            ctx.fillStyle = '#aaaaaa';
-            ctx.fillText(stat.label + ':', infoX + 30, y);
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText(stat.value.toString(), infoX + 150, y);
-            y += 40;
+        this.particles.forEach(p => {
+            p.x += p.speedX;
+            p.y += p.speedY;
+            if (p.x < 0) p.x = 1024;
+            if (p.x > 1024) p.x = 0;
+            if (p.y < 0) p.y = 768;
+            if (p.y > 768) p.y = 0;
         });
-
-        // 所属城市
-        ctx.fillStyle = '#aaaaaa';
-        ctx.fillText('起始城市:', infoX + 30, y);
-        ctx.fillStyle = '#ffffff';
-        // TODO: 显示实际城市名称
-        ctx.fillText('待获取', infoX + 150, y);
     }
 
-    /**
-     * 获取兵种名称
-     */
+    render(ctx) {
+        const w = ctx.canvas.width;
+        const h = ctx.canvas.height;
+        
+        this._renderBackground(ctx, w, h);
+        this._renderParticles(ctx);
+        this._renderTitle(ctx, w);
+        this._renderKingList(ctx, w, h);
+        this._renderKingInfo(ctx, w, h);
+        this._renderButtons(ctx, w, h);
+        this._renderVersion(ctx, w, h);
+    }
+
+    _renderBackground(ctx, w, h) {
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+        bgGrad.addColorStop(0, '#0a0a1a');
+        bgGrad.addColorStop(0.3, '#121225');
+        bgGrad.addColorStop(0.7, '#101020');
+        bgGrad.addColorStop(1, '#080812');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, w, h);
+        
+        ctx.globalAlpha = 0.02;
+        for (let i = 0; i < w; i += 4) {
+            for (let j = 0; j < h; j += 8) {
+                if ((i + j) % 16 === 0) {
+                    ctx.fillStyle = '#fff';
+                    ctx.fillRect(i, j, 1, 1);
+                }
+            }
+        }
+        ctx.globalAlpha = 1;
+        
+        const lineGrad = ctx.createLinearGradient(0, 0, w, 0);
+        lineGrad.addColorStop(0, 'transparent');
+        lineGrad.addColorStop(0.2, 'rgba(201, 160, 80, 0.4)');
+        lineGrad.addColorStop(0.8, 'rgba(201, 160, 80, 0.4)');
+        lineGrad.addColorStop(1, 'transparent');
+        ctx.strokeStyle = lineGrad;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, 90);
+        ctx.lineTo(w, 90);
+        ctx.stroke();
+        
+        ctx.beginPath();
+        ctx.moveTo(0, h - 80);
+        ctx.lineTo(w, h - 80);
+        ctx.stroke();
+    }
+
+    _renderParticles(ctx) {
+        this.particles.forEach(p => {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(201, 160, 80, ${p.opacity})`;
+            ctx.fill();
+        });
+    }
+
+    _renderTitle(ctx, w) {
+        ctx.save();
+        
+        ctx.shadowColor = '#c9a050';
+        ctx.shadowBlur = 20;
+        
+        const titleGrad = ctx.createLinearGradient(w/2 - 100, 50, w/2 + 100, 50);
+        titleGrad.addColorStop(0, '#ffd700');
+        titleGrad.addColorStop(0.5, '#fff8dc');
+        titleGrad.addColorStop(1, '#c9a050');
+        
+        ctx.fillStyle = titleGrad;
+        ctx.font = 'bold 36px "STKaiti", "KaiTi", serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('选择君主', w/2, 55);
+        
+        ctx.restore();
+    }
+
+    _renderKingList(ctx, w, h) {
+        const listX = 80;
+        const listY = 140;
+        const listW = 280;
+        const listH = 450;
+        
+        ctx.save();
+        
+        const bgGrad = ctx.createLinearGradient(listX, listY, listX + listW, listY + listH);
+        bgGrad.addColorStop(0, 'rgba(25, 25, 45, 0.85)');
+        bgGrad.addColorStop(1, 'rgba(15, 15, 35, 0.9)');
+        
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(listX, listY, listW, listH);
+        
+        ctx.strokeStyle = 'rgba(201, 160, 80, 0.3)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(listX, listY, listW, listH);
+        
+        ctx.fillStyle = 'rgba(201, 160, 80, 0.15)';
+        ctx.fillRect(listX, listY, listW, 40);
+        
+        ctx.fillStyle = '#c9a050';
+        ctx.font = 'bold 16px "Microsoft YaHei"';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('可选君主', listX + listW/2, listY + 20);
+        
+        const kings = this.availableKings.length > 0 ? this.availableKings : [
+            { id: 1, name: '曹操', force: 85, iq: 95, armsType: 0 },
+            { id: 2, name: '刘备', force: 75, iq: 90, armsType: 1 },
+            { id: 3, name: '孙权', force: 70, iq: 88, armsType: 3 },
+            { id: 4, name: '袁绍', force: 80, iq: 75, armsType: 0 },
+            { id: 5, name: '董卓', force: 90, iq: 60, armsType: 0 },
+            { id: 6, name: '吕布', force: 98, iq: 55, armsType: 0 },
+            { id: 7, name: '诸葛亮', force: 30, iq: 100, armsType: 2 },
+            { id: 8, name: '周瑜', force: 75, iq: 92, armsType: 3 }
+        ];
+        
+        const itemHeight = 45;
+        const startY = listY + 50;
+        
+        kings.forEach((king, index) => {
+            const itemY = startY + index * itemHeight;
+            const isSelected = this.selectedKing && this.selectedKing.id === king.id;
+            const isHovered = this._hoveredIndex === index;
+            
+            if (isSelected) {
+                ctx.fillStyle = 'rgba(201, 160, 80, 0.3)';
+            } else if (isHovered) {
+                ctx.fillStyle = 'rgba(60, 60, 90, 0.5)';
+            } else {
+                ctx.fillStyle = 'rgba(40, 40, 60, 0.3)';
+            }
+            
+            ctx.fillRect(listX + 5, itemY, listW - 10, itemHeight - 2);
+            
+            if (isSelected) {
+                ctx.strokeStyle = '#c9a050';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(listX + 5, itemY, listW - 10, itemHeight - 2);
+            }
+            
+            ctx.fillStyle = isSelected ? '#ffd700' : '#ccc';
+            ctx.font = 'bold 16px "Microsoft YaHei"';
+            ctx.textAlign = 'left';
+            ctx.fillText(king.name, listX + 20, itemY + itemHeight/2);
+            
+            if (isSelected) {
+                ctx.fillStyle = '#888';
+                ctx.font = '12px "Microsoft YaHei"';
+                ctx.fillText('已选择', listX + listW - 60, itemY + itemHeight/2);
+            }
+        });
+        
+        this._kingListBounds = { x: listX + 5, y: startY, w: listW - 10, h: itemHeight, itemHeight };
+        this._kings = kings;
+        
+        ctx.restore();
+    }
+
+    _renderKingInfo(ctx, w, h) {
+        const infoX = 420;
+        const infoY = 140;
+        const infoW = 530;
+        const infoH = 450;
+        
+        const king = this.selectedKing;
+        
+        ctx.save();
+        
+        const bgGrad = ctx.createLinearGradient(infoX, infoY, infoX + infoW, infoY + infoH);
+        bgGrad.addColorStop(0, 'rgba(25, 25, 45, 0.85)');
+        bgGrad.addColorStop(1, 'rgba(15, 15, 35, 0.9)');
+        
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(infoX, infoY, infoW, infoH);
+        
+        ctx.strokeStyle = king ? 'rgba(201, 160, 80, 0.5)' : 'rgba(201, 160, 80, 0.2)';
+        ctx.lineWidth = king ? 2 : 1;
+        ctx.strokeRect(infoX, infoY, infoW, infoH);
+        
+        if (!king) {
+            ctx.fillStyle = 'rgba(100, 100, 120, 0.5)';
+            ctx.font = '20px "Microsoft YaHei"';
+            ctx.textAlign = 'center';
+            ctx.fillText('请从左侧选择一位君主', infoX + infoW/2, infoY + infoH/2);
+            ctx.restore();
+            return;
+        }
+        
+        ctx.fillStyle = 'rgba(201, 160, 80, 0.15)';
+        ctx.fillRect(infoX, infoY, infoW, 50);
+        
+        ctx.shadowColor = '#ffd700';
+        ctx.shadowBlur = 15;
+        ctx.fillStyle = '#ffd700';
+        ctx.font = 'bold 28px "STKaiti", "KaiTi", serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(king.name, infoX + infoW/2, infoY + 35);
+        ctx.shadowBlur = 0;
+        
+        const statsY = infoY + 100;
+        const stats = [
+            { label: '武力', value: king.force || 0 },
+            { label: '智力', value: king.iq || 0 },
+            { label: '兵种', value: this.getArmyTypeName(king.armsType) }
+        ];
+        
+        stats.forEach((stat, i) => {
+            const statY = statsY + i * 60;
+            
+            ctx.fillStyle = '#888';
+            ctx.font = '16px "Microsoft YaHei"';
+            ctx.textAlign = 'left';
+            ctx.fillText(stat.label + '：', infoX + 40, statY);
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 20px "Microsoft YaHei"';
+            ctx.fillText(stat.value.toString(), infoX + 120, statY);
+            
+            const barWidth = 200;
+            const barHeight = 12;
+            const barX = infoX + 180;
+            const barY = statY - 8;
+            
+            ctx.fillStyle = 'rgba(50, 50, 70, 0.8)';
+            ctx.fillRect(barX, barY, barWidth, barHeight);
+            
+            const fillWidth = (stat.value / 100) * barWidth;
+            const barGrad = ctx.createLinearGradient(barX, barY, barX + fillWidth, barY);
+            barGrad.addColorStop(0, '#c9a050');
+            barGrad.addColorStop(1, '#ffd700');
+            ctx.fillStyle = barGrad;
+            ctx.fillRect(barX, barY, fillWidth, barHeight);
+        });
+        
+        ctx.restore();
+    }
+
     getArmyTypeName(type) {
         const names = ['骑兵', '步兵', '弓兵', '水军', '极兵', '玄兵'];
-        return names[type] || '未知';
+        return names[type] || '步兵';
+    }
+
+    _renderButtons(ctx, w, h) {
+        // 左上角返回按钮 - 商业级样式
+        ctx.save();
+        
+        const btnX = 10;
+        const btnY = 10;
+        const btnW = 120;
+        const btnH = 40;
+        
+        const bgGrad = ctx.createLinearGradient(btnX, btnY, btnX, btnY + btnH);
+        bgGrad.addColorStop(0, 'rgba(35, 35, 55, 0.9)');
+        bgGrad.addColorStop(1, 'rgba(20, 20, 40, 0.95)');
+        
+        ctx.fillStyle = bgGrad;
+        this._drawRoundedRect(ctx, btnX, btnY, btnW, btnH, 6, bgGrad);
+        
+        ctx.strokeStyle = 'rgba(201, 160, 80, 0.5)';
+        ctx.lineWidth = 1.5;
+        this._drawRoundedRect(ctx, btnX + 1, btnY + 1, btnW - 2, btnH - 2, 5, null, true);
+        
+        ctx.fillStyle = '#aaa';
+        ctx.font = 'bold 14px "Microsoft YaHei"';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('← 返回', btnX + btnW/2, btnY + btnH/2);
+        
+        ctx.restore();
+        
+        // 右下角确认按钮
+        ctx.save();
+        
+        const confirmX = w - 160;
+        const confirmY = h - 70;
+        const confirmW = 140;
+        const confirmH = 45;
+        
+        const confirmGrad = ctx.createLinearGradient(confirmX, confirmY, confirmX, confirmY + confirmH);
+        confirmGrad.addColorStop(0, '#c9a050');
+        confirmGrad.addColorStop(1, '#8b6914');
+        
+        ctx.fillStyle = confirmGrad;
+        this._drawRoundedRect(ctx, confirmX, confirmY, confirmW, confirmH, 8, confirmGrad);
+        
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = 1;
+        this._drawRoundedRect(ctx, confirmX + 1, confirmY + 1, confirmW - 2, confirmH - 2, 7, null, true);
+        
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 16px "Microsoft YaHei"';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+        ctx.shadowBlur = 4;
+        ctx.fillText('开始游戏 →', confirmX + confirmW/2, confirmY + confirmH/2);
+        
+        ctx.restore();
+    }
+
+    _renderTitle(ctx, w) {
+        ctx.save();
+        
+        ctx.shadowColor = '#c9a050';
+        ctx.shadowBlur = 20;
+        
+        const titleGrad = ctx.createLinearGradient(w/2 - 100, 50, w/2 + 100, 50);
+        titleGrad.addColorStop(0, '#ffd700');
+        titleGrad.addColorStop(0.5, '#fff8dc');
+        titleGrad.addColorStop(1, '#c9a050');
+        
+        ctx.fillStyle = titleGrad;
+        ctx.font = 'bold 36px "STKaiti", "KaiTi", serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('选择君主', w/2, 50);
+        
+        ctx.restore();
+    }
+
+    _renderButton(ctx, x, y, w, h, text, color, onClick, name = 'back') {
+        ctx.save();
+        
+        const bgGrad = ctx.createLinearGradient(x, y, x, y + h);
+        bgGrad.addColorStop(0, color);
+        bgGrad.addColorStop(1, this._darkenColor(color, 30));
+        
+        ctx.fillStyle = bgGrad;
+        this._drawRoundedRect(ctx, x, y, w, h, 8);
+        
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 1;
+        this._drawRoundedRect(ctx, x + 1, y + 1, w - 2, h - 2, 7, null, true);
+        
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 16px "Microsoft YaHei"';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, x + w/2, y + h/2);
+        
+        ctx.restore();
+        
+        if (name === 'back') {
+            this._backBtn = { x, y, w, h, onClick };
+        } else if (name === 'confirm') {
+            this._confirmBtn = { x, y, w, h, onClick };
+        }
+    }
+
+    _darkenColor(color, amount) {
+        const hex = color.replace('#', '');
+        const r = Math.max(0, parseInt(hex.slice(0, 2), 16) - amount);
+        const g = Math.max(0, parseInt(hex.slice(2, 4), 16) - amount);
+        const b = Math.max(0, parseInt(hex.slice(4, 6), 16) - amount);
+        return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    }
+
+    _drawRoundedRect(ctx, x, y, w, h, r, fillStyle, stroke = false) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+        
+        if (fillStyle) {
+            ctx.fillStyle = fillStyle;
+            ctx.fill();
+        }
+        
+        if (stroke) {
+            ctx.stroke();
+        }
+    }
+
+    _renderVersion(ctx, w, h) {
+        ctx.save();
+        ctx.fillStyle = 'rgba(100, 100, 120, 0.4)';
+        ctx.font = '12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('v1.0.0  |  © 2026', w/2, h - 30);
+        ctx.restore();
     }
 
     onMouseDown(x, y) {
-        this.kingList.onMouseDown(x, y);
-        this.backButton.onMouseDown(x, y);
-        this.confirmButton.onMouseDown(x, y);
-    }
-
-    onMouseUp(x, y) {
-        this.kingList.onMouseUp(x, y);
-        this.backButton.onMouseUp(x, y);
-        this.confirmButton.onMouseUp(x, y);
+        // 返回按钮 (左上角)
+        if (x >= 10 && x <= 130 && y >= 10 && y <= 50) {
+            this.onBack();
+            return;
+        }
+        
+        // 确认按钮 (右下角)
+        if (x >= 1024 - 160 && x <= 1024 - 20 && y >= 768 - 70 && y <= 768 - 25) {
+            this.onConfirm();
+            return;
+        }
+        
+        // 检查君主列表点击
+        if (this._kingListBounds && this._kings) {
+            const bounds = this._kingListBounds;
+            if (x >= bounds.x && x <= bounds.x + bounds.w &&
+                y >= bounds.y && y <= bounds.y + bounds.h) {
+                const index = Math.floor((y - bounds.y) / bounds.itemHeight);
+                if (index >= 0 && index < this._kings.length) {
+                    this.selectedKing = this._kings[index];
+                }
+            }
+        }
     }
 
     onMouseMove(x, y) {
-        this.kingList.onMouseMove(x, y);
-        this.backButton.onMouseMove(x, y);
-        this.confirmButton.onMouseMove(x, y);
+        if (this._kingListBounds && this._kings) {
+            const bounds = this._kingListBounds;
+            if (x >= bounds.x && x <= bounds.x + bounds.w &&
+                y >= bounds.y && y <= bounds.y + bounds.h) {
+                this._hoveredIndex = Math.floor((y - bounds.y) / bounds.itemHeight);
+            } else {
+                this._hoveredIndex = -1;
+            }
+        }
     }
 
-    onWheel(deltaY) {
-        this.kingList.onWheel(deltaY);
+    onMouseUp(x, y) {
     }
 }

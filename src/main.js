@@ -74,7 +74,7 @@ async function initGame() {
     
     // 监听屏幕切换事件
     eventBus.on('screen.change', (screenName) => {
-        if (SCREENS[screenName]) {
+        if (typeof screenName === 'string' && SCREENS[screenName]) {
             const newScreen = new SCREENS[screenName](gameEngine);
             gameEngine.setScreen(newScreen);
         }
