@@ -68,13 +68,7 @@ async function initGame() {
     // 启动游戏
     await gameEngine.init();
     
-    // 注册所有屏幕
-    Object.keys(SCREENS).forEach(name => {
-        const ScreenClass = SCREENS[name];
-        gameEngine.registerSystem(name, new ScreenClass(gameEngine));
-    });
-    
-    // 设置初始屏幕为主菜单
+    // 设置初始屏幕为主菜单（不要注册为system，否则会被自动渲染）
     const mainMenu = new MainMenuScreen(gameEngine);
     gameEngine.setScreen(mainMenu);
     
