@@ -1,0 +1,23 @@
+{
+  "name": "sanguobaye-remastered",
+  "version": "1.0.0",
+  "description": "三国霸业-重置版 - 回合制策略战旗游戏",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "npx http-server -p 8080 -c-1",
+    "test": "open tests/test-runner.html",
+    "dev": "npx http-server -p 8080 -c-1 -o"
+  },
+  "keywords": [
+    "game",
+    "strategy",
+    "three-kingdoms",
+    "turn-based",
+    "javascript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

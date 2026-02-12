@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="riverPattern" patternUnits="userSpaceOnUse" width="64" height="64">
+      <rect width="64" height="64" fill="#4a90d9"/>
+      <g opacity="0.4">
+    <path d="M0 20 Q16 15 32 20 T64 20" fill="none" stroke="#87ceeb" stroke-width="3"/>
+    <path d="M0 35 Q16 30 32 35 T64 35" fill="none" stroke="#87ceeb" stroke-width="2"/>
+    <path d="M0 50 Q16 45 32 50 T64 50" fill="none" stroke="#87ceeb" stroke-width="3"/>
+    <circle cx="20" cy="25" r="1.5" fill="white" opacity="0.3"/>
+    <circle cx="45" cy="40" r="1" fill="white" opacity="0.3"/>
+  </g>
+    </pattern>
+  </defs>
+  <rect width="64" height="64" fill="url(#riverPattern)" stroke="#2e5c8a" stroke-width="1"/>
+</svg>

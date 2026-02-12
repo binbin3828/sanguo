@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="cityPattern" patternUnits="userSpaceOnUse" width="64" height="64">
+      <rect width="64" height="64" fill="#7a7a7a"/>
+      <g opacity="0.5">
+    <rect x="10" y="35" width="15" height="20" fill="#4a4a4a"/>
+    <rect x="30" y="30" width="12" height="25" fill="#5a5a5a"/>
+    <rect x="45" y="38" width="10" height="17" fill="#4a4a4a"/>
+    <rect x="14" y="38" width="4" height="6" fill="#2a2a2a"/>
+    <rect x="34" y="35" width="3" height="5" fill="#2a2a2a"/>
+    <path d="M8 55 L56 55" stroke="#3a3a3a" stroke-width="2"/>
+  </g>
+    </pattern>
+  </defs>
+  <rect width="64" height="64" fill="url(#cityPattern)" stroke="#555555" stroke-width="1"/>
+</svg>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="grassPattern" patternUnits="userSpaceOnUse" width="64" height="64">
+      <rect width="64" height="64" fill="#4a7c4e"/>
+      <g opacity="0.3">
+    <circle cx="15" cy="20" r="3" fill="#3d6b40"/>
+    <circle cx="45" cy="35" r="4" fill="#3d6b40"/>
+    <circle cx="55" cy="50" r="3" fill="#3d6b40"/>
+    <path d="M10 55 Q20 45 30 55" fill="none" stroke="#3d6b40" stroke-width="1"/>
+  </g>
+    </pattern>
+  </defs>
+  <rect width="64" height="64" fill="url(#grassPattern)" stroke="#2d5a31" stroke-width="1"/>
+</svg>

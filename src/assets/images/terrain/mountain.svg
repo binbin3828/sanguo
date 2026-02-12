@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="mountainPattern" patternUnits="userSpaceOnUse" width="64" height="64">
+      <rect width="64" height="64" fill="#6b5b4f"/>
+      <g opacity="0.4">
+    <path d="M5 55 L20 25 L35 55" fill="none" stroke="#3d342f" stroke-width="2"/>
+    <path d="M30 55 L45 20 L60 55" fill="none" stroke="#3d342f" stroke-width="2"/>
+    <path d="M15 30 L25 30" fill="none" stroke="#5c4d42" stroke-width="1"/>
+    <path d="M40 25 L50 25" fill="none" stroke="#5c4d42" stroke-width="1"/>
+  </g>
+    </pattern>
+  </defs>
+  <rect width="64" height="64" fill="url(#mountainPattern)" stroke="#4a3f37" stroke-width="1"/>
+</svg>

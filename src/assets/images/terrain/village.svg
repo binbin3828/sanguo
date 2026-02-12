@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="villagePattern" patternUnits="userSpaceOnUse" width="64" height="64">
+      <rect width="64" height="64" fill="#8b7355"/>
+      <g opacity="0.5">
+    <rect x="15" y="40" width="12" height="12" fill="#5c4033"/>
+    <path d="M12 40 L21 32 L30 40" fill="#8b4513"/>
+    <rect x="40" y="35" width="10" height="15" fill="#5c4033"/>
+    <path d="M38 35 L45 28 L52 35" fill="#8b4513"/>
+    <rect x="25" y="50" width="8" height="8" fill="#5c4033"/>
+    <circle cx="50" cy="20" r="2" fill="#c9a050" opacity="0.5"/>
+  </g>
+    </pattern>
+  </defs>
+  <rect width="64" height="64" fill="url(#villagePattern)" stroke="#6b5344" stroke-width="1"/>
+</svg>
