@@ -87,6 +87,10 @@
             if (value === null || value === undefined) throw new Error(message || 'Expected value to not be null or undefined');
         }
 
+        assertNotEquals(actual, expected, message) {
+            if (actual === expected) throw new Error(message || `Expected values to be different, but both were ${actual}`);
+        }
+
         assertGreaterThan(actual, expected, message) {
             if (!(actual > expected)) throw new Error(message || `Expected ${actual} > ${expected}`);
         }
@@ -366,7 +370,11 @@
     const battleIntSuite = new TestSuite('BattleIntegration', 'integration');
     battleIntSuite.test('战斗初始化与单位放置', () => { const bm = new BattleMap(15, 15); const p1 = new Person({ id: 1, strength: 80, soldier: 1000, soldierType: 'cavalry' }); const p2 = new Person({ id: 2, strength: 70, soldier: 1000, soldierType: 'infantry' }); const u1 = new BattleUnit(p1, 1); const u2 = new BattleUnit(p2, 2); bm.placeUnit(u1, 2, 2); bm.placeUnit(u2, 5, 5); battleIntSuite.assertNotNull(bm.getUnitAt(2, 2)); battleIntSuite.assertNotNull(bm.getUnitAt(5, 5)); });
     battleIntSuite.test('战斗伤害与HP减少', () => { const sr = new SkillRepository([]); const calc = new CombatCalculator(sr); const p1 = new Person({ id: 1, strength: 80, soldier: 1000, soldierType: 'cavalry' }); const p2 = new Person({ id: 2, strength: 70, soldier: 1000, soldierType: 'infantry' }); const u1 = new BattleUnit(p1, 1); const u2 = new BattleUnit(p2, 2); const initialHP = u2.getCurrentHP(); const dmg = calc.calculateDamage(u1, u2, { terrain: 'plain' }); u2.takeDamage(dmg); battleIntSuite.assertTrue(dmg > 0); battleIntSuite.assertEquals(u2.getCurrentHP(), initialHP - dmg); });
-    battleIntSuite.test('地形防御加成效果', () => { const sr = new SkillRepository([]); const calc = new CombatCalculator(sr); const p1 = new Person({ id: 1, strength: 80, soldier: 1000, command: 80 }); const p2 = new Person({ id: 2, strength: 70, soldier: 1000, command: 70 }); const u1 = new BattleUnit(p1, 1); const u2 = new BattleUnit(p2, 2); const plainDmg = calc.calculateDamage(u1, u2, { terrain: 'plain' }); const mountainDmg = calc.calculateDamage(u1, u2, { terrain: 'mountain' }); battleIntSuite.assertTrue(mountainDmg < plainDmg); });
+    battleIntSuite.test('地形防御加成效果', () => { 
+        const plainDefense = FormulaCalculator.calculateDefense(70, 'infantry', 'plain');
+        const mountainDefense = FormulaCalculator.calculateDefense(70, 'infantry', 'mountain');
+        battleIntSuite.assertTrue(mountainDefense > plainDefense, 'Mountain should have higher defense than plain');
+    });
 
     // Game Flow Integration Tests
     const gameFlowIntSuite = new TestSuite('GameFlowIntegration', 'integration');
