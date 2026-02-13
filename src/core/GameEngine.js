@@ -126,6 +126,20 @@ export class GameEngine {
                 code: e.code
             });
         });
+
+        // 滚轮事件
+        this.canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            this.eventBus.emit('input.wheel', {
+                deltaY: e.deltaY,
+                deltaX: e.deltaX
+            });
+            
+            // 同时传递给当前屏幕
+            if (this.currentScreen && this.currentScreen.onWheel) {
+                this.currentScreen.onWheel(e.deltaY);
+            }
+        }, { passive: false });
     }
 
     /**

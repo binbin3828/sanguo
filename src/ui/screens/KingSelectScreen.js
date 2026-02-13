@@ -166,9 +166,13 @@ export class KingSelectScreen {
         const listY = 140;
         const listW = 280;
         const listH = 450;
+        const headerHeight = 40;
+        const contentY = listY + headerHeight;
+        const contentH = listH - headerHeight;
         
         ctx.save();
         
+        // 绘制列表背景
         const bgGrad = ctx.createLinearGradient(listX, listY, listX + listW, listY + listH);
         bgGrad.addColorStop(0, 'rgba(25, 25, 45, 0.85)');
         bgGrad.addColorStop(1, 'rgba(15, 15, 35, 0.9)');
@@ -180,8 +184,9 @@ export class KingSelectScreen {
         ctx.lineWidth = 1;
         ctx.strokeRect(listX, listY, listW, listH);
         
+        // 绘制标题栏
         ctx.fillStyle = 'rgba(201, 160, 80, 0.15)';
-        ctx.fillRect(listX, listY, listW, 40);
+        ctx.fillRect(listX, listY, listW, headerHeight);
         
         ctx.fillStyle = '#c9a050';
         ctx.font = 'bold 16px "Microsoft YaHei"';
@@ -192,12 +197,6 @@ export class KingSelectScreen {
         const periodText = this.periodData ? `${this.periodData.year}年` : '';
         ctx.fillText(`可选君主 ${periodText}`, listX + listW/2, listY + 20);
         
-        console.log('渲染君主列表:', {
-            period: this.periodData?.year,
-            availableKingsCount: this.availableKings?.length,
-            firstFewKings: this.availableKings?.slice(0, 5).map(k => k.name)
-        });
-        
         const kings = this.availableKings.length > 0 ? this.availableKings : [
             { id: 1, name: '曹操', force: 85, iq: 95, armyType: '骑兵', cities: 3, generals: 10 },
             { id: 2, name: '刘备', force: 75, iq: 90, armyType: '骑兵', cities: 1, generals: 5 },
@@ -206,10 +205,28 @@ export class KingSelectScreen {
         ];
         
         const itemHeight = 45;
-        const startY = listY + 50;
+        const scrollbarWidth = 8;
+        const contentWidth = listW - scrollbarWidth - 10;
         
+        // 初始化滚动状态
+        if (!this._scrollY) this._scrollY = 0;
+        const totalContentHeight = kings.length * itemHeight;
+        const maxScroll = Math.max(0, totalContentHeight - contentH + 10);
+        this._scrollY = Math.max(0, Math.min(this._scrollY, maxScroll));
+        
+        // 裁剪区域（内容区域）
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(listX + 5, contentY, contentWidth, contentH - 5);
+        ctx.clip();
+        
+        // 绘制列表项
         kings.forEach((king, index) => {
-            const itemY = startY + index * itemHeight;
+            const itemY = contentY + 5 + index * itemHeight - this._scrollY;
+            
+            // 只绘制可见项
+            if (itemY + itemHeight < contentY || itemY > contentY + contentH) return;
+            
             const isSelected = this.selectedKing && this.selectedKing.id === king.id;
             const isHovered = this._hoveredIndex === index;
             
@@ -221,30 +238,55 @@ export class KingSelectScreen {
                 ctx.fillStyle = 'rgba(40, 40, 60, 0.3)';
             }
             
-            ctx.fillRect(listX + 5, itemY, listW - 10, itemHeight - 2);
+            ctx.fillRect(listX + 5, itemY, contentWidth - 5, itemHeight - 2);
             
             if (isSelected) {
                 ctx.strokeStyle = '#c9a050';
                 ctx.lineWidth = 2;
-                ctx.strokeRect(listX + 5, itemY, listW - 10, itemHeight - 2);
+                ctx.strokeRect(listX + 5, itemY, contentWidth - 5, itemHeight - 2);
             }
             
             ctx.fillStyle = isSelected ? '#ffd700' : '#ccc';
             ctx.font = 'bold 16px "Microsoft YaHei"';
             ctx.textAlign = 'left';
-            ctx.fillText(king.name, listX + 20, itemY + itemHeight/2);
+            ctx.fillText(king.name, listX + 15, itemY + itemHeight/2);
             
             if (isSelected) {
                 ctx.fillStyle = '#888';
                 ctx.font = '12px "Microsoft YaHei"';
-                ctx.fillText('已选择', listX + listW - 60, itemY + itemHeight/2);
+                ctx.fillText('已选择', listX + contentWidth - 55, itemY + itemHeight/2);
             }
         });
         
-        this._kingListBounds = { x: listX + 5, y: startY, w: listW - 10, h: itemHeight, itemHeight };
-        this._kings = kings;
+        ctx.restore(); // 结束裁剪
+        
+        // 绘制滚动条
+        if (totalContentHeight > contentH - 10) {
+            const scrollbarHeight = ((contentH - 10) / totalContentHeight) * (contentH - 10);
+            const scrollbarY = contentY + 5 + (this._scrollY / maxScroll) * (contentH - 10 - scrollbarHeight);
+            
+            // 滚动条背景
+            ctx.fillStyle = 'rgba(50, 50, 70, 0.3)';
+            ctx.fillRect(listX + listW - scrollbarWidth - 5, contentY + 5, scrollbarWidth, contentH - 10);
+            
+            // 滚动条滑块
+            ctx.fillStyle = 'rgba(201, 160, 80, 0.6)';
+            ctx.fillRect(listX + listW - scrollbarWidth - 5, scrollbarY, scrollbarWidth, scrollbarHeight);
+        }
         
         ctx.restore();
+        
+        // 保存边界信息用于点击检测
+        this._kingListBounds = { 
+            x: listX + 5, 
+            y: contentY + 5, 
+            w: contentWidth, 
+            h: contentH - 10,
+            itemHeight,
+            scrollY: this._scrollY
+        };
+        this._kings = kings;
+        this._maxScroll = maxScroll;
     }
 
     _renderKingInfo(ctx, w, h) {
@@ -499,7 +541,8 @@ export class KingSelectScreen {
             const bounds = this._kingListBounds;
             if (x >= bounds.x && x <= bounds.x + bounds.w &&
                 y >= bounds.y && y <= bounds.y + bounds.h) {
-                const index = Math.floor((y - bounds.y) / bounds.itemHeight);
+                // 计算点击的索引（考虑滚动位置）
+                const index = Math.floor((y - bounds.y + bounds.scrollY) / bounds.itemHeight);
                 if (index >= 0 && index < this._kings.length) {
                     this.selectedKing = this._kings[index];
                 }
@@ -512,7 +555,8 @@ export class KingSelectScreen {
             const bounds = this._kingListBounds;
             if (x >= bounds.x && x <= bounds.x + bounds.w &&
                 y >= bounds.y && y <= bounds.y + bounds.h) {
-                this._hoveredIndex = Math.floor((y - bounds.y) / bounds.itemHeight);
+                // 计算悬停的索引（考虑滚动位置）
+                this._hoveredIndex = Math.floor((y - bounds.y + bounds.scrollY) / bounds.itemHeight);
             } else {
                 this._hoveredIndex = -1;
             }
@@ -520,5 +564,13 @@ export class KingSelectScreen {
     }
 
     onMouseUp(x, y) {
+    }
+
+    onWheel(deltaY) {
+        // 滚动列表
+        if (this._scrollY !== undefined && this._maxScroll > 0) {
+            this._scrollY += deltaY * 0.5;
+            this._scrollY = Math.max(0, Math.min(this._scrollY, this._maxScroll));
+        }
     }
 }
