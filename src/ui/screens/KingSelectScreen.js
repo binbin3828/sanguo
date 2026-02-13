@@ -359,6 +359,20 @@ export class KingSelectScreen {
             ctx.lineWidth = king ? 3 : 2;
             ctx.strokeRect(infoX, infoY, infoW, infoH);
             
+            // 首先显示所有城池（灰色标记）
+            ctx.save();
+            Object.entries(this.cityCoordinates).forEach(([cityName, coord]) => {
+                const screenX = infoX + (coord.x / this.mapImage.width) * infoW;
+                const screenY = infoY + (coord.y / this.mapImage.height) * infoH;
+                
+                // 绘制灰色小圆点表示所有城池
+                ctx.beginPath();
+                ctx.arc(screenX, screenY, 4, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(150, 150, 150, 0.5)';
+                ctx.fill();
+            });
+            ctx.restore();
+            
             // 高亮选中的君主的城池
             if (king && king.cityList && king.cityList.length > 0) {
                 ctx.save();
