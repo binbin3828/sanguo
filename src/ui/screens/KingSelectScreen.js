@@ -34,9 +34,12 @@ export class KingSelectScreen {
 
     setPeriod(periodData) {
         this.periodData = periodData;
+        console.log('KingSelectScreen.setPeriod 被调用:', periodData);
         if (periodData && periodData.rulers) {
             this.availableKings = periodData.rulers;
-            console.log('设置可用君主:', this.availableKings);
+            console.log(`设置可用君主 (${periodData.year}年):`, this.availableKings.map(k => k.name));
+        } else {
+            console.warn('没有可用的君主数据');
         }
     }
 

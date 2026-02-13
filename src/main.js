@@ -108,7 +108,10 @@ async function initGame() {
         const periodYears = { 1: 190, 2: 198, 3: 208, 4: 225 };
         const year = periodYears[periodId] || 190;
         selectedPeriod = dataService.getPeriodByYear(year);
-        console.log('选择时期:', year, selectedPeriod);
+        console.log(`选择时期 ${year}年:`, selectedPeriod ? `找到 ${selectedPeriod.rulers?.length || 0} 个君主` : '未找到');
+        if (selectedPeriod && selectedPeriod.rulers) {
+            console.log('君主列表:', selectedPeriod.rulers.map(r => r.name).join(', '));
+        }
     });
     
     gameEngine.start();
