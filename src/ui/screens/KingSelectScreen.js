@@ -187,7 +187,16 @@ export class KingSelectScreen {
         ctx.font = 'bold 16px "Microsoft YaHei"';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('可选君主', listX + listW/2, listY + 20);
+        
+        // 显示当前时期年份
+        const periodText = this.periodData ? `${this.periodData.year}年` : '';
+        ctx.fillText(`可选君主 ${periodText}`, listX + listW/2, listY + 20);
+        
+        console.log('渲染君主列表:', {
+            period: this.periodData?.year,
+            availableKingsCount: this.availableKings?.length,
+            firstFewKings: this.availableKings?.slice(0, 5).map(k => k.name)
+        });
         
         const kings = this.availableKings.length > 0 ? this.availableKings : [
             { id: 1, name: '曹操', force: 85, iq: 95, armyType: '骑兵', cities: 3, generals: 10 },
