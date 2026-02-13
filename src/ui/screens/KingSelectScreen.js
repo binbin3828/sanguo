@@ -406,22 +406,22 @@ export class KingSelectScreen {
                 
                 ctx.restore();
             } else {
-                // 未选中君主时：显示所有城池（金色标记）
+                // 未选中君主时：显示所有城池（金色标记，与选中状态同样大小）
                 ctx.save();
                 Object.entries(this.cityCoordinates).forEach(([cityName, coord]) => {
                     const screenX = infoX + (coord.x / this.mapImage.width) * infoW;
                     const screenY = infoY + (coord.y / this.mapImage.height) * infoH;
                     
-                    // 绘制金色小圆点表示所有城池
+                    // 绘制金色圆点 - 与选中状态同样大小（半径8）
                     ctx.beginPath();
-                    ctx.arc(screenX, screenY, 5, 0, Math.PI * 2);
+                    ctx.arc(screenX, screenY, 8, 0, Math.PI * 2);
                     ctx.fillStyle = 'rgba(201, 160, 80, 0.8)';
                     ctx.fill();
                     
                     ctx.beginPath();
-                    ctx.arc(screenX, screenY, 7, 0, Math.PI * 2);
-                    ctx.strokeStyle = 'rgba(255, 215, 0, 0.5)';
-                    ctx.lineWidth = 1;
+                    ctx.arc(screenX, screenY, 10, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(255, 215, 0, 0.6)';
+                    ctx.lineWidth = 2;
                     ctx.stroke();
                 });
                 ctx.restore();
