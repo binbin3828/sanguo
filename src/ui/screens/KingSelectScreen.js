@@ -359,22 +359,12 @@ export class KingSelectScreen {
             ctx.lineWidth = king ? 3 : 2;
             ctx.strokeRect(infoX, infoY, infoW, infoH);
             
-            // 首先显示所有城池（灰色标记）
-            ctx.save();
-            Object.entries(this.cityCoordinates).forEach(([cityName, coord]) => {
-                const screenX = infoX + (coord.x / this.mapImage.width) * infoW;
-                const screenY = infoY + (coord.y / this.mapImage.height) * infoH;
-                
-                // 绘制灰色小圆点表示所有城池
-                ctx.beginPath();
-                ctx.arc(screenX, screenY, 4, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(150, 150, 150, 0.5)';
-                ctx.fill();
-            });
-            ctx.restore();
+            // 计算闪耀动画值
+            const pulsePhase = (this.animationTime * 3) % (Math.PI * 2);
+            const pulseScale = 1 + Math.sin(pulsePhase) * 0.3; // 0.7 - 1.3 之间变化
             
-            // 高亮选中的君主的城池
             if (king && king.cityList && king.cityList.length > 0) {
+                // 选中君主后：只显示该君主的城池（金色高亮+闪耀）
                 ctx.save();
                 
                 king.cityList.forEach(cityName => {
@@ -384,29 +374,50 @@ export class KingSelectScreen {
                         const screenX = infoX + (coord.x / this.mapImage.width) * infoW;
                         const screenY = infoY + (coord.y / this.mapImage.height) * infoH;
                         
+                        // 绘制闪耀效果 - 外圈脉冲
+                        ctx.beginPath();
+                        ctx.arc(screenX, screenY, 12 * pulseScale, 0, Math.PI * 2);
+                        ctx.strokeStyle = `rgba(255, 69, 0, ${0.8 - Math.sin(pulsePhase) * 0.3})`;
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                        
                         // 绘制高亮圆环
                         ctx.beginPath();
                         ctx.arc(screenX, screenY, 8, 0, Math.PI * 2);
-                        ctx.fillStyle = 'rgba(255, 215, 0, 0.8)';
+                        ctx.fillStyle = 'rgba(255, 215, 0, 0.9)';
                         ctx.fill();
                         
                         ctx.beginPath();
-                        ctx.arc(screenX, screenY, 12, 0, Math.PI * 2);
-                        ctx.strokeStyle = 'rgba(255, 69, 0, 0.8)';
+                        ctx.arc(screenX, screenY, 10, 0, Math.PI * 2);
+                        ctx.strokeStyle = '#ff4500';
                         ctx.lineWidth = 2;
                         ctx.stroke();
                         
                         // 绘制城池名称
                         ctx.fillStyle = '#fff';
-                        ctx.font = 'bold 10px "Microsoft YaHei"';
+                        ctx.font = 'bold 12px "Microsoft YaHei"';
                         ctx.textAlign = 'center';
                         ctx.shadowColor = '#000';
-                        ctx.shadowBlur = 2;
-                        ctx.fillText(cityName, screenX, screenY - 15);
+                        ctx.shadowBlur = 3;
+                        ctx.fillText(cityName, screenX, screenY - 18);
                         ctx.shadowBlur = 0;
                     }
                 });
                 
+                ctx.restore();
+            } else {
+                // 未选中君主时：显示所有城池（灰色标记）
+                ctx.save();
+                Object.entries(this.cityCoordinates).forEach(([cityName, coord]) => {
+                    const screenX = infoX + (coord.x / this.mapImage.width) * infoW;
+                    const screenY = infoY + (coord.y / this.mapImage.height) * infoH;
+                    
+                    // 绘制灰色小圆点表示所有城池
+                    ctx.beginPath();
+                    ctx.arc(screenX, screenY, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(150, 150, 150, 0.6)';
+                    ctx.fill();
+                });
                 ctx.restore();
             }
             
