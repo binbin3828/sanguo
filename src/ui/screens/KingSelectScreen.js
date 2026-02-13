@@ -349,30 +349,15 @@ export class KingSelectScreen {
         
         ctx.save();
         
-        ctx.strokeStyle = king ? 'rgba(201, 160, 80, 0.5)' : 'rgba(201, 160, 80, 0.2)';
-        ctx.lineWidth = king ? 2 : 1;
-        ctx.strokeRect(infoX, infoY, infoW, infoH);
-        
-        // 绘制地图
+        // 绘制地图 - 全铺满模式
         if (this.mapImage && this.mapImage.complete) {
-            // 计算地图绘制区域，保持宽高比
-            const mapAspect = this.mapImage.width / this.mapImage.height;
-            const panelAspect = infoW / infoH;
+            // 计算地图绘制区域，填满整个面板（不保持宽高比，拉伸填充）
+            ctx.drawImage(this.mapImage, infoX, infoY, infoW, infoH);
             
-            let drawW, drawH, drawX, drawY;
-            if (mapAspect > panelAspect) {
-                drawW = infoW - 20;
-                drawH = drawW / mapAspect;
-                drawX = infoX + 10;
-                drawY = infoY + 10 + (infoH - drawH) / 2;
-            } else {
-                drawH = infoH - 20;
-                drawW = drawH * mapAspect;
-                drawX = infoX + 10 + (infoW - drawW) / 2;
-                drawY = infoY + 10;
-            }
-            
-            ctx.drawImage(this.mapImage, drawX, drawY, drawW, drawH);
+            // 添加边框
+            ctx.strokeStyle = king ? 'rgba(201, 160, 80, 0.8)' : 'rgba(201, 160, 80, 0.4)';
+            ctx.lineWidth = king ? 3 : 2;
+            ctx.strokeRect(infoX, infoY, infoW, infoH);
             
             // 高亮选中的君主的城池
             if (king && king.cityList && king.cityList.length > 0) {
@@ -381,9 +366,9 @@ export class KingSelectScreen {
                 king.cityList.forEach(cityName => {
                     const coord = this.cityCoordinates[cityName];
                     if (coord) {
-                        // 将坐标从原始图片坐标映射到绘制区域坐标
-                        const screenX = drawX + (coord.x / this.mapImage.width) * drawW;
-                        const screenY = drawY + (coord.y / this.mapImage.height) * drawH;
+                        // 将坐标从原始图片坐标映射到面板坐标（全铺满模式）
+                        const screenX = infoX + (coord.x / this.mapImage.width) * infoW;
+                        const screenY = infoY + (coord.y / this.mapImage.height) * infoH;
                         
                         // 绘制高亮圆环
                         ctx.beginPath();
