@@ -13,6 +13,60 @@ export class KingSelectScreen {
         this.particles = [];
         
         this._initParticles();
+        this._initMap();
+        this._initCityCoordinates();
+    }
+
+    _initMap() {
+        this.mapImage = new Image();
+        this.mapImage.src = 'src/assets/sanguoditu.png';
+        this.mapImage.onload = () => {
+            console.log('地图图片加载完成');
+        };
+    }
+
+    _initCityCoordinates() {
+        // 根据实际地图调整坐标
+        this.cityCoordinates = {
+            '西凉': { x: 120, y: 120 },
+            '北平': { x: 520, y: 80 },
+            '襄平': { x: 620, y: 60 },
+            '安定': { x: 200, y: 160 },
+            '晋阳': { x: 380, y: 140 },
+            '平原': { x: 440, y: 160 },
+            '南皮': { x: 480, y: 140 },
+            '北海': { x: 520, y: 180 },
+            '天水': { x: 180, y: 200 },
+            '河内': { x: 360, y: 200 },
+            '长安': { x: 240, y: 240 },
+            '邺': { x: 420, y: 200 },
+            '濮阳': { x: 440, y: 240 },
+            '徐州': { x: 520, y: 260 },
+            '汉中': { x: 200, y: 300 },
+            '洛阳': { x: 340, y: 260 },
+            '许昌': { x: 400, y: 280 },
+            '小沛': { x: 480, y: 280 },
+            '下邳': { x: 540, y: 300 },
+            '梓潼': { x: 160, y: 340 },
+            '宛城': { x: 320, y: 320 },
+            '寿春': { x: 480, y: 320 },
+            '建业': { x: 560, y: 340 },
+            '吴': { x: 600, y: 380 },
+            '成都': { x: 140, y: 380 },
+            '绵竹': { x: 120, y: 360 },
+            '襄阳': { x: 300, y: 360 },
+            '江夏': { x: 380, y: 380 },
+            '庐江': { x: 480, y: 380 },
+            '会稽': { x: 620, y: 400 },
+            '云南': { x: 80, y: 420 },
+            '巴郡': { x: 180, y: 400 },
+            '武陵': { x: 280, y: 420 },
+            '长沙': { x: 360, y: 440 },
+            '柴桑': { x: 440, y: 420 },
+            '零陵': { x: 280, y: 460 },
+            '桂阳': { x: 340, y: 480 },
+            '建宁': { x: 100, y: 480 }
+        };
     }
 
     _initParticles() {
@@ -295,73 +349,133 @@ export class KingSelectScreen {
         
         ctx.save();
         
-        const bgGrad = ctx.createLinearGradient(infoX, infoY, infoX + infoW, infoY + infoH);
-        bgGrad.addColorStop(0, 'rgba(25, 25, 45, 0.85)');
-        bgGrad.addColorStop(1, 'rgba(15, 15, 35, 0.9)');
-        
-        ctx.fillStyle = bgGrad;
-        ctx.fillRect(infoX, infoY, infoW, infoH);
-        
         ctx.strokeStyle = king ? 'rgba(201, 160, 80, 0.5)' : 'rgba(201, 160, 80, 0.2)';
         ctx.lineWidth = king ? 2 : 1;
         ctx.strokeRect(infoX, infoY, infoW, infoH);
         
-        if (!king) {
-            ctx.fillStyle = 'rgba(100, 100, 120, 0.5)';
-            ctx.font = '20px "Microsoft YaHei"';
-            ctx.textAlign = 'center';
-            ctx.fillText('请从左侧选择一位君主', infoX + infoW/2, infoY + infoH/2);
-            ctx.restore();
-            return;
+        // 绘制地图
+        if (this.mapImage && this.mapImage.complete) {
+            // 计算地图绘制区域，保持宽高比
+            const mapAspect = this.mapImage.width / this.mapImage.height;
+            const panelAspect = infoW / infoH;
+            
+            let drawW, drawH, drawX, drawY;
+            if (mapAspect > panelAspect) {
+                drawW = infoW - 20;
+                drawH = drawW / mapAspect;
+                drawX = infoX + 10;
+                drawY = infoY + 10 + (infoH - drawH) / 2;
+            } else {
+                drawH = infoH - 20;
+                drawW = drawH * mapAspect;
+                drawX = infoX + 10 + (infoW - drawW) / 2;
+                drawY = infoY + 10;
+            }
+            
+            ctx.drawImage(this.mapImage, drawX, drawY, drawW, drawH);
+            
+            // 高亮选中的君主的城池
+            if (king && king.cityList && king.cityList.length > 0) {
+                ctx.save();
+                
+                king.cityList.forEach(cityName => {
+                    const coord = this.cityCoordinates[cityName];
+                    if (coord) {
+                        // 将坐标从原始图片坐标映射到绘制区域坐标
+                        const screenX = drawX + (coord.x / this.mapImage.width) * drawW;
+                        const screenY = drawY + (coord.y / this.mapImage.height) * drawH;
+                        
+                        // 绘制高亮圆环
+                        ctx.beginPath();
+                        ctx.arc(screenX, screenY, 8, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(255, 215, 0, 0.8)';
+                        ctx.fill();
+                        
+                        ctx.beginPath();
+                        ctx.arc(screenX, screenY, 12, 0, Math.PI * 2);
+                        ctx.strokeStyle = 'rgba(255, 69, 0, 0.8)';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                        
+                        // 绘制城池名称
+                        ctx.fillStyle = '#fff';
+                        ctx.font = 'bold 10px "Microsoft YaHei"';
+                        ctx.textAlign = 'center';
+                        ctx.shadowColor = '#000';
+                        ctx.shadowBlur = 2;
+                        ctx.fillText(cityName, screenX, screenY - 15);
+                        ctx.shadowBlur = 0;
+                    }
+                });
+                
+                ctx.restore();
+            }
+            
+            // 在地图上方显示君主名称
+            if (king) {
+                ctx.save();
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(infoX + 10, infoY + 10, infoW - 20, 40);
+                
+                ctx.shadowColor = '#ffd700';
+                ctx.shadowBlur = 15;
+                ctx.fillStyle = '#ffd700';
+                ctx.font = 'bold 24px "STKaiti", "KaiTi", serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(king.name, infoX + infoW/2, infoY + 38);
+                ctx.shadowBlur = 0;
+                ctx.restore();
+            }
+        } else {
+            // 地图未加载时显示占位符
+            const bgGrad = ctx.createLinearGradient(infoX, infoY, infoX + infoW, infoY + infoH);
+            bgGrad.addColorStop(0, 'rgba(25, 25, 45, 0.85)');
+            bgGrad.addColorStop(1, 'rgba(15, 15, 35, 0.9)');
+            
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(infoX, infoY, infoW, infoH);
+            
+            if (!king) {
+                ctx.fillStyle = 'rgba(100, 100, 120, 0.5)';
+                ctx.font = '20px "Microsoft YaHei"';
+                ctx.textAlign = 'center';
+                ctx.fillText('请从左侧选择一位君主', infoX + infoW/2, infoY + infoH/2);
+            } else {
+                ctx.fillStyle = 'rgba(201, 160, 80, 0.15)';
+                ctx.fillRect(infoX, infoY, infoW, 50);
+                
+                ctx.shadowColor = '#ffd700';
+                ctx.shadowBlur = 15;
+                ctx.fillStyle = '#ffd700';
+                ctx.font = 'bold 28px "STKaiti", "KaiTi", serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(king.name, infoX + infoW/2, infoY + 35);
+                ctx.shadowBlur = 0;
+                
+                // 显示属性
+                const statsY = infoY + 100;
+                const stats = [
+                    { label: '武力', value: king.force || 70 },
+                    { label: '智力', value: king.iq || 70 },
+                    { label: '兵种', value: king.armyType || '步兵' },
+                    { label: '城池', value: king.cities || 0 },
+                    { label: '将领', value: king.generals || 0 }
+                ];
+                
+                stats.forEach((stat, i) => {
+                    const statY = statsY + i * 50;
+                    
+                    ctx.fillStyle = '#888';
+                    ctx.font = '14px "Microsoft YaHei"';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(stat.label + '：', infoX + 40, statY);
+                    
+                    ctx.fillStyle = '#fff';
+                    ctx.font = 'bold 16px "Microsoft YaHei"';
+                    ctx.fillText(stat.value.toString(), infoX + 100, statY);
+                });
+            }
         }
-        
-        ctx.fillStyle = 'rgba(201, 160, 80, 0.15)';
-        ctx.fillRect(infoX, infoY, infoW, 50);
-        
-        ctx.shadowColor = '#ffd700';
-        ctx.shadowBlur = 15;
-        ctx.fillStyle = '#ffd700';
-        ctx.font = 'bold 28px "STKaiti", "KaiTi", serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(king.name, infoX + infoW/2, infoY + 35);
-        ctx.shadowBlur = 0;
-        
-        const statsY = infoY + 100;
-        const stats = [
-            { label: '武力', value: king.force || 70 },
-            { label: '智力', value: king.iq || 70 },
-            { label: '兵种', value: king.armyType || '步兵' },
-            { label: '城池', value: king.cities || 0 },
-            { label: '将领', value: king.generals || 0 }
-        ];
-        
-        stats.forEach((stat, i) => {
-            const statY = statsY + i * 60;
-            
-            ctx.fillStyle = '#888';
-            ctx.font = '16px "Microsoft YaHei"';
-            ctx.textAlign = 'left';
-            ctx.fillText(stat.label + '：', infoX + 40, statY);
-            
-            ctx.fillStyle = '#fff';
-            ctx.font = 'bold 20px "Microsoft YaHei"';
-            ctx.fillText(stat.value.toString(), infoX + 120, statY);
-            
-            const barWidth = 200;
-            const barHeight = 12;
-            const barX = infoX + 180;
-            const barY = statY - 8;
-            
-            ctx.fillStyle = 'rgba(50, 50, 70, 0.8)';
-            ctx.fillRect(barX, barY, barWidth, barHeight);
-            
-            const fillWidth = (stat.value / 100) * barWidth;
-            const barGrad = ctx.createLinearGradient(barX, barY, barX + fillWidth, barY);
-            barGrad.addColorStop(0, '#c9a050');
-            barGrad.addColorStop(1, '#ffd700');
-            ctx.fillStyle = barGrad;
-            ctx.fillRect(barX, barY, fillWidth, barHeight);
-        });
         
         ctx.restore();
     }
