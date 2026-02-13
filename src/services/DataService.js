@@ -86,18 +86,28 @@ export class DataService {
 
     parsePeriods(root) {
         const periodElements = root.querySelectorAll('时期');
-        return Array.from(periodElements).map(periodEl => {
+        const periods = Array.from(periodElements).map(periodEl => {
             const year = parseInt(periodEl.getAttribute('起始年') || 0);
             const cities = this.parsePeriodCities(periodEl);
             const generals = this.parsePeriodGenerals(periodEl);
+            const rulers = this.extractRulers(cities, generals);
+            
+            console.log(`时期 ${year}年 解析完成:`, {
+                cityCount: cities.length,
+                generalCount: generals.length,
+                rulerCount: rulers.length,
+                rulers: rulers.map(r => r.name)
+            });
             
             return {
                 year,
                 cities,
                 generals,
-                rulers: this.extractRulers(cities, generals)
+                rulers
             };
         });
+        
+        return periods;
     }
 
     parsePeriodCities(periodEl) {
