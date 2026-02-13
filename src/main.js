@@ -8,6 +8,9 @@ import { GameEngine } from './core/GameEngine.js';
 import { EventBus } from './core/EventBus.js';
 import { StateManager } from './core/StateManager.js';
 
+// 导入数据服务
+import { DataService } from './services/DataService.js';
+
 // 导入UI屏幕
 import { MainMenuScreen } from './ui/screens/MainMenuScreen.js';
 import { PeriodSelectScreen } from './ui/screens/PeriodSelectScreen.js';
@@ -57,11 +60,20 @@ async function initGame() {
     // 创建状态管理器
     const stateManager = new StateManager(eventBus);
     
+    // 创建数据服务
+    const dataService = new DataService();
+    
+    // 加载游戏数据
+    console.log('加载游戏数据...');
+    await dataService.loadData();
+    console.log('数据加载完成');
+    
     // 创建游戏引擎
     const gameEngine = new GameEngine({
         canvas,
         eventBus,
         stateManager,
+        dataService,
         config: GAME_CONFIG
     });
     
@@ -72,12 +84,31 @@ async function initGame() {
     const mainMenu = new MainMenuScreen(gameEngine);
     gameEngine.setScreen(mainMenu);
     
+    // 当前选中的时期和君主
+    let selectedPeriod = null;
+    let selectedKing = null;
+    
     // 监听屏幕切换事件
     eventBus.on('screen.change', (screenName) => {
         if (typeof screenName === 'string' && SCREENS[screenName]) {
-            const newScreen = new SCREENS[screenName](gameEngine);
+            const ScreenClass = SCREENS[screenName];
+            const newScreen = new ScreenClass(gameEngine);
+            
+            // 如果是君主选择界面，传入当前选中的时期
+            if (screenName === 'KingSelect' && selectedPeriod) {
+                newScreen.setPeriod(selectedPeriod);
+            }
+            
             gameEngine.setScreen(newScreen);
         }
+    });
+    
+    // 监听时期选择
+    eventBus.on('period.selected', (periodId) => {
+        const periodYears = { 1: 190, 2: 198, 3: 208, 4: 225 };
+        const year = periodYears[periodId] || 190;
+        selectedPeriod = dataService.getPeriodByYear(year);
+        console.log('选择时期:', year, selectedPeriod);
     });
     
     gameEngine.start();

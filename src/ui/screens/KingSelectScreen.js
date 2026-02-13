@@ -32,6 +32,14 @@ export class KingSelectScreen {
         this.animationTime = 0;
     }
 
+    setPeriod(periodData) {
+        this.periodData = periodData;
+        if (periodData && periodData.rulers) {
+            this.availableKings = periodData.rulers;
+            console.log('设置可用君主:', this.availableKings);
+        }
+    }
+
     setAvailableKings(kings) {
         this.availableKings = kings || [];
     }
@@ -179,14 +187,10 @@ export class KingSelectScreen {
         ctx.fillText('可选君主', listX + listW/2, listY + 20);
         
         const kings = this.availableKings.length > 0 ? this.availableKings : [
-            { id: 1, name: '曹操', force: 85, iq: 95, armsType: 0 },
-            { id: 2, name: '刘备', force: 75, iq: 90, armsType: 1 },
-            { id: 3, name: '孙权', force: 70, iq: 88, armsType: 3 },
-            { id: 4, name: '袁绍', force: 80, iq: 75, armsType: 0 },
-            { id: 5, name: '董卓', force: 90, iq: 60, armsType: 0 },
-            { id: 6, name: '吕布', force: 98, iq: 55, armsType: 0 },
-            { id: 7, name: '诸葛亮', force: 30, iq: 100, armsType: 2 },
-            { id: 8, name: '周瑜', force: 75, iq: 92, armsType: 3 }
+            { id: 1, name: '曹操', force: 85, iq: 95, armyType: '骑兵', cities: 3, generals: 10 },
+            { id: 2, name: '刘备', force: 75, iq: 90, armyType: '骑兵', cities: 1, generals: 5 },
+            { id: 3, name: '孙权', force: 70, iq: 88, armyType: '水军', cities: 1, generals: 6 },
+            { id: 4, name: '袁绍', force: 80, iq: 75, armyType: '骑兵', cities: 2, generals: 12 }
         ];
         
         const itemHeight = 45;
@@ -274,9 +278,11 @@ export class KingSelectScreen {
         
         const statsY = infoY + 100;
         const stats = [
-            { label: '武力', value: king.force || 0 },
-            { label: '智力', value: king.iq || 0 },
-            { label: '兵种', value: this.getArmyTypeName(king.armsType) }
+            { label: '武力', value: king.force || 70 },
+            { label: '智力', value: king.iq || 70 },
+            { label: '兵种', value: king.armyType || '步兵' },
+            { label: '城池', value: king.cities || 0 },
+            { label: '将领', value: king.generals || 0 }
         ];
         
         stats.forEach((stat, i) => {
@@ -311,6 +317,7 @@ export class KingSelectScreen {
     }
 
     getArmyTypeName(type) {
+        if (typeof type === 'string') return type;
         const names = ['骑兵', '步兵', '弓兵', '水军', '极兵', '玄兵'];
         return names[type] || '步兵';
     }
