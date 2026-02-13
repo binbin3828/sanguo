@@ -359,39 +359,52 @@ export class KingSelectScreen {
             ctx.lineWidth = king ? 3 : 2;
             ctx.strokeRect(infoX, infoY, infoW, infoH);
             
-            // 计算闪耀动画值
-            const pulsePhase = (this.animationTime * 3) % (Math.PI * 2);
-            const pulseScale = 1 + Math.sin(pulsePhase) * 0.3; // 0.7 - 1.3 之间变化
+            // 首先显示所有城池（金色标记）
+            ctx.save();
+            Object.entries(this.cityCoordinates).forEach(([cityName, coord]) => {
+                const screenX = infoX + (coord.x / this.mapImage.width) * infoW;
+                const screenY = infoY + (coord.y / this.mapImage.height) * infoH;
+                
+                // 绘制金色圆点
+                ctx.beginPath();
+                ctx.arc(screenX, screenY, 8, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(201, 160, 80, 0.8)';
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(screenX, screenY, 10, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(255, 215, 0, 0.6)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            });
+            ctx.restore();
             
+            // 如果选择了君主，为其城池添加闪耀效果
             if (king && king.cityList && king.cityList.length > 0) {
-                // 选中君主后：只显示该君主的城池（金色高亮+闪耀）
+                // 计算闪耀动画值
+                const pulsePhase = (this.animationTime * 3) % (Math.PI * 2);
+                const pulseScale = 1 + Math.sin(pulsePhase) * 0.3;
+                
                 ctx.save();
                 
                 king.cityList.forEach(cityName => {
                     const coord = this.cityCoordinates[cityName];
                     if (coord) {
-                        // 将坐标从原始图片坐标映射到面板坐标（全铺满模式）
                         const screenX = infoX + (coord.x / this.mapImage.width) * infoW;
                         const screenY = infoY + (coord.y / this.mapImage.height) * infoH;
                         
-                        // 绘制闪耀效果 - 外圈脉冲
+                        // 绘制闪耀效果 - 外圈脉冲（叠加在所有城池之上）
                         ctx.beginPath();
                         ctx.arc(screenX, screenY, 12 * pulseScale, 0, Math.PI * 2);
                         ctx.strokeStyle = `rgba(255, 69, 0, ${0.8 - Math.sin(pulsePhase) * 0.3})`;
                         ctx.lineWidth = 2;
                         ctx.stroke();
                         
-                        // 绘制高亮圆环
+                        // 绘制更亮的中心点
                         ctx.beginPath();
                         ctx.arc(screenX, screenY, 8, 0, Math.PI * 2);
-                        ctx.fillStyle = 'rgba(255, 215, 0, 0.9)';
+                        ctx.fillStyle = 'rgba(255, 215, 0, 0.95)';
                         ctx.fill();
-                        
-                        ctx.beginPath();
-                        ctx.arc(screenX, screenY, 10, 0, Math.PI * 2);
-                        ctx.strokeStyle = '#ff4500';
-                        ctx.lineWidth = 2;
-                        ctx.stroke();
                         
                         // 绘制城池名称
                         ctx.fillStyle = '#fff';
@@ -404,26 +417,6 @@ export class KingSelectScreen {
                     }
                 });
                 
-                ctx.restore();
-            } else {
-                // 未选中君主时：显示所有城池（金色标记，与选中状态同样大小）
-                ctx.save();
-                Object.entries(this.cityCoordinates).forEach(([cityName, coord]) => {
-                    const screenX = infoX + (coord.x / this.mapImage.width) * infoW;
-                    const screenY = infoY + (coord.y / this.mapImage.height) * infoH;
-                    
-                    // 绘制金色圆点 - 与选中状态同样大小（半径8）
-                    ctx.beginPath();
-                    ctx.arc(screenX, screenY, 8, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(201, 160, 80, 0.8)';
-                    ctx.fill();
-                    
-                    ctx.beginPath();
-                    ctx.arc(screenX, screenY, 10, 0, Math.PI * 2);
-                    ctx.strokeStyle = 'rgba(255, 215, 0, 0.6)';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                });
                 ctx.restore();
             }
             
