@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="badgeBg3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a3a6a"/>
+      <stop offset="100%" style="stop-color:#0a1a3a"/>
+    </linearGradient>
+    <linearGradient id="badgeBorder3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#87ceeb"/>
+      <stop offset="50%" style="stop-color:#4169e1"/>
+      <stop offset="100%" style="stop-color:#00008b"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- 徽章背景 -->
+  <circle cx="100" cy="75" r="65" fill="url(#badgeBg3)"/>
+  <circle cx="100" cy="75" r="60" fill="none" stroke="url(#badgeBorder3)" stroke-width="4"/>
+  <circle cx="100" cy="75" r="55" fill="none" stroke="#4169e1" stroke-width="1" opacity="0.5"/>
+  
+  <!-- 战船图标 -->
+  <g fill="#5c4033">
+    <!-- 船身 -->
+    <path d="M70 95 Q100 100 130 95 L125 85 L75 85 Z"/>
+    <!-- 桅杆 -->
+    <rect x="87" y="60" width="4" height="25"/>
+    <rect x="109" y="60" width="4" height="25"/>
+    <!-- 帆 -->
+    <path d="M75 65 L89 50 L103 65 Z" fill="#d2b48c"/>
+    <path d="M97 65 L111 50 L125 65 Z" fill="#d2b48c"/>
+  </g>
+  
+  <!-- 水波纹 -->
+  <g stroke="#4169e1" stroke-width="2" fill="none" opacity="0.6">
+    <path d="M50 105 Q65 100 80 105"/>
+    <path d="M120 105 Q135 100 150 105"/>
+  </g>
+  
+  <!-- 火焰 -->
+  <g fill="#ff4500">
+    <path d="M140 70 Q145 55 150 70 Q155 60 158 75" opacity="0.8"/>
+  </g>
+  
+  <!-- 装饰星星 -->
+  <g fill="#87ceeb">
+    <polygon points="100,30 102,35 107,35 103,39 105,44 100,41 95,44 97,39 93,35 98,35"/>
+  </g>
+  
+  <!-- 标题 -->
+  <text x="100" y="122" font-family="SimHei, Microsoft YaHei" font-size="14" fill="#87ceeb" text-anchor="middle" font-weight="bold">赤壁之战</text>
+  
+  <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#4169e1" stroke-width="2"/>
+</svg>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="badgeBg4" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a3a1a"/>
+      <stop offset="100%" style="stop-color:#2a1a0a"/>
+    </linearGradient>
+    <linearGradient id="badgeBorder4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffd700"/>
+      <stop offset="50%" style="stop-color:#daa520"/>
+      <stop offset="100%" style="stop-color:#b8860b"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- 徽章背景 -->
+  <circle cx="100" cy="75" r="65" fill="url(#badgeBg4)"/>
+  <circle cx="100" cy="75" r="60" fill="none" stroke="url(#badgeBorder4)" stroke-width="4"/>
+  <circle cx="100" cy="75" r="55" fill="none" stroke="#daa520" stroke-width="1" opacity="0.5"/>
+  
+  <!-- 三足鼎图标 -->
+  <g fill="#8b6914">
+    <!-- 鼎腿 -->
+    <rect x="78" y="85" width="6" height="20"/>
+    <rect x="97" y="75" width="6" height="30"/>
+    <rect x="116" y="85" width="6" height="20"/>
+    <!-- 鼎身 -->
+    <ellipse cx="100" cy="85" rx="30" ry="10"/>
+    <ellipse cx="100" cy="70" rx="22" ry="8" fill="#daa520"/>
+  </g>
+  
+  <!-- 魏蜀吴标记 -->
+  <g>
+    <circle cx="78" cy="110" r="8" fill="#dc143c"/>
+    <text x="78" y="113" font-family="SimHei" font-size="10" fill="#fff" text-anchor="middle">魏</text>
+    
+    <circle cx="100" cy="110" r="8" fill="#228b22"/>
+    <text x="100" y="113" font-family="SimHei" font-size="10" fill="#fff" text-anchor="middle">蜀</text>
+    
+    <circle cx="122" cy="110" r="8" fill="#4169e1"/>
+    <text x="122" y="113" font-family="SimHei" font-size="10" fill="#fff" text-anchor="middle">吴</text>
+  </g>
+  
+  <!-- 装饰皇冠 -->
+  <g fill="#ffd700">
+    <polygon points="100,25 103,32 110,32 105,37 107,44 100,40 93,44 95,37 90,32 97,32"/>
+  </g>
+  
+  <!-- 标题 -->
+  <text x="100" y="122" font-family="SimHei, Microsoft YaHei" font-size="14" fill="#ffd700" text-anchor="middle" font-weight="bold">三国鼎立</text>
+  
+  <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#b8860b" stroke-width="2"/>
+</svg>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+  <rect x="2" y="2" width="196" height="146" rx="8" fill="#fff"/>
+  
+  <!-- 极简线条 - 军旗 -->
+  <g stroke="#228b22" stroke-width="1.5" fill="none">
+    <!-- 旗杆 -->
+    <line x1="100" y1="45" x2="100" y2="95"/>
+    <!-- 旗帜 -->
+    <path d="M100 45 L130 60 L100 75"/>
+    <!-- 飘带 -->
+    <path d="M100 55 L115 58"/>
+    <path d="M100 65 L115 68"/>
+  </g>
+  
+  <!-- 马轮廓 -->
+  <g stroke="#1a1a1a" stroke-width="1.5" fill="none" opacity="0.7">
+    <ellipse cx="70" cy="95" rx="12" ry="8"/>
+    <circle cx="62" cy="88" r="5"/>
+    <line x1="66" y1="86" x2="72" y2="80"/>
+  </g>
+  
+  <!-- 装饰线条 -->
+  <line x1="40" y1="75" x2="55" y2="75" stroke="#228b22" stroke-width="1" opacity="0.4"/>
+  <line x1="145" y1="75" x2="160" y2="75" stroke="#228b22" stroke-width="1" opacity="0.4"/>
+  
+  <!-- 标题 -->
+  <text x="100" y="125" font-family="SimHei, Microsoft YaHei" font-size="16" fill="#228b22" text-anchor="middle" font-weight="bold">曹操崛起</text>
+  
+  <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#228b22" stroke-width="1"/>
+</svg>

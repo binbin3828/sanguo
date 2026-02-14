@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- 渐变背景 -->
+  <defs>
+    <linearGradient id="flatBg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff6b6b"/>
+      <stop offset="100%" style="stop-color:#c92a2a"/>
+    </linearGradient>
+  </defs>
+  
+  <rect x="2" y="2" width="196" height="146" rx="8" fill="url(#flatBg1)"/>
+  
+  <!-- 宫殿插画 -->
+  <g>
+    <!-- 底座 -->
+    <rect x="70" y="90" width="60" height="15" fill="#5c4033"/>
+    <!-- 主殿 -->
+    <rect x="85" y="60" width="30" height="30" fill="#8b4513"/>
+    <!-- 屋顶 -->
+    <path d="M75 60 L100 40 L125 60 Z" fill="#4a0000"/>
+    <!-- 门 -->
+    <rect x="95" y="75" width="10" height="15" fill="#2a0000"/>
+    <!-- 装饰柱子 -->
+    <rect x="88" y="60" width="4" height="30" fill="#6b3513"/>
+    <rect x="108" y="60" width="4" height="30" fill="#6b3513"/>
+  </g>
+  
+  <!-- 火焰 -->
+  <g>
+    <path d="M40 100 Q45 80 40 60 Q50 70 45 50" fill="#ff4500"/>
+    <path d="M160 100 Q155 80 160 60 Q150 70 155 50" fill="#ff4500"/>
+  </g>
+  
+  <!-- 云朵装饰 -->
+  <g fill="#fff" opacity="0.2">
+    <ellipse cx="50" cy="40" rx="20" ry="10"/>
+    <ellipse cx="150" cy="35" rx="25" ry="12"/>
+  </g>
+  
+  <!-- 标题 -->
+  <text x="100" y="125" font-family="SimHei, Microsoft YaHei" font-size="16" fill="#fff" text-anchor="middle" font-weight="bold">董卓弄权</text>
+  
+  <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#fff" stroke-width="2" opacity="0.5"/>
+</svg>

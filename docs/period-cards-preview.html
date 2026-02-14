@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>剧本卡片风格预览</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #fff;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 32px;
+            background: linear-gradient(45deg, #c9a050, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .style-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(201, 160, 80, 0.2);
+        }
+        .style-title {
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: #c9a050;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .style-number {
+            background: #c9a050;
+            color: #1a1a2e;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .cards-row {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .card-wrapper {
+            text-align: center;
+        }
+        .card-label {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #888;
+        }
+        .card-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        .card-container svg {
+            width: 200px;
+            height: 150px;
+            border-radius: 8px;
+        }
+        .description {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            color: #aaa;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .select-btn {
+            margin-top: 15px;
+            padding: 10px 30px;
+            background: linear-gradient(45deg, #c9a050, #ffd700);
+            border: none;
+            border-radius: 6px;
+            color: #1a1a2e;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform 0.2s;
+        }
+        .select-btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <h1>🏛️ 剧本卡片风格选择</h1>
+    
+    <div class="container">
+        <!-- 方案一：古典水墨风格 -->
+        <div class="style-section">
+            <h2 class="style-title"><span class="style-number">1</span>古典水墨风格</h2>
+            <div class="cards-row">
+                <div class="card-wrapper">
+                    <div class="card-container">
+                        <svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="inkBg1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#f5f5f0"/>
+                                    <stop offset="100%" style="stop-color:#e8e4dc"/>
+                                </linearGradient>
+                            </defs>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="url(#inkBg1)"/>
+                            <ellipse cx="100" cy="75" rx="60" ry="45" fill="#2a2a2a" opacity="0.08"/>
+                            <ellipse cx="80" cy="60" rx="30" ry="20" fill="#3a3a3a" opacity="0.1"/>
+                            <g opacity="0.7">
+                                <path d="M70 100 L70 60 L100 40 L130 60 L130 100 Z" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+                                <path d="M60 60 Q100 30 140 60" fill="none" stroke="#2a2a2a" stroke-width="3"/>
+                                <line x1="80" y1="60" x2="80" y2="100" stroke="#1a1a1a" stroke-width="1.5"/>
+                                <line x1="100" y1="45" x2="100" y2="100" stroke="#1a1a1a" stroke-width="1.5"/>
+                                <line x1="120" y1="60" x2="120" y2="100" stroke="#1a1a1a" stroke-width="1.5"/>
+                            </g>
+                            <g opacity="0.6">
+                                <path d="M40 110 Q45 90 40 70 Q50 80 45 60" fill="none" stroke="#8b0000" stroke-width="2"/>
+                                <path d="M160 110 Q155 90 160 70 Q150 80 155 60" fill="none" stroke="#8b0000" stroke-width="2"/>
+                            </g>
+                            <rect x="150" y="20" width="30" height="35" fill="#a52a2a" opacity="0.8" rx="2"/>
+                            <text x="165" y="42" font-family="SimHei" font-size="16" fill="#fff" text-anchor="middle">乱</text>
+                            <text x="100" y="128" font-family="STKaiti, KaiTi" font-size="18" fill="#1a1a1a" text-anchor="middle" font-weight="bold">董卓弄权</text>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#8b4513" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="card-label">董卓弄权</div>
+                </div>
+                <div class="card-wrapper">
+                    <div class="card-container">
+                        <svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="inkBg2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#f0f5f0"/>
+                                    <stop offset="100%" style="stop-color:#e0e8e0"/>
+                                </linearGradient>
+                            </defs>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="url(#inkBg2)"/>
+                            <ellipse cx="100" cy="80" rx="55" ry="40" fill="#1a3a1a" opacity="0.06"/>
+                            <g opacity="0.75">
+                                <line x1="100" y1="35" x2="100" y2="95" stroke="#2a2a2a" stroke-width="3"/>
+                                <path d="M100 35 L140 55 L100 75" fill="none" stroke="#1a3a1a" stroke-width="2"/>
+                                <path d="M100 45 Q115 48 130 45" fill="none" stroke="#2a4a2a" stroke-width="1" opacity="0.6"/>
+                                <path d="M100 55 Q115 58 130 55" fill="none" stroke="#2a4a2a" stroke-width="1" opacity="0.6"/>
+                            </g>
+                            <g opacity="0.6">
+                                <ellipse cx="65" cy="95" rx="18" ry="10" fill="#3a3a3a"/>
+                                <circle cx="55" cy="85" r="7" fill="#3a3a3a"/>
+                                <path d="M60 83 L70 75" stroke="#3a3a3a" stroke-width="2"/>
+                                <line x1="58" y1="100" x2="55" y2="110" stroke="#3a3a3a" stroke-width="1.5"/>
+                                <line x1="65" y1="100" x2="68" y2="110" stroke="#3a3a3a" stroke-width="1.5"/>
+                            </g>
+                            <path d="M150 115 Q160 95 170 105 Q180 90 190 110" fill="none" stroke="#4a5a4a" stroke-width="1.5" opacity="0.5"/>
+                            <rect x="150" y="20" width="30" height="35" fill="#2a5a2a" opacity="0.8" rx="2"/>
+                            <text x="165" y="42" font-family="SimHei" font-size="16" fill="#fff" text-anchor="middle">起</text>
+                            <text x="100" y="128" font-family="STKaiti, KaiTi" font-size="18" fill="#1a3a1a" text-anchor="middle" font-weight="bold">曹操崛起</text>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#2a5a2a" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="card-label">曹操崛起</div>
+                </div>
+                <div class="card-wrapper">
+                    <div class="card-container">
+                        <svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="inkBg3" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#f0f0f5"/>
+                                    <stop offset="100%" style="stop-color:#e0e0e8"/>
+                                </linearGradient>
+                            </defs>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="url(#inkBg3)"/>
+                            <g opacity="0.4">
+                                <path d="M10 100 Q30 90 50 100 T90 100 T130 100 T170 100" fill="none" stroke="#1a3a6a" stroke-width="1.5"/>
+                                <path d="M20 110 Q40 100 60 110 T100 110 T140 110 T180 110" fill="none" stroke="#1a3a6a" stroke-width="1.5"/>
+                            </g>
+                            <g opacity="0.7">
+                                <path d="M70 85 Q100 90 130 85 L125 75 L75 75 Z" fill="none" stroke="#2a2a2a" stroke-width="2"/>
+                                <line x1="85" y1="75" x2="85" y2="50" stroke="#2a2a2a" stroke-width="1.5"/>
+                                <line x1="115" y1="75" x2="115" y2="50" stroke="#2a2a2a" stroke-width="1.5"/>
+                                <path d="M75 55 L85 40 L95 55" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+                                <path d="M105 55 L115 40 L125 55" fill="none" stroke="#3a3a3a" stroke-width="1.5"/>
+                            </g>
+                            <g opacity="0.5">
+                                <path d="M130 60 Q135 45 140 60 Q145 50 150 65" fill="none" stroke="#8b0000" stroke-width="2"/>
+                                <ellipse cx="140" cy="55" rx="5" ry="10" fill="#8b0000" opacity="0.3"/>
+                            </g>
+                            <circle cx="45" cy="50" r="15" fill="none" stroke="#4a4a5a" stroke-width="1" opacity="0.4"/>
+                            <rect x="150" y="20" width="30" height="35" fill="#1a4a8a" opacity="0.8" rx="2"/>
+                            <text x="165" y="42" font-family="SimHei" font-size="16" fill="#fff" text-anchor="middle">战</text>
+                            <text x="100" y="128" font-family="STKaiti, KaiTi" font-size="18" fill="#1a3a6a" text-anchor="middle" font-weight="bold">赤壁之战</text>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#1a4a8a" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="card-label">赤壁之战</div>
+                </div>
+                <div class="card-wrapper">
+                    <div class="card-container">
+                        <svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="inkBg4" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#f5f5f0"/>
+                                    <stop offset="100%" style="stop-color:#e8e4dc"/>
+                                </linearGradient>
+                            </defs>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="url(#inkBg4)"/>
+                            <ellipse cx="100" cy="75" rx="50" ry="35" fill="#3a3020" opacity="0.06"/>
+                            <g opacity="0.7">
+                                <line x1="70" y1="95" x2="70" y2="70" stroke="#4a3a2a" stroke-width="3"/>
+                                <line x1="100" y1="95" x2="100" y2="55" stroke="#4a3a2a" stroke-width="3"/>
+                                <line x1="130" y1="95" x2="130" y2="70" stroke="#4a3a2a" stroke-width="3"/>
+                                <ellipse cx="100" cy="70" rx="35" ry="10" fill="none" stroke="#4a3a2a" stroke-width="2"/>
+                                <ellipse cx="100" cy="55" rx="25" ry="8" fill="none" stroke="#4a3a2a" stroke-width="2"/>
+                                <path d="M75 55 Q70 45 75 40" fill="none" stroke="#4a3a2a" stroke-width="2"/>
+                                <path d="M125 55 Q130 45 125 40" fill="none" stroke="#4a3a2a" stroke-width="2"/>
+                            </g>
+                            <text x="70" y="115" font-family="STKaiti" font-size="12" fill="#8b0000" text-anchor="middle" opacity="0.8">魏</text>
+                            <text x="100" y="115" font-family="STKaiti" font-size="12" fill="#228b22" text-anchor="middle" opacity="0.8">蜀</text>
+                            <text x="130" y="115" font-family="STKaiti" font-size="12" fill="#1a3a8a" text-anchor="middle" opacity="0.8">吴</text>
+                            <rect x="150" y="20" width="30" height="35" fill="#8b6914" opacity="0.8" rx="2"/>
+                            <text x="165" y="42" font-family="SimHei" font-size="16" fill="#fff" text-anchor="middle">鼎</text>
+                            <text x="100" y="128" font-family="STKaiti, KaiTi" font-size="18" fill="#5a4a3a" text-anchor="middle" font-weight="bold">三国鼎立</text>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#8b6914" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="card-label">三国鼎立</div>
+                </div>
+            </div>
+            <div class="description">
+                采用中国传统水墨画风格，用墨色的浓淡表现层次，配以印章元素和书法字体，古色古香，富有中国文化韵味。
+            </div>
+        </div>
+
+        <!-- 方案二：极简线条风格 -->
+        <div class="style-section">
+            <h2 class="style-title"><span class="style-number">2</span>极简线条风格</h2>
+            <div class="cards-row">
+                <div class="card-wrapper">
+                    <div class="card-container">
+                        <svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="#fff"/>
+                            <g stroke="#1a1a1a" stroke-width="1.5" fill="none">
+                                <path d="M70 85 L100 55 L130 85"/>
+                                <line x1="75" y1="85" x2="75" y2="105"/>
+                                <line x1="125" y1="85" x2="125" y2="105"/>
+                                <line x1="75" y1="105" x2="125" y2="105"/>
+                                <rect x="95" y="90" width="10" height="15"/>
+                            </g>
+                            <g stroke="#dc143c" stroke-width="1.5" fill="none" opacity="0.8">
+                                <path d="M50 100 Q55 85 50 70"/>
+                                <path d="M150 100 Q145 85 150 70"/>
+                            </g>
+                            <circle cx="100" cy="40" r="3" fill="#1a1a1a" opacity="0.3"/>
+                            <circle cx="85" cy="45" r="2" fill="#1a1a1a" opacity="0.2"/>
+                            <circle cx="115" cy="45" r="2" fill="#1a1a1a" opacity="0.2"/>
+                            <text x="100" y="125" font-family="SimHei, Microsoft YaHei" font-size="16" fill="#1a1a1a" text-anchor="middle" font-weight="bold">董卓弄权</text>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#1a1a1a" stroke-width="1"/>
+                        </svg>
+                    </div>
+                    <div class="card-label">董卓弄权</div>
+                </div>
+                <div class="card-wrapper">
+                    <div class="card-container">
+                        <svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="#fff"/>
+                            <g stroke="#228b22" stroke-width="1.5" fill="none">
+                                <line x1="100" y1="45" x2="100" y2="95"/>
+                                <path d="M100 45 L130 60 L100 75"/>
+                                <path d="M100 55 L115 58"/>
+                                <path d="M100 65 L115 68"/>
+                            </g>
+                            <g stroke="#1a1a1a" stroke-width="1.5" fill="none" opacity="0.7">
+                                <ellipse cx="70" cy="95" rx="12" ry="8"/>
+                                <circle cx="62" cy="88" r="5"/>
+                                <line x1="66" y1="86" x2="72" y2="80"/>
+                            </g>
+                            <line x1="40" y1="75" x2="55" y2="75" stroke="#228b22" stroke-width="1" opacity="0.4"/>
+                            <line x1="145" y1="75" x2="160" y2="75" stroke="#228b22" stroke-width="1" opacity="0.4"/>
+                            <text x="100" y="125" font-family="SimHei, Microsoft YaHei" font-size="16" fill="#228b22" text-anchor="middle" font-weight="bold">曹操崛起</text>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#228b22" stroke-width="1"/>
+                        </svg>
+                    </div>
+                    <div class="card-label">曹操崛起</div>
+                </div>
+                <div class="card-wrapper">
+                    <div class="card-container">
+                        <svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="#fff"/>
+                            <g stroke="#4169e1" stroke-width="1.5" fill="none">
+                                <path d="M75 90 Q100 95 125 90"/>
+                                <line x1="90" y1="90" x2="90" y2="65"/>
+                                <line x1="110" y1="90" x2="110" y2="65"/>
+                                <path d="M82 70 L90 55 L98 70"/>
+                                <path d="M102 70 L110 55 L118 70"/>
+                            </g>
+                            <g stroke="#4169e1" stroke-width="1" fill="none" opacity="0.4">
+                                <path d="M30 100 Q45 95 60 100"/>
+                                <path d="M140 100 Q155 95 170 100"/>
+                                <path d="M40 108 Q55 103 70 108"/>
+                            </g>
+                            <g stroke="#dc143c" stroke-width="1.5" fill="none" opacity="0.6">
+                                <path d="M135 70 Q140 55 145 70"/>
+                            </g>
+                            <text x="100" y="125" font-family="SimHei, Microsoft YaHei" font-size="16" fill="#4169e1" text-anchor="middle" font-weight="bold">赤壁之战</text>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#4169e1" stroke-width="1"/>
+                        </svg>
+                    </div>
+                    <div class="card-label">赤壁之战</div>
+                </div>
+                <div class="card-wrapper">
+                    <div class="card-container">
+                        <svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="#fff"/>
+                            <g stroke="#b8860b" stroke-width="2" fill="none">
+                                <line x1="75" y1="95" x2="75" y2="70"/>
+                                <line x1="100" y1="95" x2="100" y2="55"/>
+                                <line x1="125" y1="95" x2="125" y2="70"/>
+                                <ellipse cx="100" cy="70" rx="30" ry="8"/>
+                                <ellipse cx="100" cy="55" rx="20" ry="6"/>
+                            </g>
+                            <g>
+                                <circle cx="75" cy="105" r="4" fill="#dc143c" opacity="0.6"/>
+                                <circle cx="100" cy="105" r="4" fill="#228b22" opacity="0.6"/>
+                                <circle cx="125" cy="105" r="4" fill="#4169e1" opacity="0.6"/>
+                            </g>
+                            <g stroke="#b8860b" stroke-width="1" opacity="0.3">
+                                <line x1="75" y1="105" x2="100" y2="105"/>
+                                <line x1="100" y1="105" x2="125" y2="105"/>
+                            </g>
+                            <text x="100" y="125" font-family="SimHei, Microsoft YaHei" font-size="16" fill="#b8860b" text-anchor="middle" font-weight="bold">三国鼎立</text>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#b8860b" stroke-width="1"/>
+                        </svg>
+                    </div>
+                    <div class="card-label">三国鼎立</div>
+                </div>
+            </div>
+            <div class="description">
+                现代简约设计，使用简洁的线条和几何图形，留白较多，突出文字，适合喜欢干净简洁风格的用户。
+            </div>
+        </div>
+
+        <!-- 方案三：游戏徽章风格 -->
+        <div class="style-section">
+            <h2 class="style-title"><span class="style-number">3</span>游戏徽章风格</h2>
+            <div class="cards-row">
+                <div class="card-wrapper">
+                    <div class="card-container">
+                        <svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="badgeBg1" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#4a0000"/>
+                                    <stop offset="100%" style="stop-color:#2a0000"/>
+                                </linearGradient>
+                                <linearGradient id="badgeBorder1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#ffd700"/>
+                                    <stop offset="50%" style="stop-color:#ffed4e"/>
+                                    <stop offset="100%" style="stop-color:#b8860b"/>
+                                </linearGradient>
+                            </defs>
+                            <circle cx="100" cy="75" r="65" fill="url(#badgeBg1)"/>
+                            <circle cx="100" cy="75" r="60" fill="none" stroke="url(#badgeBorder1)" stroke-width="4"/>
+                            <circle cx="100" cy="75" r="55" fill="none" stroke="#8b0000" stroke-width="1" opacity="0.5"/>
+                            <g fill="#cd853f">
+                                <rect x="70" y="95" width="60" height="10"/>
+                                <rect x="85" y="60" width="30" height="30"/>
+                                <path d="M65 75 L100 50 L135 75 Z" fill="#daa520"/>
+                            </g>
+                            <g fill="#ff4500">
+                                <path d="M45 75 Q50 60 45 45 Q55 55 50 40" opacity="0.8"/>
+                                <path d="M155 75 Q150 60 155 45 Q145 55 150 40" opacity="0.8"/>
+                            </g>
+                            <g fill="#ffd700">
+                                <polygon points="100,25 102,30 107,30 103,34 105,39 100,36 95,39 97,34 93,30 98,30"/>
+                            </g>
+                            <text x="100" y="122" font-family="SimHei, Microsoft YaHei" font-size="14" fill="#ffd700" text-anchor="middle" font-weight="bold">董卓弄权</text>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#8b0000" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="card-label">董卓弄权</div>
+                </div>
+                <div class="card-wrapper">
+                    <div class="card-container">
+                        <svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="badgeBg2" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#1a4a1a"/>
+                                    <stop offset="100%" style="stop-color:#0a2a0a"/>
+                                </linearGradient>
+                                <linearGradient id="badgeBorder2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#90ee90"/>
+                                    <stop offset="50%" style="stop-color:#228b22"/>
+                                    <stop offset="100%" style="stop-color:#006400"/>
+                                </linearGradient>
+                            </defs>
+                            <circle cx="100" cy="75" r="65" fill="url(#badgeBg2)"/>
+                            <circle cx="100" cy="75" r="60" fill="none" stroke="url(#badgeBorder2)" stroke-width="4"/>
+                            <circle cx="100" cy="75" r="55" fill="none" stroke="#228b22" stroke-width="1" opacity="0.5"/>
+                            <g>
+                                <rect x="97" y="40" width="6" height="50" fill="#8b4513"/>
+                                <path d="M103 45 L135 60 L103 75 Z" fill="#dc143c"/>
+                                <text x="119" y="65" font-family="SimHei" font-size="12" fill="#ffd700">魏</text>
+                            </g>
+                            <g fill="#8b4513">
+                                <ellipse cx="75" cy="95" rx="15" ry="8"/>
+                                <circle cx="65" cy="88" r="6"/>
+                                <rect x="70" y="96" width="3" height="8"/>
+                                <rect x="77" y="96" width="3" height="8"/>
+                            </g>
+                            <g fill="#90ee90">
+                                <polygon points="140,50 141,53 144,53 142,55 143,58 140,56 137,58 138,55 136,53 139,53"/>
+                                <polygon points="60,50 61,53 64,53 62,55 63,58 60,56 57,58 58,55 56,53 59,53"/>
+                            </g>
+                            <text x="100" y="122" font-family="SimHei, Microsoft YaHei" font-size="14" fill="#90ee90" text-anchor="middle" font-weight="bold">曹操崛起</text>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#228b22" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="card-label">曹操崛起</div>
+                </div>
+                <div class="card-wrapper">
+                    <div class="card-container">
+                        <svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="badgeBg3" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#1a3a6a"/>
+                                    <stop offset="100%" style="stop-color:#0a1a3a"/>
+                                </linearGradient>
+                                <linearGradient id="badgeBorder3" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#87ceeb"/>
+                                    <stop offset="50%" style="stop-color:#4169e1"/>
+                                    <stop offset="100%" style="stop-color:#00008b"/>
+                                </linearGradient>
+                            </defs>
+                            <circle cx="100" cy="75" r="65" fill="url(#badgeBg3)"/>
+                            <circle cx="100" cy="75" r="60" fill="none" stroke="url(#badgeBorder3)" stroke-width="4"/>
+                            <circle cx="100" cy="75" r="55" fill="none" stroke="#4169e1" stroke-width="1" opacity="0.5"/>
+                            <g fill="#5c4033">
+                                <path d="M70 95 Q100 100 130 95 L125 85 L75 85 Z"/>
+                                <rect x="87" y="60" width="4" height="25"/>
+                                <rect x="109" y="60" width="4" height="25"/>
+                                <path d="M75 65 L89 50 L103 65 Z" fill="#d2b48c"/>
+                                <path d="M97 65 L111 50 L125 65 Z" fill="#d2b48c"/>
+                            </g>
+                            <g stroke="#4169e1" stroke-width="2" fill="none" opacity="0.6">
+                                <path d="M50 105 Q65 100 80 105"/>
+                                <path d="M120 105 Q135 100 150 105"/>
+                            </g>
+                            <g fill="#ff4500">
+                                <path d="M140 70 Q145 55 150 70 Q155 60 158 75" opacity="0.8"/>
+                            </g>
+                            <g fill="#87ceeb">
+                                <polygon points="100,30 102,35 107,35 103,39 105,44 100,41 95,44 97,39 93,35 98,35"/>
+                            </g>
+                            <text x="100" y="122" font-family="SimHei, Microsoft YaHei" font-size="14" fill="#87ceeb" text-anchor="middle" font-weight="bold">赤壁之战</text>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#4169e1" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="card-label">赤壁之战</div>
+                </div>
+                <div class="card-wrapper">
+                    <div class="card-container">
+                        <svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="badgeBg4" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#4a3a1a"/>
+                                    <stop offset="100%" style="stop-color:#2a1a0a"/>
+                                </linearGradient>
+                                <linearGradient id="badgeBorder4" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#ffd700"/>
+                                    <stop offset="50%" style="stop-color:#daa520"/>
+                                    <stop offset="100%" style="stop-color:#b8860b"/>
+                                </linearGradient>
+                            </defs>
+                            <circle cx="100" cy="75" r="65" fill="url(#badgeBg4)"/>
+                            <circle cx="100" cy="75" r="60" fill="none" stroke="url(#badgeBorder4)" stroke-width="4"/>
+                            <circle cx="100" cy="75" r="55" fill="none" stroke="#daa520" stroke-width="1" opacity="0.5"/>
+                            <g fill="#8b6914">
+                                <rect x="78" y="85" width="6" height="20"/>
+                                <rect x="97" y="75" width="6" height="30"/>
+                                <rect x="116" y="85" width="6" height="20"/>
+                                <ellipse cx="100" cy="85" rx="30" ry="10"/>
+                                <ellipse cx="100" cy="70" rx="22" ry="8" fill="#daa520"/>
+                            </g>
+                            <g>
+                                <circle cx="78" cy="110" r="8" fill="#dc143c"/>
+                                <text x="78" y="113" font-family="SimHei" font-size="10" fill="#fff" text-anchor="middle">魏</text>
+                                <circle cx="100" cy="110" r="8" fill="#228b22"/>
+                                <text x="100" y="113" font-family="SimHei" font-size="10" fill="#fff" text-anchor="middle">蜀</text>
+                                <circle cx="122" cy="110" r="8" fill="#4169e1"/>
+                                <text x="122" y="113" font-family="SimHei" font-size="10" fill="#fff" text-anchor="middle">吴</text>
+                            </g>
+                            <g fill="#ffd700">
+                                <polygon points="100,25 103,32 110,32 105,37 107,44 100,40 93,44 95,37 90,32 97,32"/>
+                            </g>
+                            <text x="100" y="122" font-family="SimHei, Microsoft YaHei" font-size="14" fill="#ffd700" text-anchor="middle" font-weight="bold">三国鼎立</text>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#b8860b" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="card-label">三国鼎立</div>
+                </div>
+            </div>
+            <div class="description">
+                游戏化的徽章设计，有金属质感、渐变色彩，适合游戏界面，视觉冲击力强。
+            </div>
+        </div>
+
+        <!-- 方案四：扁平插画风格 -->
+        <div class="style-section">
+            <h2 class="style-title"><span class="style-number">4</span>扁平插画风格</h2>
+            <div class="cards-row">
+                <div class="card-wrapper">
+                    <div class="card-container">
+                        <svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="flatBg1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#ff6b6b"/>
+                                    <stop offset="100%" style="stop-color:#c92a2a"/>
+                                </linearGradient>
+                            </defs>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="url(#flatBg1)"/>
+                            <g>
+                                <rect x="70" y="90" width="60" height="15" fill="#5c4033"/>
+                                <rect x="85" y="60" width="30" height="30" fill="#8b4513"/>
+                                <path d="M75 60 L100 40 L125 60 Z" fill="#4a0000"/>
+                                <rect x="95" y="75" width="10" height="15" fill="#2a0000"/>
+                                <rect x="88" y="60" width="4" height="30" fill="#6b3513"/>
+                                <rect x="108" y="60" width="4" height="30" fill="#6b3513"/>
+                            </g>
+                            <g>
+                                <path d="M40 100 Q45 80 40 60 Q50 70 45 50" fill="#ff4500"/>
+                                <path d="M160 100 Q155 80 160 60 Q150 70 155 50" fill="#ff4500"/>
+                            </g>
+                            <g fill="#fff" opacity="0.2">
+                                <ellipse cx="50" cy="40" rx="20" ry="10"/>
+                                <ellipse cx="150" cy="35" rx="25" ry="12"/>
+                            </g>
+                            <text x="100" y="125" font-family="SimHei, Microsoft YaHei" font-size="16" fill="#fff" text-anchor="middle" font-weight="bold">董卓弄权</text>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#fff" stroke-width="2" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="card-label">董卓弄权</div>
+                </div>
+                <div class="card-wrapper">
+                    <div class="card-container">
+                        <svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="flatBg2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#51cf66"/>
+                                    <stop offset="100%" style="stop-color:#2b8a3e"/>
+                                </linearGradient>
+                            </defs>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="url(#flatBg2)"/>
+                            <g>
+                                <rect x="98" y="35" width="4" height="55" fill="#8b4513"/>
+                                <path d="M102 40 L140 55 L102 70 Z" fill="#dc143c"/>
+                                <text x="121" y="60" font-family="SimHei" font-size="14" fill="#ffd700">魏</text>
+                            </g>
+                            <g fill="#2d6a32">
+                                <ellipse cx="60" cy="100" rx="35" ry="20"/>
+                                <ellipse cx="140" cy="100" rx="40" ry="25"/>
+                            </g>
+                            <circle cx="155" cy="40" r="15" fill="#ffd700" opacity="0.8"/>
+                            <g fill="#fff" opacity="0.3">
+                                <ellipse cx="45" cy="45" rx="18" ry="9"/>
+                            </g>
+                            <text x="100" y="125" font-family="SimHei, Microsoft YaHei" font-size="16" fill="#fff" text-anchor="middle" font-weight="bold">曹操崛起</text>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#fff" stroke-width="2" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="card-label">曹操崛起</div>
+                </div>
+                <div class="card-wrapper">
+                    <div class="card-container">
+                        <svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="flatBg3" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#4dabf7"/>
+                                    <stop offset="100%" style="stop-color:#1864ab"/>
+                                </linearGradient>
+                            </defs>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="url(#flatBg3)"/>
+                            <g>
+                                <path d="M65 95 Q100 100 135 95 L130 85 L70 85 Z" fill="#5c4033"/>
+                                <rect x="85" y="55" width="3" height="30" fill="#8b4513"/>
+                                <rect x="112" y="55" width="3" height="30" fill="#8b4513"/>
+                                <path d="M70 60 L86 45 L102 60 Z" fill="#f5f5dc"/>
+                                <path d="M98 60 L114 45 L130 60 Z" fill="#f5f5dc"/>
+                            </g>
+                            <g fill="#228be6" opacity="0.5">
+                                <ellipse cx="50" cy="105" rx="30" ry="8"/>
+                                <ellipse cx="150" cy="105" rx="35" ry="10"/>
+                            </g>
+                            <g>
+                                <path d="M145 70 Q150 55 155 70 Q160 60 163 75" fill="#ff6b6b"/>
+                            </g>
+                            <circle cx="40" cy="40" r="12" fill="#ffd700" opacity="0.6"/>
+                            <text x="100" y="125" font-family="SimHei, Microsoft YaHei" font-size="16" fill="#fff" text-anchor="middle" font-weight="bold">赤壁之战</text>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#fff" stroke-width="2" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="card-label">赤壁之战</div>
+                </div>
+                <div class="card-wrapper">
+                    <div class="card-container">
+                        <svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="flatBg4" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#fcc419"/>
+                                    <stop offset="100%" style="stop-color:#e67700"/>
+                                </linearGradient>
+                            </defs>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="url(#flatBg4)"/>
+                            <g fill="#8b6914">
+                                <rect x="75" y="85" width="8" height="20"/>
+                                <rect x="96" y="75" width="8" height="30"/>
+                                <rect x="117" y="85" width="8" height="20"/>
+                                <ellipse cx="100" cy="85" rx="32" ry="12"/>
+                                <ellipse cx="100" cy="70" rx="24" ry="10" fill="#daa520"/>
+                            </g>
+                            <g>
+                                <circle cx="75" cy="110" r="10" fill="#dc143c"/>
+                                <text x="75" y="114" font-family="SimHei" font-size="12" fill="#fff" text-anchor="middle">魏</text>
+                                <circle cx="100" cy="110" r="10" fill="#228b22"/>
+                                <text x="100" y="114" font-family="SimHei" font-size="12" fill="#fff" text-anchor="middle">蜀</text>
+                                <circle cx="125" cy="110" r="10" fill="#4169e1"/>
+                                <text x="125" y="114" font-family="SimHei" font-size="12" fill="#fff" text-anchor="middle">吴</text>
+                            </g>
+                            <g stroke="#ffd700" stroke-width="2" opacity="0.4">
+                                <line x1="100" y1="20" x2="100" y2="30"/>
+                                <line x1="70" y1="30" x2="77" y2="37"/>
+                                <line x1="130" y1="30" x2="123" y2="37"/>
+                            </g>
+                            <text x="100" y="125" font-family="SimHei, Microsoft YaHei" font-size="16" fill="#fff" text-anchor="middle" font-weight="bold">三国鼎立</text>
+                            <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#fff" stroke-width="2" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="card-label">三国鼎立</div>
+                </div>
+            </div>
+            <div class="description">
+                现代扁平化插画风格，色彩鲜艳明快，图案简洁明了，适合年轻化的界面设计。
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 添加卡片悬停效果
+        document.querySelectorAll('.card-container').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05)';
+                this.style.transition = 'transform 0.3s ease';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

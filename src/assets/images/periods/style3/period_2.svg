@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="badgeBg2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a4a1a"/>
+      <stop offset="100%" style="stop-color:#0a2a0a"/>
+    </linearGradient>
+    <linearGradient id="badgeBorder2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#90ee90"/>
+      <stop offset="50%" style="stop-color:#228b22"/>
+      <stop offset="100%" style="stop-color:#006400"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- 徽章背景 -->
+  <circle cx="100" cy="75" r="65" fill="url(#badgeBg2)"/>
+  <circle cx="100" cy="75" r="60" fill="none" stroke="url(#badgeBorder2)" stroke-width="4"/>
+  <circle cx="100" cy="75" r="55" fill="none" stroke="#228b22" stroke-width="1" opacity="0.5"/>
+  
+  <!-- 军旗图标 -->
+  <g>
+    <!-- 旗杆 -->
+    <rect x="97" y="40" width="6" height="50" fill="#8b4513"/>
+    <!-- 旗帜 -->
+    <path d="M103 45 L135 60 L103 75 Z" fill="#dc143c"/>
+    <text x="119" y="65" font-family="SimHei" font-size="12" fill="#ffd700">魏</text>
+  </g>
+  
+  <!-- 战马图标 -->
+  <g fill="#8b4513">
+    <ellipse cx="75" cy="95" rx="15" ry="8"/>
+    <circle cx="65" cy="88" r="6"/>
+    <rect x="70" y="96" width="3" height="8"/>
+    <rect x="77" y="96" width="3" height="8"/>
+  </g>
+  
+  <!-- 装饰星星 -->
+  <g fill="#90ee90">
+    <polygon points="140,50 141,53 144,53 142,55 143,58 140,56 137,58 138,55 136,53 139,53"/>
+    <polygon points="60,50 61,53 64,53 62,55 63,58 60,56 57,58 58,55 56,53 59,53"/>
+  </g>
+  
+  <!-- 标题 -->
+  <text x="100" y="122" font-family="SimHei, Microsoft YaHei" font-size="14" fill="#90ee90" text-anchor="middle" font-weight="bold">曹操崛起</text>
+  
+  <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#228b22" stroke-width="2"/>
+</svg>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="flatBg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#51cf66"/>
+      <stop offset="100%" style="stop-color:#2b8a3e"/>
+    </linearGradient>
+  </defs>
+  
+  <rect x="2" y="2" width="196" height="146" rx="8" fill="url(#flatBg2)"/>
+  
+  <!-- 军旗插画 -->
+  <g>
+    <!-- 旗杆 -->
+    <rect x="98" y="35" width="4" height="55" fill="#8b4513"/>
+    <!-- 旗帜 -->
+    <path d="M102 40 L140 55 L102 70 Z" fill="#dc143c"/>
+    <text x="121" y="60" font-family="SimHei" font-size="14" fill="#ffd700">魏</text>
+  </g>
+  
+  <!-- 山丘 -->
+  <g fill="#2d6a32">
+    <ellipse cx="60" cy="100" rx="35" ry="20"/>
+    <ellipse cx="140" cy="100" rx="40" ry="25"/>
+  </g>
+  
+  <!-- 太阳 -->
+  <circle cx="155" cy="40" r="15" fill="#ffd700" opacity="0.8"/>
+  
+  <!-- 云朵 -->
+  <g fill="#fff" opacity="0.3">
+    <ellipse cx="45" cy="45" rx="18" ry="9"/>
+  </g>
+  
+  <!-- 标题 -->
+  <text x="100" y="125" font-family="SimHei, Microsoft YaHei" font-size="16" fill="#fff" text-anchor="middle" font-weight="bold">曹操崛起</text>
+  
+  <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#fff" stroke-width="2" opacity="0.5"/>
+</svg>

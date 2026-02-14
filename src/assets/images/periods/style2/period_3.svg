@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+  <rect x="2" y="2" width="196" height="146" rx="8" fill="#fff"/>
+  
+  <!-- 极简线条 - 战船 -->
+  <g stroke="#4169e1" stroke-width="1.5" fill="none">
+    <!-- 船身 -->
+    <path d="M75 90 Q100 95 125 90"/>
+    <!-- 桅杆 -->
+    <line x1="90" y1="90" x2="90" y2="65"/>
+    <line x1="110" y1="90" x2="110" y2="65"/>
+    <!-- 帆 -->
+    <path d="M82 70 L90 55 L98 70"/>
+    <path d="M102 70 L110 55 L118 70"/>
+  </g>
+  
+  <!-- 水波纹 -->
+  <g stroke="#4169e1" stroke-width="1" fill="none" opacity="0.4">
+    <path d="M30 100 Q45 95 60 100"/>
+    <path d="M140 100 Q155 95 170 100"/>
+    <path d="M40 108 Q55 103 70 108"/>
+  </g>
+  
+  <!-- 火焰 -->
+  <g stroke="#dc143c" stroke-width="1.5" fill="none" opacity="0.6">
+    <path d="M135 70 Q140 55 145 70"/>
+  </g>
+  
+  <!-- 标题 -->
+  <text x="100" y="125" font-family="SimHei, Microsoft YaHei" font-size="16" fill="#4169e1" text-anchor="middle" font-weight="bold">赤壁之战</text>
+  
+  <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#4169e1" stroke-width="1"/>
+</svg>

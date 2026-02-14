@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="flatBg4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fcc419"/>
+      <stop offset="100%" style="stop-color:#e67700"/>
+    </linearGradient>
+  </defs>
+  
+  <rect x="2" y="2" width="196" height="146" rx="8" fill="url(#flatBg4)"/>
+  
+  <!-- 三足鼎插画 -->
+  <g fill="#8b6914">
+    <!-- 鼎腿 -->
+    <rect x="75" y="85" width="8" height="20"/>
+    <rect x="96" y="75" width="8" height="30"/>
+    <rect x="117" y="85" width="8" height="20"/>
+    <!-- 鼎身 -->
+    <ellipse cx="100" cy="85" rx="32" ry="12"/>
+    <ellipse cx="100" cy="70" rx="24" ry="10" fill="#daa520"/>
+  </g>
+  
+  <!-- 魏蜀吴圆圈 -->
+  <g>
+    <circle cx="75" cy="110" r="10" fill="#dc143c"/>
+    <text x="75" y="114" font-family="SimHei" font-size="12" fill="#fff" text-anchor="middle">魏</text>
+    
+    <circle cx="100" cy="110" r="10" fill="#228b22"/>
+    <text x="100" y="114" font-family="SimHei" font-size="12" fill="#fff" text-anchor="middle">蜀</text>
+    
+    <circle cx="125" cy="110" r="10" fill="#4169e1"/>
+    <text x="125" y="114" font-family="SimHei" font-size="12" fill="#fff" text-anchor="middle">吴</text>
+  </g>
+  
+  <!-- 光芒 -->
+  <g stroke="#ffd700" stroke-width="2" opacity="0.4">
+    <line x1="100" y1="20" x2="100" y2="30"/>
+    <line x1="70" y1="30" x2="77" y2="37"/>
+    <line x1="130" y1="30" x2="123" y2="37"/>
+  </g>
+  
+  <!-- 标题 -->
+  <text x="100" y="125" font-family="SimHei, Microsoft YaHei" font-size="16" fill="#fff" text-anchor="middle" font-weight="bold">三国鼎立</text>
+  
+  <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#fff" stroke-width="2" opacity="0.5"/>
+</svg>
