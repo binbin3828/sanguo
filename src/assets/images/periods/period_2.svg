@@ -1,35 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="period2Bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1f2d1f"/>
-      <stop offset="100%" style="stop-color:#0a1a0a"/>
-    </linearGradient>
-    <linearGradient id="period2Border" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#006400"/>
-      <stop offset="50%" style="stop-color:#228b22"/>
-      <stop offset="100%" style="stop-color:#006400"/>
+    <linearGradient id="inkBg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f0f5f0"/>
+      <stop offset="100%" style="stop-color:#e0e8e0"/>
     </linearGradient>
   </defs>
   
-  <!-- 背景 -->
-  <rect x="2" y="2" width="196" height="146" rx="8" fill="url(#period2Bg)" stroke="url(#period2Border)" stroke-width="2"/>
+  <rect x="2" y="2" width="196" height="146" rx="8" fill="url(#inkBg2)"/>
   
-  <!-- 军旗 -->
-  <line x1="100" y1="35" x2="100" y2="110" stroke="#8b4513" stroke-width="3"/>
-  <polygon points="100,35 130,55 100,75" fill="#228b22" stroke="#006400" stroke-width="2"/>
-  <text x="115" y="60" font-family="SimHei" font-size="12" fill="#ffd700" transform="rotate(10 115 60)">魏</text>
+  <!-- 水墨渲染 -->
+  <ellipse cx="100" cy="80" rx="55" ry="40" fill="#1a3a1a" opacity="0.06"/>
   
-  <!-- 战马 -->
-  <ellipse cx="60" cy="100" rx="20" ry="12" fill="#4a3728"/>
-  <circle cx="50" cy="90" r="8" fill="#4a3728"/>
-  <line x1="55" y1="88" x2="65" y2="82" stroke="#4a3728" stroke-width="2"/>
+  <!-- 军旗水墨 -->
+  <g opacity="0.75">
+    <!-- 旗杆 -->
+    <line x1="100" y1="35" x2="100" y2="95" stroke="#2a2a2a" stroke-width="3"/>
+    <!-- 旗帜 -->
+    <path d="M100 35 L140 55 L100 75" fill="none" stroke="#1a3a1a" stroke-width="2"/>
+    <!-- 飘动效果 -->
+    <path d="M100 45 Q115 48 130 45" fill="none" stroke="#2a4a2a" stroke-width="1" opacity="0.6"/>
+    <path d="M100 55 Q115 58 130 55" fill="none" stroke="#2a4a2a" stroke-width="1" opacity="0.6"/>
+  </g>
   
-  <!-- 兵器架 -->
-  <line x1="140" y1="80" x2="160" y2="60" stroke="#a0a0a0" stroke-width="2"/>
-  <line x1="145" y1="85" x2="165" y2="65" stroke="#a0a0a0" stroke-width="2"/>
-  <polygon points="160,60 170,55 165,68" fill="#c0c0c0"/>
+  <!-- 战马剪影 -->
+  <g opacity="0.6">
+    <ellipse cx="65" cy="95" rx="18" ry="10" fill="#3a3a3a"/>
+    <circle cx="55" cy="85" r="7" fill="#3a3a3a"/>
+    <path d="M60 83 L70 75" stroke="#3a3a3a" stroke-width="2"/>
+    <!-- 马腿 -->
+    <line x1="58" y1="100" x2="55" y2="110" stroke="#3a3a3a" stroke-width="1.5"/>
+    <line x1="65" y1="100" x2="68" y2="110" stroke="#3a3a3a" stroke-width="1.5"/>
+  </g>
   
-  <!-- 时期名称 -->
-  <text x="100" y="125" font-family="SimHei" font-size="14" fill="#90ee90" text-anchor="middle">曹操崛起</text>
+  <!-- 远山 -->
+  <path d="M150 115 Q160 95 170 105 Q180 90 190 110" fill="none" stroke="#4a5a4a" stroke-width="1.5" opacity="0.5"/>
+  
+  <!-- 印章 -->
+  <rect x="150" y="20" width="30" height="35" fill="#2a5a2a" opacity="0.8" rx="2"/>
+  <text x="165" y="42" font-family="SimHei" font-size="16" fill="#fff" text-anchor="middle">起</text>
+  
+  <!-- 书法标题 -->
+  <text x="100" y="128" font-family="STKaiti, KaiTi" font-size="18" fill="#1a3a1a" text-anchor="middle" font-weight="bold">曹操崛起</text>
+  
+  <rect x="2" y="2" width="196" height="146" rx="8" fill="none" stroke="#2a5a2a" stroke-width="2"/>
 </svg>
