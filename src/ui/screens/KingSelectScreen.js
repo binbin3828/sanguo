@@ -540,30 +540,35 @@ export class KingSelectScreen {
     }
 
     _renderButtons(ctx, w, h) {
-        // 左上角返回按钮 - 商业级样式
+        // 左上角返回按钮 - 统一使用模版样式
+        const x = 20;
+        const y = 20;
+        const btnW = 140;
+        const btnH = 50;
+        
         ctx.save();
         
-        const btnX = 10;
-        const btnY = 10;
-        const btnW = 120;
-        const btnH = 40;
-        
-        const bgGrad = ctx.createLinearGradient(btnX, btnY, btnX, btnY + btnH);
-        bgGrad.addColorStop(0, 'rgba(35, 35, 55, 0.9)');
-        bgGrad.addColorStop(1, 'rgba(20, 20, 40, 0.95)');
+        const bgGrad = ctx.createLinearGradient(x, y, x, y + btnH);
+        bgGrad.addColorStop(0, 'rgba(35, 35, 55, 0.8)');
+        bgGrad.addColorStop(1, 'rgba(20, 20, 40, 0.9)');
         
         ctx.fillStyle = bgGrad;
-        this._drawRoundedRect(ctx, btnX, btnY, btnW, btnH, 6, bgGrad);
+        this._drawRoundedRect(ctx, x, y, btnW, btnH, 8, bgGrad);
         
-        ctx.strokeStyle = 'rgba(201, 160, 80, 0.5)';
+        ctx.strokeStyle = 'rgba(201, 160, 80, 0.4)';
         ctx.lineWidth = 1.5;
-        this._drawRoundedRect(ctx, btnX + 1, btnY + 1, btnW - 2, btnH - 2, 5, null, true);
+        this._drawRoundedRect(ctx, x + 1, y + 1, btnW - 2, btnH - 2, 7, null, true);
         
-        ctx.fillStyle = '#aaa';
-        ctx.font = 'bold 14px "Microsoft YaHei"';
+        const textGrad = ctx.createLinearGradient(x, y, x + btnW, y);
+        textGrad.addColorStop(0, '#888');
+        textGrad.addColorStop(0.5, '#aaa');
+        textGrad.addColorStop(1, '#888');
+        
+        ctx.fillStyle = textGrad;
+        ctx.font = 'bold 18px "Microsoft YaHei", sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('← 返回', btnX + btnW/2, btnY + btnH/2);
+        ctx.fillText('← 返回主菜单', x + btnW/2, y + btnH/2);
         
         ctx.restore();
         
@@ -638,8 +643,8 @@ export class KingSelectScreen {
     }
 
     onMouseDown(x, y) {
-        // 返回按钮 (左上角)
-        if (x >= 10 && x <= 130 && y >= 10 && y <= 50) {
+        // 返回按钮 (左上角) - 与模版样式统一
+        if (x >= 20 && x <= 160 && y >= 20 && y <= 70) {
             this.onBack();
             return;
         }
