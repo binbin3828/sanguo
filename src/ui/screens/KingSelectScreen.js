@@ -304,8 +304,8 @@ export class KingSelectScreen {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         
-        // 显示当前时期年份
-        const periodText = this.periodData ? `${this.periodData.year}年` : '';
+        // 显示当前剧本名称
+        const periodText = this.periodData ? `<${this.periodData.name || ''}>` : '';
         ctx.fillText(`可选君主 ${periodText}`, listX + listW/2, listY + 20);
         
         const kings = this.availableKings.length > 0 ? this.availableKings : [

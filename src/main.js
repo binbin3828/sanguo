@@ -106,8 +106,13 @@ async function initGame() {
     // 监听时期选择
     eventBus.on('period.selected', (periodId) => {
         const periodYears = { 1: 190, 2: 198, 3: 208, 4: 225 };
+        const periodNames = { 1: '董卓霸京师', 2: '曹操伐董卓', 3: '赤壁之战', 4: '三国鼎立' };
         const year = periodYears[periodId] || 190;
         selectedPeriod = dataService.getPeriodByYear(year);
+        // 添加剧本名称到时期数据中
+        if (selectedPeriod) {
+            selectedPeriod.name = periodNames[periodId] || '未知剧本';
+        }
     });
     
     // 监听君主选择
