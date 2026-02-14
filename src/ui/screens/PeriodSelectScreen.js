@@ -331,8 +331,8 @@ export class PeriodSelectScreen {
     }
 
     _renderBackButton(ctx, w, h) {
-        const x = 50;
-        const y = 50;
+        const x = 20;
+        const y = 20;
         const btnW = 140;
         const btnH = 50;
         
