@@ -250,23 +250,6 @@ export class PeriodSelectScreen {
         
         this._renderCardDecor(ctx, x, y, w, h, period, select);
         
-        const textAlpha = 0.6 + Math.max(hover, select) * 0.4;
-        ctx.globalAlpha = textAlpha;
-        
-        ctx.fillStyle = select > 0 ? '#ffd700' : (hover > 0 ? '#fff' : '#aaa');
-        ctx.font = 'bold 28px "STKaiti", "KaiTi", "SimKai", serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-        ctx.shadowBlur = 4;
-        ctx.shadowOffsetX = 2;
-        ctx.shadowOffsetY = 2;
-        ctx.fillText(period.name, centerX, centerY);
-        
-        ctx.font = '16px "Microsoft YaHei", sans-serif';
-        ctx.fillStyle = select > 0 ? '#fff' : '#888';
-        ctx.fillText(period.year, centerX, centerY + 35);
-        
         ctx.restore();
     }
 
