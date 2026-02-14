@@ -232,7 +232,7 @@ export class PeriodSelectScreen {
             ctx.shadowBlur = 25 * Math.max(hover, select);
         }
         
-        // 先绘制背景图片
+        // 绘制背景图片
         const bgImage = this.backgroundImages[period.id];
         if (bgImage && this.backgroundImagesLoaded[period.id]) {
             ctx.save();
@@ -242,24 +242,6 @@ export class PeriodSelectScreen {
             ctx.drawImage(bgImage, x, y, w, h);
             ctx.restore();
         }
-        
-        // 绘制半透明蒙层，降低不透明度让背景图更清晰
-        const bgGrad = ctx.createLinearGradient(x, y, x, y + h);
-        if (select > 0) {
-            const r = parseInt(period.color.slice(1, 3), 16);
-            const g = parseInt(period.color.slice(3, 5), 16);
-            const b = parseInt(period.color.slice(5, 7), 16);
-            bgGrad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${0.2 + select * 0.15})`);
-            bgGrad.addColorStop(1, `rgba(${r}, ${g}, ${b}, ${0.1 + select * 0.1})`);
-        } else if (hover > 0) {
-            bgGrad.addColorStop(0, `rgba(40, 40, 65, ${0.4 + hover * 0.1})`);
-            bgGrad.addColorStop(1, `rgba(25, 25, 45, ${0.5 + hover * 0.1})`);
-        } else {
-            bgGrad.addColorStop(0, 'rgba(25, 25, 45, 0.4)');
-            bgGrad.addColorStop(1, 'rgba(15, 15, 35, 0.5)');
-        }
-        
-        this._drawRoundedRect(ctx, x, y, w, h, 12, bgGrad);
         
         const borderAlpha = 0.3 + Math.max(hover, select) * 0.7;
         ctx.strokeStyle = `rgba(201, 160, 80, ${borderAlpha})`;
