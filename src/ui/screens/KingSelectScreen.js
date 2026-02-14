@@ -568,7 +568,7 @@ export class KingSelectScreen {
         ctx.font = 'bold 18px "Microsoft YaHei", sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('← 返回主菜单', x + btnW/2, y + btnH/2);
+        ctx.fillText('← 返回', x + btnW/2, y + btnH/2);
         
         ctx.restore();
         
