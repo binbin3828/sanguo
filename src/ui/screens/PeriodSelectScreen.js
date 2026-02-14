@@ -67,8 +67,9 @@ export class PeriodSelectScreen {
 
     onSelectPeriod(periodId) {
         this.selectedPeriod = periodId;
+        const period = this.periods.find(p => p.id === periodId);
         if (this.eventBus) {
-            this.eventBus.emit('period.selected', periodId);
+            this.eventBus.emit('period.selected', periodId, period ? period.name : '');
             this.eventBus.emit('screen.change', 'KingSelect');
         }
     }
