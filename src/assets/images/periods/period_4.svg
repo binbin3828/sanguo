@@ -26,11 +26,6 @@
   <text x="100" y="48" font-family="SimHei" font-size="10" fill="#44ff44" text-anchor="middle">蜀</text>
   <text x="140" y="98" font-family="SimHei" font-size="10" fill="#4444ff" text-anchor="middle">吴</text>
   
-  <!-- 玉玺意象 -->
-  <rect x="88" y="105" width="24" height="20" rx="2" fill="#8b4513" stroke="#ffd700" stroke-width="1"/>
-  <rect x="92" y="108" width="16" height="14" rx="1" fill="#daa520"/>
-  <text x="100" y="118" font-family="SimHei" font-size="8" fill="#8b4513" text-anchor="middle">玺</text>
-  
   <!-- 时期名称 -->
   <text x="100" y="125" font-family="SimHei" font-size="14" fill="#ffd700" text-anchor="middle">三国鼎立</text>
 </svg>
