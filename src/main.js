@@ -110,6 +110,117 @@ async function initGame() {
         selectedPeriod = dataService.getPeriodByYear(year);
     });
     
+    // 监听君主选择
+    eventBus.on('king.selected', (king) => {
+        selectedKing = king;
+        // 设置玩家君主ID到状态管理器
+        stateManager.set('playerKing', king.id || king.name);
+        
+        // 初始化游戏数据：设置城市、将领等到状态中
+        if (selectedPeriod) {
+            stateManager.batchUpdate({
+                'cities': selectedPeriod.cities || [],
+                'persons': selectedPeriod.generals || [],
+                'yearDate': selectedPeriod.year || 190,
+                'monthDate': 1
+            });
+        }
+        
+        console.log('君主已选择:', king.name);
+    });
+    
+    // 监听城市选择
+    eventBus.on('city.selected', (city) => {
+        stateManager.set('selectedCity', city);
+        console.log('选中城市:', city.name);
+    });
+    
+    // 监听进入城市
+    eventBus.on('city.enter', (city) => {
+        console.log('进入城市:', city.name);
+    });
+    
+    // 监听下一回合
+    eventBus.on('turn.next', () => {
+        const currentMonth = stateManager.get('monthDate') || 1;
+        const currentYear = stateManager.get('yearDate') || 190;
+        
+        let newMonth = currentMonth + 1;
+        let newYear = currentYear;
+        
+        if (newMonth > 12) {
+            newMonth = 1;
+            newYear += 1;
+        }
+        
+        stateManager.batchUpdate({
+            'monthDate': newMonth,
+            'yearDate': newYear
+        });
+        
+        console.log(`回合结束，现在时间: ${newYear}年${newMonth}月`);
+    });
+    
+    // 监听战斗结束
+    eventBus.on('battle.exit', () => {
+        console.log('战斗结束，返回战略地图');
+    });
+    
+    // 监听存档列表加载请求
+    eventBus.on('saves.load', () => {
+        const saves = JSON.parse(localStorage.getItem('sanguo_saves') || '[]');
+        eventBus.emit('saves.loaded', saves);
+    });
+    
+    // 监听创建存档
+    eventBus.on('save.create', (saveData) => {
+        const saves = JSON.parse(localStorage.getItem('sanguo_saves') || '[]');
+        const newSave = {
+            id: Date.now(),
+            name: saveData.name || `存档 ${saves.length + 1}`,
+            timestamp: Date.now(),
+            year: stateManager.get('yearDate'),
+            month: stateManager.get('monthDate'),
+            king: selectedKing?.name || '未知',
+            data: stateManager.createSnapshot()
+        };
+        
+        saves.push(newSave);
+        localStorage.setItem('sanguo_saves', JSON.stringify(saves));
+        eventBus.emit('save.created', newSave);
+        console.log('存档已创建:', newSave.name);
+    });
+    
+    // 监听加载存档
+    eventBus.on('save.load', (saveId) => {
+        const saves = JSON.parse(localStorage.getItem('sanguo_saves') || '[]');
+        const save = saves.find(s => s.id === saveId);
+        
+        if (save && save.data) {
+            stateManager.restoreSnapshot(save.data);
+            selectedKing = { name: save.king };
+            selectedPeriod = { year: save.year };
+            eventBus.emit('screen.change', 'StrategyMap');
+            console.log('存档已加载:', save.name);
+        } else {
+            console.error('找不到存档:', saveId);
+        }
+    });
+    
+    // 监听删除存档
+    eventBus.on('save.delete', (saveId) => {
+        let saves = JSON.parse(localStorage.getItem('sanguo_saves') || '[]');
+        saves = saves.filter(s => s.id !== saveId);
+        localStorage.setItem('sanguo_saves', JSON.stringify(saves));
+        eventBus.emit('save.deleted', saveId);
+        console.log('存档已删除:', saveId);
+    });
+    
+    // 监听游戏错误
+    eventBus.on('game.error', ({ error, context }) => {
+        console.error(`游戏错误 (${context}):`, error);
+    });
+    
     gameEngine.start();
     
     console.log('游戏初始化完成！');

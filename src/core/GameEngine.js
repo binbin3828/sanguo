@@ -8,6 +8,7 @@ export class GameEngine {
         this.canvas = options.canvas;
         this.eventBus = options.eventBus;
         this.stateManager = options.stateManager;
+        this.dataService = options.dataService;
         this.config = options.config;
 
         this.ctx = this.canvas.getContext('2d');

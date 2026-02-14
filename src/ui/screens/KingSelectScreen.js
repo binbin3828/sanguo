@@ -489,12 +489,6 @@ export class KingSelectScreen {
         ctx.restore();
     }
 
-    getArmyTypeName(type) {
-        if (typeof type === 'string') return type;
-        const names = ['骑兵', '步兵', '弓兵', '水军', '极兵', '玄兵'];
-        return names[type] || '步兵';
-    }
-
     _renderButtons(ctx, w, h) {
         // 左上角返回按钮 - 商业级样式
         ctx.save();
@@ -551,55 +545,6 @@ export class KingSelectScreen {
         ctx.fillText('开始游戏 →', confirmX + confirmW/2, confirmY + confirmH/2);
         
         ctx.restore();
-    }
-
-    _renderTitle(ctx, w) {
-        ctx.save();
-        
-        ctx.shadowColor = '#c9a050';
-        ctx.shadowBlur = 20;
-        
-        const titleGrad = ctx.createLinearGradient(w/2 - 100, 50, w/2 + 100, 50);
-        titleGrad.addColorStop(0, '#ffd700');
-        titleGrad.addColorStop(0.5, '#fff8dc');
-        titleGrad.addColorStop(1, '#c9a050');
-        
-        ctx.fillStyle = titleGrad;
-        ctx.font = 'bold 36px "STKaiti", "KaiTi", serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('选择君主', w/2, 50);
-        
-        ctx.restore();
-    }
-
-    _renderButton(ctx, x, y, w, h, text, color, onClick, name = 'back') {
-        ctx.save();
-        
-        const bgGrad = ctx.createLinearGradient(x, y, x, y + h);
-        bgGrad.addColorStop(0, color);
-        bgGrad.addColorStop(1, this._darkenColor(color, 30));
-        
-        ctx.fillStyle = bgGrad;
-        this._drawRoundedRect(ctx, x, y, w, h, 8);
-        
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-        ctx.lineWidth = 1;
-        this._drawRoundedRect(ctx, x + 1, y + 1, w - 2, h - 2, 7, null, true);
-        
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 16px "Microsoft YaHei"';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(text, x + w/2, y + h/2);
-        
-        ctx.restore();
-        
-        if (name === 'back') {
-            this._backBtn = { x, y, w, h, onClick };
-        } else if (name === 'confirm') {
-            this._confirmBtn = { x, y, w, h, onClick };
-        }
     }
 
     _darkenColor(color, amount) {
