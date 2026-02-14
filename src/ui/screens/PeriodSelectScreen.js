@@ -19,9 +19,24 @@ export class PeriodSelectScreen {
         this.animationTime = 0;
         this.particles = [];
         this.titleGlow = 0;
+        this.backgroundImages = {};
+        this.backgroundImagesLoaded = {};
         
         this._initParticles();
         this._initCards();
+        this._initBackgroundImages();
+    }
+    
+    _initBackgroundImages() {
+        // 加载各时期的背景图片
+        this.periods.forEach(period => {
+            const img = new Image();
+            img.src = `src/assets/images/periods/period_${period.id}.svg`;
+            img.onload = () => {
+                this.backgroundImagesLoaded[period.id] = true;
+            };
+            this.backgroundImages[period.id] = img;
+        });
     }
 
     _initParticles() {
@@ -217,19 +232,31 @@ export class PeriodSelectScreen {
             ctx.shadowBlur = 25 * Math.max(hover, select);
         }
         
+        // 先绘制背景图片
+        const bgImage = this.backgroundImages[period.id];
+        if (bgImage && this.backgroundImagesLoaded[period.id]) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.roundRect(x, y, w, h, 12);
+            ctx.clip();
+            ctx.drawImage(bgImage, x, y, w, h);
+            ctx.restore();
+        }
+        
+        // 绘制半透明蒙层，降低不透明度让背景图更清晰
         const bgGrad = ctx.createLinearGradient(x, y, x, y + h);
         if (select > 0) {
             const r = parseInt(period.color.slice(1, 3), 16);
             const g = parseInt(period.color.slice(3, 5), 16);
             const b = parseInt(period.color.slice(5, 7), 16);
-            bgGrad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${0.35 + select * 0.25})`);
-            bgGrad.addColorStop(1, `rgba(${r}, ${g}, ${b}, ${0.2 + select * 0.15})`);
+            bgGrad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${0.2 + select * 0.15})`);
+            bgGrad.addColorStop(1, `rgba(${r}, ${g}, ${b}, ${0.1 + select * 0.1})`);
         } else if (hover > 0) {
-            bgGrad.addColorStop(0, `rgba(40, 40, 65, ${0.7 + hover * 0.15})`);
-            bgGrad.addColorStop(1, `rgba(25, 25, 45, ${0.85 + hover * 0.1})`);
+            bgGrad.addColorStop(0, `rgba(40, 40, 65, ${0.4 + hover * 0.1})`);
+            bgGrad.addColorStop(1, `rgba(25, 25, 45, ${0.5 + hover * 0.1})`);
         } else {
-            bgGrad.addColorStop(0, 'rgba(25, 25, 45, 0.7)');
-            bgGrad.addColorStop(1, 'rgba(15, 15, 35, 0.85)');
+            bgGrad.addColorStop(0, 'rgba(25, 25, 45, 0.4)');
+            bgGrad.addColorStop(1, 'rgba(15, 15, 35, 0.5)');
         }
         
         this._drawRoundedRect(ctx, x, y, w, h, 12, bgGrad);
