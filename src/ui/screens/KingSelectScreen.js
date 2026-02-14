@@ -23,6 +23,55 @@ export class KingSelectScreen {
         this.mapImage.onload = () => {
             console.log('地图图片加载完成');
         };
+        
+        // 加载城池图标
+        this._initCityIcons();
+    }
+    
+    _initCityIcons() {
+        this.cityIcons = {
+            friendly: new Image(),
+            enemy: new Image(),
+            neutral: new Image()
+        };
+        
+        this.cityIcons.friendly.src = 'src/assets/icons/city-friendly-classic.svg';
+        this.cityIcons.enemy.src = 'src/assets/icons/city-enemy-classic.svg';
+        this.cityIcons.neutral.src = 'src/assets/icons/city-neutral-classic.svg';
+        
+        // 标记加载状态
+        this.cityIconsLoaded = {
+            friendly: false,
+            enemy: false,
+            neutral: false
+        };
+        
+        this.cityIcons.friendly.onload = () => this.cityIconsLoaded.friendly = true;
+        this.cityIcons.enemy.onload = () => this.cityIconsLoaded.enemy = true;
+        this.cityIcons.neutral.onload = () => this.cityIconsLoaded.neutral = true;
+    }
+    
+    _drawCityIcon(ctx, x, y, type) {
+        const icon = this.cityIcons[type];
+        const loaded = this.cityIconsLoaded[type];
+        
+        if (icon && loaded) {
+            // 绘制SVG图标，居中显示
+            const size = 28;
+            ctx.drawImage(icon, x - size/2, y - size/2, size, size);
+        } else {
+            // 图标未加载完成时，绘制备用圆点
+            ctx.beginPath();
+            ctx.arc(x, y, 6, 0, Math.PI * 2);
+            if (type === 'friendly') {
+                ctx.fillStyle = '#4682B4';
+            } else if (type === 'enemy') {
+                ctx.fillStyle = '#DC143C';
+            } else {
+                ctx.fillStyle = '#C0C0C0';
+            }
+            ctx.fill();
+        }
     }
 
     _initCityCoordinates() {
@@ -359,23 +408,29 @@ export class KingSelectScreen {
             ctx.lineWidth = king ? 3 : 2;
             ctx.strokeRect(infoX, infoY, infoW, infoH);
             
-            // 首先显示所有城池（金色标记）
+            // 首先显示所有城池
             ctx.save();
             Object.entries(this.cityCoordinates).forEach(([cityName, coord]) => {
                 const screenX = infoX + (coord.x / this.mapImage.width) * infoW;
                 const screenY = infoY + (coord.y / this.mapImage.height) * infoH;
                 
-                // 绘制金色圆点
-                ctx.beginPath();
-                ctx.arc(screenX, screenY, 8, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(201, 160, 80, 0.8)';
-                ctx.fill();
+                // 判断城池归属类型
+                let cityType = 'neutral';
+                if (king && king.cityList && king.cityList.includes(cityName)) {
+                    cityType = 'friendly';
+                }
                 
-                ctx.beginPath();
-                ctx.arc(screenX, screenY, 10, 0, Math.PI * 2);
-                ctx.strokeStyle = 'rgba(255, 215, 0, 0.6)';
-                ctx.lineWidth = 2;
-                ctx.stroke();
+                // 绘制城池图标
+                this._drawCityIcon(ctx, screenX, screenY, cityType);
+                
+                // 绘制城池名称（白色）
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 12px "Microsoft YaHei"';
+                ctx.textAlign = 'center';
+                ctx.shadowColor = '#000';
+                ctx.shadowBlur = 3;
+                ctx.fillText(cityName, screenX, screenY - 18);
+                ctx.shadowBlur = 0;
             });
             ctx.restore();
             
@@ -393,27 +448,18 @@ export class KingSelectScreen {
                         const screenX = infoX + (coord.x / this.mapImage.width) * infoW;
                         const screenY = infoY + (coord.y / this.mapImage.height) * infoH;
                         
-                        // 绘制闪耀效果 - 外圈脉冲（叠加在所有城池之上）
+                        // 绘制闪耀效果 - 外圈脉冲（叠加在图标之上）
                         ctx.beginPath();
-                        ctx.arc(screenX, screenY, 12 * pulseScale, 0, Math.PI * 2);
-                        ctx.strokeStyle = `rgba(255, 69, 0, ${0.8 - Math.sin(pulsePhase) * 0.3})`;
-                        ctx.lineWidth = 2;
+                        ctx.arc(screenX, screenY, 20 * pulseScale, 0, Math.PI * 2);
+                        ctx.strokeStyle = `rgba(255, 215, 0, ${0.6 - Math.sin(pulsePhase) * 0.2})`;
+                        ctx.lineWidth = 3;
                         ctx.stroke();
                         
-                        // 绘制更亮的中心点
+                        // 绘制内圈光晕
                         ctx.beginPath();
-                        ctx.arc(screenX, screenY, 8, 0, Math.PI * 2);
-                        ctx.fillStyle = 'rgba(255, 215, 0, 0.95)';
+                        ctx.arc(screenX, screenY, 16, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(255, 215, 0, ${0.3 + Math.sin(pulsePhase) * 0.2})`;
                         ctx.fill();
-                        
-                        // 绘制城池名称
-                        ctx.fillStyle = '#fff';
-                        ctx.font = 'bold 12px "Microsoft YaHei"';
-                        ctx.textAlign = 'center';
-                        ctx.shadowColor = '#000';
-                        ctx.shadowBlur = 3;
-                        ctx.fillText(cityName, screenX, screenY - 18);
-                        ctx.shadowBlur = 0;
                     }
                 });
                 
