@@ -140,6 +140,18 @@ export class KingSelectScreen {
         if (periodData && periodData.rulers) {
             this.availableKings = periodData.rulers;
         }
+        // 构建城池归属映射表
+        this._buildCityOwnershipMap();
+    }
+    
+    _buildCityOwnershipMap() {
+        this.cityOwnershipMap = {};
+        if (this.periodData && this.periodData.cities) {
+            this.periodData.cities.forEach(city => {
+                // 归属为空字符串表示未被占领
+                this.cityOwnershipMap[city.name] = city.owner || '';
+            });
+        }
     }
 
     setAvailableKings(kings) {
@@ -415,10 +427,17 @@ export class KingSelectScreen {
                 const screenY = infoY + (coord.y / this.mapImage.height) * infoH;
                 
                 // 判断城池归属类型
-                let cityType = 'neutral';
-                if (king && king.cityList && king.cityList.includes(cityName)) {
+                let cityType = 'enemy'; // 默认敌方城池
+                const owner = this.cityOwnershipMap[cityName];
+                
+                if (!owner || owner === '') {
+                    // 归属为空，未被占领
+                    cityType = 'neutral';
+                } else if (king && owner === king.name) {
+                    // 归属当前选中的君主
                     cityType = 'friendly';
                 }
+                // 其他情况保持为敌方城池
                 
                 // 绘制城池图标
                 this._drawCityIcon(ctx, screenX, screenY, cityType);
@@ -435,16 +454,17 @@ export class KingSelectScreen {
             ctx.restore();
             
             // 如果选择了君主，为其城池添加闪耀效果
-            if (king && king.cityList && king.cityList.length > 0) {
+            if (king) {
                 // 计算闪耀动画值
                 const pulsePhase = (this.animationTime * 3) % (Math.PI * 2);
                 const pulseScale = 1 + Math.sin(pulsePhase) * 0.3;
                 
                 ctx.save();
                 
-                king.cityList.forEach(cityName => {
-                    const coord = this.cityCoordinates[cityName];
-                    if (coord) {
+                // 遍历所有城池，为归属当前君主的城池添加闪耀效果
+                Object.entries(this.cityCoordinates).forEach(([cityName, coord]) => {
+                    const owner = this.cityOwnershipMap[cityName];
+                    if (owner && owner === king.name) {
                         const screenX = infoX + (coord.x / this.mapImage.width) * infoW;
                         const screenY = infoY + (coord.y / this.mapImage.height) * infoH;
                         
