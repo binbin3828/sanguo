@@ -30,9 +30,6 @@
   <line x1="50" y1="100" x2="80" y2="70" stroke="#c0c0c0" stroke-width="3"/>
   <polygon points="80,70 90,65 88,78" fill="#a0a0a0"/>
   
-  <!-- 年份文字 -->
-  <text x="100" y="115" font-family="SimHei" font-size="16" fill="#ffd700" text-anchor="middle" font-weight="bold">190年</text>
-  
   <!-- 时期名称 -->
-  <text x="100" y="135" font-family="SimHei" font-size="12" fill="#cd5c5c" text-anchor="middle">董卓弄权</text>
+  <text x="100" y="125" font-family="SimHei" font-size="14" fill="#cd5c5c" text-anchor="middle">董卓弄权</text>
 </svg>

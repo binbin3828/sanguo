@@ -30,9 +30,6 @@
   <line x1="145" y1="85" x2="165" y2="65" stroke="#a0a0a0" stroke-width="2"/>
   <polygon points="160,60 170,55 165,68" fill="#c0c0c0"/>
   
-  <!-- 年份文字 -->
-  <text x="100" y="115" font-family="SimHei" font-size="16" fill="#ffd700" text-anchor="middle" font-weight="bold">198年</text>
-  
   <!-- 时期名称 -->
-  <text x="100" y="135" font-family="SimHei" font-size="12" fill="#90ee90" text-anchor="middle">曹操崛起</text>
+  <text x="100" y="125" font-family="SimHei" font-size="14" fill="#90ee90" text-anchor="middle">曹操崛起</text>
 </svg>

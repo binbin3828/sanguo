@@ -39,9 +39,6 @@
   <circle cx="155" cy="65" r="10" fill="#2a2a2a"/>
   <ellipse cx="155" cy="80" rx="12" ry="15" fill="#2a2a2a"/>
   
-  <!-- 年份文字 -->
-  <text x="100" y="115" font-family="SimHei" font-size="16" fill="#ffd700" text-anchor="middle" font-weight="bold">208年</text>
-  
   <!-- 时期名称 -->
-  <text x="100" y="135" font-family="SimHei" font-size="12" fill="#87ceeb" text-anchor="middle">赤壁之战</text>
+  <text x="100" y="125" font-family="SimHei" font-size="14" fill="#87ceeb" text-anchor="middle">赤壁之战</text>
 </svg>
