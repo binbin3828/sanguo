@@ -332,7 +332,7 @@ export class PeriodSelectScreen {
 
     _renderBackButton(ctx, w, h) {
         const x = 50;
-        const y = h - 55;
+        const y = 50;
         const btnW = 140;
         const btnH = 50;
         
