@@ -485,22 +485,6 @@ export class KingSelectScreen {
                 
                 ctx.restore();
             }
-            
-            // 在地图上方显示君主名称
-            if (king) {
-                ctx.save();
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-                ctx.fillRect(infoX + 10, infoY + 10, infoW - 20, 40);
-                
-                ctx.shadowColor = '#ffd700';
-                ctx.shadowBlur = 15;
-                ctx.fillStyle = '#ffd700';
-                ctx.font = 'bold 24px "STKaiti", "KaiTi", serif';
-                ctx.textAlign = 'center';
-                ctx.fillText(king.name, infoX + infoW/2, infoY + 38);
-                ctx.shadowBlur = 0;
-                ctx.restore();
-            }
         } else {
             // 地图未加载时显示占位符
             const bgGrad = ctx.createLinearGradient(infoX, infoY, infoX + infoW, infoY + infoH);
