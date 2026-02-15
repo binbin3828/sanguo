@@ -99,6 +99,20 @@ async function initGame() {
                 newScreen.setPeriod(selectedPeriod);
             }
             
+            // 如果是战略地图界面，传入城市和君主数据
+            if (screenName === 'StrategyMap') {
+                const cities = stateManager.get('cities') || [];
+                const playerKing = stateManager.get('playerKing');
+                const periodData = selectedPeriod;
+                newScreen.setData({
+                    cities: cities,
+                    playerKing: playerKing,
+                    periodData: periodData,
+                    year: stateManager.get('yearDate') || 190,
+                    month: stateManager.get('monthDate') || 1
+                });
+            }
+            
             gameEngine.setScreen(newScreen);
         }
     });
