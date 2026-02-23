@@ -647,11 +647,11 @@ export class StrategyMapScreen {
         // 准备城市数据
         const cityData = [
             { label: '归属', value: city.owner || city.belong || '未知', color: '#ffd700' },
-            { label: '太守', value: city.satrapId || '暂无', color: '#fff' },
-            { label: '农业', value: `${city.farming || 0}/${city.farmingLimit || 0}`, color: '#90EE90' },
+            { label: '太守', value: city.governor || '暂无', color: '#fff' },
+            { label: '农业', value: `${city.agriculture || 0}/${city.agricultureLimit || 0}`, color: '#90EE90' },
             { label: '商业', value: `${city.commerce || 0}/${city.commerceLimit || 0}`, color: '#87CEEB' },
-            { label: '民忠', value: `${city.peopleDevotion || 0}%`, color: '#FFB6C1' },
-            { label: '防灾', value: city.avoidCalamity || 0, color: '#DDA0DD' },
+            { label: '民忠', value: `${city.loyalty || 0}%`, color: '#FFB6C1' },
+            { label: '防灾', value: city.disaster || 0, color: '#DDA0DD' },
             { label: '人口', value: `${city.population || 0}/${city.populationLimit || 0}`, color: '#F0E68C' },
             { label: '金钱', value: city.money || 0, color: '#FFD700' },
             { label: '粮食', value: city.food || 0, color: '#DEB887' }
