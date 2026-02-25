@@ -113,6 +113,14 @@ async function initGame() {
                 });
             }
             
+            // 如果是城市界面，传入当前选中的城市和标签
+            if (screenName === 'City') {
+                const selectedCity = stateManager.get('selectedCity');
+                const cityTab = stateManager.get('cityTab') || 'internal';
+                newScreen.setCity(selectedCity);
+                newScreen.switchTab(cityTab);
+            }
+            
             gameEngine.setScreen(newScreen);
         }
     });

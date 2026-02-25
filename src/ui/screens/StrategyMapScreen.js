@@ -1,6 +1,6 @@
 /**
  * 战略地图界面
- * 显示完整地图和所有城池，支持点击己方城池进入城市指令系统
+ * 显示完整地图和所有城池，支持悬停查看城池详情，点击进入城市指令系统
  */
 
 import { Button } from '../components/Button.js';
@@ -17,6 +17,10 @@ export class StrategyMapScreen {
         this.periodData = null;
         this.year = 190;
         this.month = 1;
+        
+        // 城市操作面板
+        this.showCityMenu = false;
+        this.cityMenuButtons = [];
         
         // 地图相关
         this.mapImage = null;
@@ -153,6 +157,7 @@ export class StrategyMapScreen {
         
         // 城市信息面板
         this.showCityInfoPanel = false;
+        this.hoveredCityPos = null; // 当前悬停城市的屏幕坐标
         
         // 动画
         this.animationTime = 0;
@@ -193,32 +198,14 @@ export class StrategyMapScreen {
     }
     
     /**
-     * 初始化UI
+     * 初始化UI - 城市操作按钮
      */
     _initUI() {
-        // 关闭按钮（用于城市信息面板）
-        this.closeButton = new Button({
-            x: 0, // 动态计算
-            y: 0, // 动态计算
-            width: 100,
-            height: 35,
-            text: '关闭',
-            backgroundColor: '#8b4513',
-            hoverColor: '#a0522d',
-            onClick: () => this._closeCityInfo()
-        });
-        
-        // 进入城市按钮
-        this.enterCityButton = new Button({
-            x: 0, // 动态计算
-            y: 0, // 动态计算
-            width: 100,
-            height: 35,
-            text: '进入城市',
-            backgroundColor: '#2e8b57',
-            hoverColor: '#3cb371',
-            onClick: () => this.onEnterCity()
-        });
+        this.cityMenuButtons = [
+            { text: '内政', action: 'internal', btn: null },
+            { text: '外交', action: 'diplomacy', btn: null },
+            { text: '军事', action: 'military', btn: null }
+        ];
     }
     
     /**
@@ -277,18 +264,14 @@ export class StrategyMapScreen {
     }
     
     /**
-     * 选择城市
+     * 选择城市 - 悬停时显示详情
      */
-    onSelectCity(city) {
+    onSelectCity(city, cityScreenX, cityScreenY) {
         this.selectedCity = city;
+        this.selectedCityPos = { x: cityScreenX, y: cityScreenY };
         
-        // 检查是否是己方城市
-        const cityType = this._getCityType(city.name);
-        
-        if (cityType === 'friendly') {
-            // 显示城市信息面板
-            this._showCityInfo(city);
-        }
+        // 显示信息面板
+        this._showCityInfoPanel(city, cityScreenX, cityScreenY);
         
         if (this.eventBus) {
             this.eventBus.emit('city.selected', city);
@@ -296,19 +279,82 @@ export class StrategyMapScreen {
     }
     
     /**
-     * 显示城市信息面板
+     * 显示城市详情面板
      */
-    _showCityInfo(city) {
+    _showCityInfoPanel(city, cityScreenX, cityScreenY) {
         this.showCityInfoPanel = true;
         
-        // 更新按钮位置
-        const panelW = 320;
-        const panelH = 420;
-        const panelX = (1024 - panelW) / 2;
-        const panelY = (768 - panelH) / 2;
+        const panelW = 200;
+        const panelH = 280;
         
-        this.closeButton.setPosition(panelX + panelW - 120, panelY + panelH - 55);
-        this.enterCityButton.setPosition(panelX + 20, panelY + panelH - 55);
+        // 面板位置：城市右下角
+        let panelX = cityScreenX + 15;
+        let panelY = cityScreenY + 15;
+        
+        if (panelX + panelW > 1024) {
+            panelX = 1024 - panelW - 10;
+        }
+        if (panelX < 10) panelX = 10;
+        if (panelY + panelH > 768) panelY = 768 - panelH - 10;
+        if (panelY < 50) panelY = 50;
+        
+        this._cityPanelPos = { x: panelX, y: panelY, w: panelW, h: panelH };
+    }
+    
+    /**
+     * 显示城市操作菜单 - 点击时调用
+     */
+    _showCityMenu(city, cityScreenX, cityScreenY) {
+        this.showCityMenu = true;
+        
+        const btnWidth = 90;
+        const btnHeight = 32;
+        const btnGap = 4;
+        
+        // 3个按钮垂直排列
+        const totalHeight = btnHeight * 3 + btnGap * 2;
+        
+        // 面板位置：城市右侧
+        let panelX = cityScreenX + 20;
+        let panelY = cityScreenY - totalHeight / 2;
+        
+        if (panelX + btnWidth > 1024) panelX = cityScreenX - btnWidth - 20;
+        if (panelX < 10) panelX = 10;
+        if (panelY + totalHeight > 768) panelY = 768 - totalHeight - 10;
+        if (panelY < 50) panelY = 50;
+        
+        this._cityMenuPos = { x: panelX, y: panelY, w: btnWidth, h: totalHeight };
+        
+        // 创建按钮（垂直排列）
+        this.cityMenuButtons.forEach((menu, index) => {
+            menu.btn = new Button({
+                x: panelX,
+                y: panelY + index * (btnHeight + btnGap),
+                width: btnWidth,
+                height: btnHeight,
+                text: menu.text,
+                backgroundColor: 'rgba(30, 30, 50, 0.95)',
+                hoverColor: 'rgba(201, 160, 80, 0.4)',
+                textColor: '#ffd700',
+                borderColor: 'rgba(201, 160, 80, 0.5)',
+                borderWidth: 1,
+                borderRadius: 3,
+                fontSize: 14,
+                onClick: () => this._onMenuAction(menu.action)
+            });
+        });
+    }
+    
+    /**
+     * 菜单操作
+     */
+    _onMenuAction(action) {
+        if (this.selectedCity && this.eventBus) {
+            this.showCityMenu = false;
+            this.stateManager.set('cityTab', action);
+            this.eventBus.emit('city.enter', this.selectedCity);
+            this.eventBus.emit('screen.change', 'City');
+        }
     }
     
     /**
@@ -316,11 +362,12 @@ export class StrategyMapScreen {
      */
     _closeCityInfo() {
         this.showCityInfoPanel = false;
+        this.showCityMenu = false;
         this.selectedCity = null;
     }
     
     /**
-     * 进入城市
+     * 进入城市 - 保留兼容性
      */
     onEnterCity() {
         if (this.selectedCity && this.eventBus) {
@@ -378,6 +425,11 @@ export class StrategyMapScreen {
         // 绘制城市信息面板
         if (this.showCityInfoPanel && this.selectedCity) {
             this._renderCityInfoPanel(ctx);
+        }
+        
+        // 绘制城市操作菜单
+        if (this.showCityMenu && this.selectedCity) {
+            this._renderCityMenu(ctx);
         }
     }
     
@@ -607,44 +659,32 @@ export class StrategyMapScreen {
      */
     _renderCityInfoPanel(ctx) {
         const city = this.selectedCity;
-        if (!city) return;
+        if (!city || !this._cityPanelPos) return;
         
-        // 面板尺寸
-        const panelW = 320;
-        const panelH = 420;
-        const panelX = (ctx.canvas.width - panelW) / 2;
-        const panelY = (ctx.canvas.height - panelH) / 2;
+        const { x: panelX, y: panelY, w: panelW, h: panelH } = this._cityPanelPos;
         
-        // 半透明背景遮罩
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        
-        // 面板背景 - 渐变深蓝（无边框）
+        // 面板背景 - 渐变深蓝（无边框无遮罩）
         const bgGrad = ctx.createLinearGradient(panelX, panelY, panelX, panelY + panelH);
         bgGrad.addColorStop(0, 'rgba(25, 25, 45, 0.95)');
         bgGrad.addColorStop(1, 'rgba(15, 15, 35, 0.95)');
         ctx.fillStyle = bgGrad;
         ctx.fillRect(panelX, panelY, panelW, panelH);
         
-        // 顶部标题栏背景（无边框装饰）
-        const titleGrad = ctx.createLinearGradient(panelX, panelY, panelX, panelY + 50);
+        // 顶部标题栏背景
+        const titleGrad = ctx.createLinearGradient(panelX, panelY, panelX, panelY + 35);
         titleGrad.addColorStop(0, 'rgba(201, 160, 80, 0.15)');
         titleGrad.addColorStop(1, 'rgba(201, 160, 80, 0.02)');
         ctx.fillStyle = titleGrad;
-        ctx.fillRect(panelX, panelY, panelW, 50);
+        ctx.fillRect(panelX, panelY, panelW, 35);
         
-        // 城市名称标题 - 金色发光效果
-        ctx.save();
-        ctx.shadowColor = '#c9a050';
-        ctx.shadowBlur = 15;
+        // 城市名称标题 - 金色
         ctx.fillStyle = '#ffd700';
-        ctx.font = 'bold 26px "STKaiti", "KaiTi", serif';
+        ctx.font = 'bold 16px "STKaiti", "KaiTi", serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(city.name || '未知城市', panelX + panelW / 2, panelY + 30);
-        ctx.restore();
+        ctx.fillText(city.name || '未知城市', panelX + panelW / 2, panelY + 18);
         
-        // 准备城市数据
+        // 准备城市数据（完整9项）
         const cityData = [
             { label: '归属', value: city.owner || city.belong || '未知', color: '#ffd700' },
             { label: '太守', value: city.governor || '暂无', color: '#fff' },
@@ -652,75 +692,121 @@ export class StrategyMapScreen {
             { label: '商业', value: `${city.commerce || 0}/${city.commerceLimit || 0}`, color: '#87CEEB' },
             { label: '民忠', value: `${city.loyalty || 0}%`, color: '#FFB6C1' },
             { label: '防灾', value: city.disaster || 0, color: '#DDA0DD' },
-            { label: '人口', value: `${city.population || 0}/${city.populationLimit || 0}`, color: '#F0E68C' },
+            { label: '人口', value: city.population || 0, color: '#F0E68C' },
             { label: '金钱', value: city.money || 0, color: '#FFD700' },
             { label: '粮食', value: city.food || 0, color: '#DEB887' }
         ];
         
         // 绘制数据列表
-        const startY = panelY + 80;
-        const rowHeight = 32;
-        const labelX = panelX + 30;
-        const valueX = panelX + panelW - 30;
+        const startY = panelY + 38;
+        const rowHeight = 26;
         
         cityData.forEach((item, index) => {
             const y = startY + index * rowHeight;
             
-            // 交替行背景
-            if (index % 2 === 0) {
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
-                ctx.fillRect(panelX + 15, y - 18, panelW - 30, rowHeight - 2);
-            }
-            
-            // 标签 - 灰色
+            // 标签 - 灰色（左侧）
             ctx.fillStyle = '#aaa';
-            ctx.font = '16px "Microsoft YaHei", sans-serif';
+            ctx.font = '11px "Microsoft YaHei", sans-serif';
             ctx.textAlign = 'left';
             ctx.textBaseline = 'middle';
-            ctx.fillText(item.label + '：', labelX, y);
+            ctx.fillText(item.label, panelX + 12, y);
             
-            // 值 - 根据类型使用不同颜色
+            // 值 - 根据类型使用不同颜色（右对齐）
             ctx.fillStyle = item.color;
-            ctx.font = 'bold 16px "Microsoft YaHei", sans-serif';
+            ctx.font = 'bold 12px "Microsoft YaHei", sans-serif';
             ctx.textAlign = 'right';
-            ctx.fillText(item.value.toString(), valueX, y);
+            ctx.fillText(item.value.toString(), panelX + panelW - 12, y);
         });
-        
-        // 底部按钮区域背景
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-        ctx.fillRect(panelX, panelY + panelH - 70, panelW, 70);
-        
-        // 绘制按钮
-        this.enterCityButton.render(ctx);
-        this.closeButton.render(ctx);
     }
     
     /**
-     * 鼠标按下
+     * 绘制城市操作菜单
+     */
+    _renderCityMenu(ctx) {
+        if (!this._cityMenuPos) return;
+        
+        const { x: panelX, y: panelY, w: panelW, h: panelH } = this._cityMenuPos;
+        
+        // 绘制背景面板
+        const bgGrad = ctx.createLinearGradient(panelX, panelY, panelX, panelY + panelH);
+        bgGrad.addColorStop(0, 'rgba(25, 25, 45, 0.95)');
+        bgGrad.addColorStop(1, 'rgba(15, 15, 35, 0.95)');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(panelX, panelY, panelW, panelH);
+        
+        // 绘制金色边框
+        ctx.strokeStyle = 'rgba(201, 160, 80, 0.6)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(panelX, panelY, panelW, panelH);
+        
+        // 绘制按钮
+        this.cityMenuButtons.forEach(menu => {
+            if (menu.btn) menu.btn.render(ctx);
+        });
+    }
+    
+    /**
+     * 鼠标按下 - 点击己方城池显示操作菜单
      */
     onMouseDown(x, y) {
-        // 检查是否点击城市信息面板
-        if (this.showCityInfoPanel) {
-            this.closeButton.onMouseDown(x, y);
-            this.enterCityButton.onMouseDown(x, y);
-            
-            // 检查是否点击面板外部（关闭面板）
-            const panelW = 320;
-            const panelH = 420;
-            const panelX = (1024 - panelW) / 2;
-            const panelY = (768 - panelH) / 2;
-            
-            if (x < panelX || x > panelX + panelW || y < panelY || y > panelY + panelH) {
+        // 检查是否点击了操作菜单按钮
+        if (this.showCityMenu) {
+            // 检查是否点击在操作菜单区域内
+            if (this._isInCityMenu(x, y)) {
+                this.cityMenuButtons.forEach(menu => {
+                    if (menu.btn) menu.btn.onMouseDown(x, y);
+                });
+            } else {
+                // 点击操作菜单区域外，关闭菜单
                 this._closeCityInfo();
             }
             return;
         }
         
-        // 检查是否点击城市
+        // 点击己方城池，显示操作菜单
+        if (this.showCityInfoPanel && this.selectedCity && this.selectedCityPos) {
+            const cityType = this._getCityType(this.selectedCity.name);
+            if (cityType === 'friendly') {
+                this.showCityInfoPanel = false;
+                this._showCityMenu(this.selectedCity, this.selectedCityPos.x, this.selectedCityPos.y);
+                return;
+            }
+        }
+        
+        // 点击其他区域，关闭面板
+        this._closeCityInfo();
+    }
+    
+    /**
+     * 检查坐标是否在操作菜单区域内
+     */
+    _isInCityMenu(x, y) {
+        if (!this._cityMenuPos) return false;
+        const { x: mx, y: my, w: mw, h: mh } = this._cityMenuPos;
+        return x >= mx && x <= mx + mw && y >= my && y <= my + mh;
+    }
+    
+    /**
+     * 鼠标移动 - 检测悬停城市
+     */
+    onMouseMove(x, y) {
+        // 如果显示操作菜单，只处理按钮悬停，不关闭面板
+        if (this.showCityMenu) {
+            this.cityMenuButtons.forEach(menu => {
+                if (menu.btn) menu.btn.onMouseMove(x, y);
+            });
+            return;
+        }
+        
+        // 检测是否悬停在城市上
+        let hoveredCity = null;
+        let hoveredCityX = 0;
+        let hoveredCityY = 0;
+        
         if (this.mapDrawInfo) {
             const { x: mapX, y: mapY, scaleX, scaleY } = this.mapDrawInfo;
             
-            Object.entries(this.cityCoordinates).forEach(([cityName, coord]) => {
+            for (const [cityName, coord] of Object.entries(this.cityCoordinates)) {
                 const screenX = mapX + coord.x * scaleX;
                 const screenY = mapY + coord.y * scaleY;
                 
@@ -729,21 +815,23 @@ export class StrategyMapScreen {
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 
                 if (dist < 20) {
-                    // 找到对应的城市数据
                     const cityData = this.cities.find(c => c.name === cityName) || { name: cityName };
-                    this.onSelectCity(cityData);
+                    hoveredCity = cityData;
+                    hoveredCityX = screenX;
+                    hoveredCityY = screenY;
+                    break;
                 }
-            });
+            }
         }
-    }
-    
-    /**
-     * 鼠标移动
-     */
-    onMouseMove(x, y) {
-        if (this.showCityInfoPanel) {
-            this.closeButton.onMouseMove(x, y);
-            this.enterCityButton.onMouseMove(x, y);
+        
+        // 悬停在不同城市上
+        if (hoveredCity && (!this.selectedCity || this.selectedCity.name !== hoveredCity.name)) {
+            this.onSelectCity(hoveredCity, hoveredCityX, hoveredCityY);
+        }
+        
+        // 移出所有城市区域，关闭详情面板（但不关闭操作菜单）
+        if (!hoveredCity) {
+            this.showCityInfoPanel = false;
         }
     }
     
@@ -751,9 +839,6 @@ export class StrategyMapScreen {
      * 鼠标释放
      */
     onMouseUp(x, y) {
-        if (this.showCityInfoPanel) {
-            this.closeButton.onMouseUp(x, y);
-            this.enterCityButton.onMouseUp(x, y);
-        }
+        // 无需处理
     }
 }
