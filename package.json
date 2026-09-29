@@ -5,7 +5,6 @@
   "main": "src/main.js",
   "scripts": {
     "start": "node server.js",
-    "test": "open tests/test-runner.html",
     "dev": "node server.js"
   },
   "keywords": [
@@ -16,8 +15,5 @@
     "javascript"
   ],
   "author": "",
-  "license": "MIT",
-  "devDependencies": {
-    "http-server": "^14.1.1"
-  }
+  "license": "MIT"
 }
