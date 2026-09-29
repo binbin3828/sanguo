@@ -1,5 +1,5 @@
 import { adjacentCityNames } from './MapData.js';
-import { makeBattleMap, reachableTiles, distanceField, canAttack, attackError, alive, attackDamage, counterattackChance, skillDamage, nextWeather, WEATHER, skillError, SKILLS, tileAt, occupantAt } from './BattleCore.js?v=20260929-classic-attack';
+import { makeBattleMap, MAX_BATTLE_GENERALS, reachableTiles, distanceField, canAttack, attackError, alive, attackDamage, counterattackChance, skillDamage, nextWeather, WEATHER, skillError, SKILLS, tileAt, occupantAt } from './BattleCore.js?v=20260929-expedition-ten';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const copy = value => JSON.parse(JSON.stringify(value));
@@ -764,12 +764,12 @@ export class GameModel {
     if (!this.adjacent(source).includes(target)) throw new Error('只能进攻相邻城池');
     if (!Array.isArray(personIds)) throw new Error('请选择出征武将');
     const uniqueIds = [...new Set(personIds)];
-    if (!uniqueIds.length || uniqueIds.length > 5 || uniqueIds.length !== personIds.length) throw new Error('请选择 1 至 5 名出征武将');
+    if (!uniqueIds.length || uniqueIds.length > MAX_BATTLE_GENERALS || uniqueIds.length !== personIds.length) throw new Error(`请选择 1 至 ${MAX_BATTLE_GENERALS} 名出征武将`);
     const available = this.availableGenerals(source.id, 'battle');
     const selected = uniqueIds.map(id => available.find(general => general.id === id));
     if (selected.some(general => !general)) throw new Error('所选武将本月无法出征');
     const map = makeBattleMap(fromId, toId);
-    const defenders = target.owner ? target.generals.filter(g => g.owner === target.owner && g.troops > 0).sort((a, b) => b.troops - a.troops).slice(0, 4) : [];
+    const defenders = target.owner ? target.generals.filter(g => g.owner === target.owner && g.troops > 0).sort((a, b) => b.troops - a.troops).slice(0, MAX_BATTLE_GENERALS - (target.troops > 0 ? 1 : 0)) : [];
     const defenderUnits = [...defenders];
     if (target.troops > 0) defenderUnits.push({ name: '守城军', force: 55, intelligence: 45, level: 1, armsType: '步兵', id: null, troops: target.troops });
     if (!defenderUnits.length) defenderUnits.push({ name: '守城军', force: 40, intelligence: 35, level: 1, armsType: '步兵', id: null, troops: 200 });
@@ -808,7 +808,7 @@ export class GameModel {
 
   startDefenseBattle(source, target, commander) {
     const map = makeBattleMap(source.id, target.id);
-    const defenders = target.generals.filter(g => g.owner === this.player && g.troops > 0).sort((a, b) => b.troops - a.troops).slice(0, 4);
+    const defenders = target.generals.filter(g => g.owner === this.player && g.troops > 0).sort((a, b) => b.troops - a.troops).slice(0, MAX_BATTLE_GENERALS - (target.troops > 0 ? 1 : 0));
     if (target.troops > 0) defenders.push({ id: null, name: '守城军', force: 55, intelligence: 45, level: 1, armsType: '步兵', troops: target.troops });
     if (!defenders.length) defenders.push({ id: null, name: '守城军', force: 40, intelligence: 35, level: 1, armsType: '步兵', troops: 200 });
     const attackers = [commander];

@@ -2,6 +2,7 @@ import { CITY_POSITIONS } from './MapData.js';
 import { CLASSIC_TERRAIN_ROWS } from './ClassicBattleMaps.js';
 
 export const MAP_NAMES = ['北方开阔', '西北关隘', '荆南林谷', '大河争桥', '江淮水网', '海港登陆', '都城纵深'];
+export const MAX_BATTLE_GENERALS = 10;
 const CITY_GROUPS = [
   '北平 南皮 邺 平原 濮阳 许昌 小沛',
   '西凉 安定 天水 晋阳 河内 汉中 梓潼 棉竹 巴郡 云南 建宁',
@@ -89,14 +90,15 @@ function approachSide(from, to) {
 }
 
 function entrance(side, city, index) {
-  const offset = (index - 2.5) * 3;
-  if (side === 'W') return { x: 2, y: clamp(city.y + offset) };
-  if (side === 'E') return { x: 29, y: clamp(city.y + offset) };
-  if (side === 'N') return { x: clamp(city.x + offset), y: 2 };
-  if (side === 'S') return { x: clamp(city.x + offset), y: 29 };
+  const rank = Math.floor(index / 5);
+  const offset = (index % 5 - 2) * 3;
+  if (side === 'W') return { x: 2 + rank * 2, y: clamp(city.y + offset) };
+  if (side === 'E') return { x: 29 - rank * 2, y: clamp(city.y + offset) };
+  if (side === 'N') return { x: clamp(city.x + offset), y: 2 + rank * 2 };
+  if (side === 'S') return { x: clamp(city.x + offset), y: 29 - rank * 2 };
   return {
-    x: side.includes('W') ? 2 + index % 2 * 3 : 29 - index % 2 * 3,
-    y: side.includes('N') ? 2 + Math.floor(index / 2) * 3 : 29 - Math.floor(index / 2) * 3
+    x: side.includes('W') ? 2 + rank * 2 : 29 - rank * 2,
+    y: side.includes('N') ? clamp(city.y + offset) : clamp(city.y - offset)
   };
 }
 
@@ -113,12 +115,14 @@ export function makeLargeBattleMap(fromId, toId) {
   tiles[objective.y][objective.x] = 'city';
   const side = approachSide(CITY_POSITIONS[fromName] || [0, 0], CITY_POSITIONS[toName] || [1, 0]);
   const used = new Set([key(objective.x, objective.y)]);
-  const attackerSpawns = Array.from({ length: 6 }, (_, index) => nearestLand(tiles, entrance(side, objective, index), used, 5));
+  const attackerSpawns = Array.from({ length: MAX_BATTLE_GENERALS }, (_, index) => nearestLand(tiles, entrance(side, objective, index), used, 8));
   for (const spawn of attackerSpawns) if (tiles[spawn.y][spawn.x] === 'mountain') tiles[spawn.y][spawn.x] = 'plain';
   const defenderSpawns = [
     { x: objective.x - 2, y: objective.y - 2 }, { x: objective.x + 2, y: objective.y - 2 },
     { x: objective.x + 2, y: objective.y + 2 }, { x: objective.x - 2, y: objective.y + 2 },
-    { x: objective.x, y: objective.y - 5 }, { x: objective.x, y: objective.y + 5 }
+    { x: objective.x, y: objective.y - 5 }, { x: objective.x, y: objective.y + 5 },
+    { x: objective.x - 5, y: objective.y }, { x: objective.x + 5, y: objective.y },
+    { x: objective.x - 3, y: objective.y + 4 }, { x: objective.x + 3, y: objective.y - 4 }
   ].map(point => nearestLand(tiles, point, used));
   for (const spawn of attackerSpawns) connectLandRoute(tiles, spawn, objective);
   return {

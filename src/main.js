@@ -1,10 +1,11 @@
 import { loadCatalog } from './game/GameData.js';
-import { GameModel, ORDER_RULES } from './game/GameModel.js?v=20260929-classic-attack';
+import { GameModel, ORDER_RULES } from './game/GameModel.js?v=20260929-expedition-ten';
 import { CITY_ROUTES, WORLD_MAP_POSITIONS, WORLD_MAP_SIZE, WORLD_ROUTE_PATHS } from './game/MapData.js';
 import { listSlots, readSlot, writeSlot, parseImport, exportSlot } from './game/SaveStore.js';
-import { TERRAIN, reachableTiles, canAttack, attackError, availableSkills, skillError, SKILLS, alive, occupantAt, rangeCells, battleRangeRule } from './game/BattleCore.js?v=20260929-classic-attack';
+import { TERRAIN, MAX_BATTLE_GENERALS, reachableTiles, canAttack, attackError, availableSkills, skillError, SKILLS, alive, occupantAt, rangeCells, battleRangeRule } from './game/BattleCore.js?v=20260929-expedition-ten';
 import { terrainVisual, visualRoadCells } from './game/TerrainVisuals.js?v=20260929-seam-fix';
 import { TERRAIN_ART, ARMY_ART } from './game/BattleArt.js?v=20260929-seam-fix';
+import { planAutoBattleAction } from './game/AutoBattle.js?v=20260929-auto-battle';
 
 const NAMES = ['董卓弄权', '曹操崛起', '赤壁之战', '三国鼎立'];
 const app = document.getElementById('app');
@@ -13,6 +14,8 @@ let renderedScreen = null;
 let battlePointer = null;
 let battleDragAt = 0;
 let autoEnemyTurnPending = false;
+let autoBattleEnabled = false;
+let autoBattleTimer = null;
 const safe = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const fmt = value => Number(value || 0).toLocaleString('zh-CN');
 const maxRecruitAmount = (city, count = 1) => Math.min(city.loyalty * 20, Math.floor(city.money / Math.max(1, count)) * 10);
@@ -115,7 +118,7 @@ function orderPicker(game) {
   const recruitOptions = pending.type === 'recruit' ? [...new Set([100, 500, 1000, maxRecruit].filter(amount => amount >= 10 && amount <= maxRecruit))] : [];
   return `<div class="order-overlay"><div class="order-dialog" role="dialog" aria-modal="true" aria-labelledby="order-title">
     <div class="order-dialog-head"><div><span class="eyebrow">${safe(city.name)}${destination}</span><h2 id="order-title">${safe(rule.label)} · 选择武将</h2></div><button data-action="cancel-order" aria-label="关闭选将面板">×</button></div>
-    <p>${pending.type === 'battle' ? '选择 1 至 5 名武将带兵出征。' : pending.type === 'surrender' ? '选择一名武将在月末劝降这名俘虏。' : pending.type === 'exchange' ? '选择一名武将完成交易，物资立即入库。' : pending.type === 'transport' ? '选择一名武将押送物资，月末呈报是否抵达。' : pending.type === 'move' ? '选择一名武将携带现有兵力前往目标城，月末到达。' : pending.type === 'scout' ? '选择一名武将侦察目标城，立即获得详细军情。' : pending.type === 'raid' ? '可选择多名武将在本城分别掠夺。月末每执行一条命令，民忠、农业、商业都会再减半，并分别获得金粮。' : '可勾选多名武将分别执行这项命令。'}每名武将本月只能接一项任务，各消耗 ${rule.stamina} 体力。</p>
+    <p>${pending.type === 'battle' ? `选择 1 至 ${MAX_BATTLE_GENERALS} 名武将带兵出征。` : pending.type === 'surrender' ? '选择一名武将在月末劝降这名俘虏。' : pending.type === 'exchange' ? '选择一名武将完成交易，物资立即入库。' : pending.type === 'transport' ? '选择一名武将押送物资，月末呈报是否抵达。' : pending.type === 'move' ? '选择一名武将携带现有兵力前往目标城，月末到达。' : pending.type === 'scout' ? '选择一名武将侦察目标城，立即获得详细军情。' : pending.type === 'raid' ? '可选择多名武将在本城分别掠夺。月末每执行一条命令，民忠、农业、商业都会再减半，并分别获得金粮。' : '可勾选多名武将分别执行这项命令。'}每名武将本月只能接一项任务，各消耗 ${rule.stamina} 体力。</p>
     <div class="order-person-list"><div class="order-rank-heading">可接令 ${availableCount} 人 · 按本指令适配度排序</div>${ranked.map(({ general, available, reason }, index) => `${index === availableCount ? `<div class="order-rank-heading unavailable">本月不可接令 ${ranked.length - availableCount} 人</div>` : ''}<button class="order-person ${pending.selectedIds.includes(general.id) ? 'selected' : ''}" data-action="choose-general" data-id="${safe(general.id)}" ${available ? '' : 'disabled'}><span class="person-avatar">${safe(general.name.slice(0, 1))}</span><span><strong>${safe(general.name)}${index === 0 && available ? '<em>推荐</em>' : ''}</strong><small><img class="order-arms-logo" src="${armyLogo(general.armsType)}" alt="">${safe(general.armsType)} · 武 ${game.force(general)} · 智 ${game.intelligence(general)} · 体力 ${general.stamina} · 带兵 ${fmt(general.troops)}</small><small class="order-fit">${safe(reason)}</small></span><b>${available ? pending.selectedIds.includes(general.id) ? '✓' : '+' : '—'}</b></button>`).join('')}</div>
     ${pending.type === 'recruit' ? `<div class="recruit-amount"><label>每名武将征兵 <input data-recruit-input type="number" inputmode="numeric" min="10" max="${maxRecruit}" step="10" value="${recruitAmount}"> 人</label><small>默认填入当前最大值 ${fmt(maxRecruit)} 人；民忠上限 ${fmt(city.loyalty * 20)} 人，每 10 兵花 1 金</small><div>${recruitOptions.map(amount => `<button data-action="recruit-amount" data-amount="${amount}" class="${recruitAmount === amount ? 'selected' : ''}">${amount === maxRecruit ? `最多 ${fmt(amount)}` : fmt(amount)}</button>`).join('')}</div></div>` : ''}
     <div class="order-cost ${canAfford ? '' : 'insufficient'}">已选 ${selectedCount} 将${pending.type === 'recruit' ? ` · 共征 ${fmt(recruitAmount * selectedCount)} 兵` : pending.type === 'battle' ? ` · 至少需要 ${fmt(battleFoodNeed)} 粮，城中现有 ${fmt(city.food)} 粮` : pending.type === 'exchange' ? ` · ${pending.direction === 'buy' ? '买入' : '卖出'} ${fmt(pending.amount)} 粮 · ${pending.direction === 'buy' ? '支出' : '获得'} ${fmt(pending.amount * (pending.direction === 'buy' ? 5 : 2))} 金` : pending.type === 'transport' ? ` · 押送 ${fmt(pending.food)} 粮、${fmt(pending.money)} 金、${fmt(pending.troops)} 后备兵` : ` · 共需 ${fmt(totalCost)} 金`}${canAfford ? '' : pending.type === 'battle' ? ' · 粮草不足' : ` · 当前只有 ${fmt(city.money)} 金或兵量超限`}</div>
@@ -163,6 +166,7 @@ function worldReportDialog() {
 }
 
 function showBattleReport(targetId, retreated = false) {
+  stopAutoBattle();
   const target = ui.game.city(targetId);
   const report = ui.game.state.lastBattleReport;
   if (!retreated && target.owner === ui.game.player) ui.cityId = targetId;
@@ -372,9 +376,9 @@ function battleScreen() {
   const preMarchButtons = `${btn('◇ 移动', 'battle-move', ui.battleMode === 'move' ? 'primary' : 'quiet')}${attackReady ? btn('⚔ 攻击', 'battle-attack', 'combat-ready') : ''}${anySkillReady ? btn('✦ 计谋', 'battle-skill-open', 'combat-ready') : ''}${btn('待机', 'battle-wait', 'standby')}`;
   const contextBody = ui.battleMode === 'skills' && chosen ? `<div class="battle-context-head"><strong>${safe(chosen.name)} · 选择计谋</strong><button data-action="battle-skill-close" aria-label="返回操作">×</button></div>${skillList}`
     : `<div class="battle-context-head"><strong>${safe(chosen?.name)} · 选择行动</strong><button data-action="battle-context-close" aria-label="收起操作">×</button></div><div class="battle-context-choices">${chosen?.moved ? postMarchButtons : preMarchButtons}</div>`;
-  const commandTray = !ui.battleAnimating && active && ui.battleMenuOpen ? `<div class="battle-command-tray ${ui.battleMode === 'skills' ? 'is-skills' : ''}" role="group" aria-label="武将操作">${contextBody}</div>` : '';
-  return `<div class="battle-shell"><header class="battle-header"><div><div class="eyebrow">${safe(b.map.name)} · ${safe(from.name)} → ${safe(to.name)}</div><h1>第 ${b.turn}/${b.turnLimit || 12} 回合 <span>· ${safe(b.weather)}</span></h1></div><strong>粮 ${fmt(b.supplies.player)} / 敌 ${fmt(b.supplies.enemy)}<small>预报 ${safe(b.forecast)} · <button data-action="battle-log">战况</button> · <button data-action="battle-more">更多</button></small><button class="battle-end-turn" data-action="battle-turn" ${autoEnemyTurnPending ? 'disabled' : ''}>${autoEnemyTurnPending ? '敌军行动中…' : '结束回合 →'}</button></strong></header>
-    <main class="battle-layout"><div class="battle-main"><div class="battle-status">${safe(b.message)}</div><div class="battle-map-toolbar"><span>${chosen ? `${safe(chosen.name)} · ${fmt(chosen.troops)} 兵` : '拖动地图查看战场'}</span><button data-action="battle-overview" title="查看整张战场">全图</button><button data-action="battle-focus-player" title="定位我军">我军</button><button data-action="battle-focus-city" title="定位城池">城池</button></div>${commandTray}<div class="battle-map-frame"><div class="battle-viewport" aria-label="战场地图，可上下左右拖动"><div class="battle-map-content"><canvas class="battle-terrain-canvas" width="${b.map.width * 32}" height="${b.map.height * 32}" aria-hidden="true"></canvas><div class="battle-grid" style="grid-template-columns:repeat(${b.map.width},var(--battle-cell));grid-template-rows:repeat(${b.map.height},var(--battle-cell));width:max-content;height:max-content">${tiles}</div></div></div></div><div class="battle-guide">${safe(modeHint)} · 拖动地图查看全场</div><div class="battle-selected-info">${chosen ? `<img class="battle-selected-logo" src="${armyLogo(chosen.armsType)}" alt="">${safe(chosen.name)} · ${safe(chosen.armsType)} · 兵 ${fmt(chosen.troops)} · HP ${chosen.hp}/${chosen.maxHp} · MP ${chosen.mp}/${chosen.maxMp}` : b.mode === 'defend' ? '守住城池核心，或击溃敌军。' : '夺取城池核心，或击溃守军。'}</div></div>
+  const commandTray = !autoBattleEnabled && !ui.battleAnimating && active && ui.battleMenuOpen ? `<div class="battle-command-tray ${ui.battleMode === 'skills' ? 'is-skills' : ''}" role="group" aria-label="武将操作">${contextBody}</div>` : '';
+  return `<div class="battle-shell"><header class="battle-header"><div><div class="eyebrow">${safe(b.map.name)} · ${safe(from.name)} → ${safe(to.name)}</div><h1>第 ${b.turn}/${b.turnLimit || 12} 回合 <span>· ${safe(b.weather)}</span></h1></div><strong>粮 ${fmt(b.supplies.player)} / 敌 ${fmt(b.supplies.enemy)}<small>预报 ${safe(b.forecast)} · <button data-action="battle-log">战况</button> · <button data-action="battle-more">更多</button></small><div class="battle-turn-controls"><button class="battle-auto-toggle ${autoBattleEnabled ? 'active' : ''}" data-action="battle-auto-toggle" ${!autoBattleEnabled && ui.battleAnimating ? 'disabled' : ''}>${autoBattleEnabled ? '停止自动' : '自动作战'}</button><button class="battle-end-turn" data-action="battle-turn" ${autoEnemyTurnPending || autoBattleEnabled ? 'disabled' : ''}>${autoEnemyTurnPending ? '敌军行动中…' : '结束回合 →'}</button></div></strong></header>
+    <main class="battle-layout"><div class="battle-main"><div class="battle-status">${safe(b.message)}</div><div class="battle-map-toolbar"><span>${chosen ? `${safe(chosen.name)} · ${fmt(chosen.troops)} 兵` : '拖动地图查看战场'}</span><button data-action="battle-overview" title="查看整张战场">全图</button><button data-action="battle-focus-player" title="定位我军">我军</button><button data-action="battle-focus-city" title="定位城池">城池</button></div>${commandTray}<div class="battle-map-frame"><div class="battle-viewport" aria-label="战场地图，可上下左右拖动"><div class="battle-map-content"><canvas class="battle-terrain-canvas" width="${b.map.width * 32}" height="${b.map.height * 32}" aria-hidden="true"></canvas><div class="battle-grid" style="grid-template-columns:repeat(${b.map.width},var(--battle-cell));grid-template-rows:repeat(${b.map.height},var(--battle-cell));width:max-content;height:max-content">${tiles}</div></div></div><button class="battle-minimap-button" data-action="battle-minimap-pick" aria-label="战场缩略图，点击定位地图"><canvas class="battle-minimap" width="320" height="320" aria-hidden="true"></canvas></button></div><div class="battle-guide">${safe(autoBattleEnabled ? '全军自动移动与普通攻击中，点“停止自动”可接管。' : modeHint)} · 拖动地图查看全场</div><div class="battle-selected-info">${chosen ? `<img class="battle-selected-logo" src="${armyLogo(chosen.armsType)}" alt="">${safe(chosen.name)} · ${safe(chosen.armsType)} · 兵 ${fmt(chosen.troops)} · HP ${chosen.hp}/${chosen.maxHp} · MP ${chosen.mp}/${chosen.maxMp}` : b.mode === 'defend' ? '守住城池核心，或击溃敌军。' : '夺取城池核心，或击溃守军。'}</div></div>
     <aside class="battle-side"><div class="battle-unit-strip">${b.units.filter(u => u.side === 'player').map(u => `<button class="unit-item ${ui.unitId === u.id ? 'selected' : ''} ${u.acted ? 'unit-acted' : 'unit-ready'}" data-action="unit" data-id="${u.id}" aria-label="${safe(u.name)}，${u.acted ? '已行动' : '可行动'}，${fmt(u.troops)}兵" ${!alive(u) ? 'disabled' : ''}><img class="battle-roster-logo" src="${armyLogo(u.armsType)}" alt=""><span class="battle-roster-copy"><span>${safe(u.name)}</span><strong>${fmt(u.troops)}</strong><small>${u.acted ? '已行动' : safe(u.armsType)}</small></span></button>`).join('')}</div></aside></main>${ui.battleMoreOpen ? `<div class="report-overlay"><div class="report-dialog battle-more-dialog" role="dialog" aria-modal="true"><h2>战场设置</h2><p>目标范围：${battleRangeRule(b) === 'classic' ? '经典掩码 · 无自动反击' : '手机版规则 · 概率反击'}</p>${btn(battleRangeRule(b) === 'classic' ? '切换到手机版范围' : '切换到经典范围（无反击）', 'battle-rule-toggle', 'quiet')}${btn('保存战局', 'save', 'quiet')}${b.mode === 'attack' ? btn('撤军', 'retreat', 'quiet') : ''}${btn('返回战场', 'battle-more-close', 'primary')}</div></div>` : ''}${ui.battleOverviewOpen ? `<div class="report-overlay"><div class="report-dialog battle-overview-dialog" role="dialog" aria-modal="true"><h2>全图态势 · ${b.map.width}×${b.map.height}</h2><p>点地图上的位置，返回战术视角。</p><canvas class="battle-overview-map" width="320" height="320" data-action="battle-overview-pick" role="button" tabindex="0" aria-label="全图态势，点选区域移动镜头"></canvas>${battleIconLegend()}${btn('返回战场', 'battle-overview-close', 'primary')}</div></div>` : ''}${ui.battleLogOpen ? `<div class="report-overlay"><div class="report-dialog battle-log-dialog" role="dialog" aria-modal="true"><h2>战场纪事</h2><div class="battle-log-entries">${(b.log || []).map(entry => `<p><b>第 ${entry.round} 回合</b> ${safe(entry.text)}</p>`).join('') || '<p>战斗刚刚开始。</p>'}</div>${btn('返回战场', 'battle-log-close', 'primary')}</div></div>` : ''}${saveManager()}</div>`;
 }
 
@@ -418,7 +422,7 @@ function drawBattleOverview() {
   const battle = ui.battleReplay || ui.game?.battle;
   if (!viewport || !battle) return;
   const colors = { plain: '#b6a577', grass: '#7e9b68', mountain: '#77786c', forest: '#426e50', river: '#4b8ba2', bridge: '#c8a975', city: '#e3bb80', village: '#bda070', camp: '#9b7558' };
-  for (const canvas of app.querySelectorAll('.battle-overview-map')) {
+  for (const canvas of app.querySelectorAll('.battle-overview-map, .battle-minimap')) {
     const context = canvas.getContext('2d');
     if (!context) continue;
     const scale = canvas.width / battle.map.width;
@@ -610,10 +614,12 @@ async function finishBattleMarch(preview, unitId) {
     }
   } catch (error) {
     console.error('行军失败', error);
+    if (autoBattleEnabled) stopAutoBattle();
     ui.toast = error.message;
   } finally {
     ui.battleAnimating = false;
     if (!autoFinishTurn || !scheduleEnemyTurnIfReady()) render();
+    queueAutoBattleStep();
   }
 }
 
@@ -688,8 +694,9 @@ async function playBattleEffects(effects, targetCityId, quick = false, completed
     ui.battleAnimating = false;
     if (!ui.game.battle) { ui.screen = 'game'; ui.unitId = null; showBattleReport(targetCityId); }
     else if (quick) advanceBattleSelection();
-    else if (advanceBattleSelection(completedId)) return;
+    else if (advanceBattleSelection(completedId)) { queueAutoBattleStep(); return; }
     render();
+    queueAutoBattleStep();
   }
 }
 
@@ -711,8 +718,8 @@ function scheduleEnemyTurnIfReady() {
     autoEnemyTurnPending = false;
     if (ui.screen !== 'battle' || ui.game?.battle !== battle) { ui.battleAnimating = false; return; }
     ui.battleAnimating = false;
-    try { if (!startBattleEffects(() => ui.game.endBattleTurn(), { resetSelection: true })) render(); }
-    catch (error) { console.error('敌军回合失败', error); ui.toast = error.message; render(); }
+    try { if (!startBattleEffects(() => ui.game.endBattleTurn(), { resetSelection: true })) { render(); queueAutoBattleStep(); } }
+    catch (error) { console.error('敌军回合失败', error); stopAutoBattle(); ui.toast = error.message; render(); }
   }, 480);
   return true;
 }
@@ -741,14 +748,75 @@ function startBattleEffects(action, { resetSelection = false } = {}) {
   return true;
 }
 
+function stopAutoBattle() {
+  autoBattleEnabled = false;
+  if (autoBattleTimer !== null) clearTimeout(autoBattleTimer);
+  autoBattleTimer = null;
+}
+
+function queueAutoBattleStep(delay = 180) {
+  if (!autoBattleEnabled || autoBattleTimer !== null) return;
+  if (ui.screen !== 'battle' || !ui.game?.battle) { stopAutoBattle(); return; }
+  autoBattleTimer = setTimeout(() => {
+    autoBattleTimer = null;
+    try { runAutoBattleStep(); }
+    catch (error) { console.error('自动作战中断', error); stopAutoBattle(); ui.battleAnimating = false; ui.toast = `自动作战已停止：${error.message}`; render(); }
+  }, delay);
+}
+
+function runAutoBattleStep() {
+  if (!autoBattleEnabled || ui.screen !== 'battle' || !ui.game?.battle || ui.battleAnimating || autoEnemyTurnPending) return;
+  const battle = ui.game.battle;
+  const plan = planAutoBattleAction(battle, ui.unitId);
+  if (!plan) {
+    if (scheduleEnemyTurnIfReady()) return;
+    stopAutoBattle();
+    render();
+    return;
+  }
+  const unit = battle.units.find(item => item.id === plan.unitId);
+  ui.unitId = plan.unitId;
+  ui.battleMode = 'move';
+  ui.battleMenuOpen = false;
+  ui.battleSkillId = null;
+  ui.battlePreview = null;
+  ui.battleFocus = unit;
+  try {
+    if (plan.type === 'move') {
+      ui.battleAnimating = true;
+      render();
+      void finishBattleMarch(plan, unit.id);
+      return;
+    }
+    if (plan.type === 'attack') {
+      const target = battle.units.find(item => item.id === plan.targetId);
+      if (!startBattleEffects(() => ui.game.battleAttack(unit, target))) {
+        if (!advanceBattleSelection(unit.id)) render();
+        queueAutoBattleStep();
+      }
+      return;
+    }
+    ui.game.battleWait(unit.id);
+    if (!advanceBattleSelection(unit.id)) render();
+    queueAutoBattleStep();
+  } catch (error) {
+    console.error('自动作战中断', error);
+    stopAutoBattle();
+    ui.battleAnimating = false;
+    ui.toast = `自动作战已停止：${error.message}`;
+    render();
+  }
+}
+
 app.addEventListener('click', event => {
   const t = event.target.closest('[data-action]');
   if (!t || t.disabled) return;
   if (t.dataset.action === 'tile' && Date.now() - battleDragAt < 350) return;
-  if (ui.battleAnimating) return;
+  if (ui.battleAnimating && t.dataset.action !== 'battle-auto-toggle') return;
   try {
     ui.toast = '';
     const a = t.dataset.action;
+    if (autoBattleEnabled && ui.screen === 'battle' && !['battle-auto-toggle', 'battle-minimap-pick', 'battle-focus-player', 'battle-focus-city'].includes(a)) return;
     if (a === 'menu') { ui.screen = 'menu'; ui.commandMenu = null; ui.generalId = null; ui.economyDraft = null; ui.pendingItem = null; ui.moveSourceId = null; ui.scoutSourceId = null; ui.confirmMonth = false; ui.pendingOrder = null; ui.pendingDistribution = null; ui.battleAfterDistribution = false; ui.report = null; ui.worldReport = null; ui.pendingSiegeWorldReport = null; ui.worldReportIndex = 0; ui.worldReportFromHistory = false; ui.saveMenu = false; }
     else if (a === 'new') { ui.screen = 'scenarios'; ui.ruler = null; }
     else if (a === 'scenarios') ui.screen = 'scenarios';
@@ -901,7 +969,7 @@ app.addEventListener('click', event => {
       const selected = ui.pendingOrder.selectedIds;
       const id = t.dataset.id;
       if (selected.includes(id)) selected.splice(selected.indexOf(id), 1);
-      else if (ui.pendingOrder.type === 'battle' && selected.length >= 5) throw new Error('最多选择 5 名出征武将');
+      else if (ui.pendingOrder.type === 'battle' && selected.length >= MAX_BATTLE_GENERALS) throw new Error(`最多选择 ${MAX_BATTLE_GENERALS} 名出征武将`);
       else if (['surrender', 'exchange', 'transport', 'move', 'scout'].includes(ui.pendingOrder.type)) selected.splice(0, selected.length, id);
       else selected.push(id);
       if (ui.pendingOrder.type === 'recruit') {
@@ -958,12 +1026,31 @@ app.addEventListener('click', event => {
       ui.worldReportFromHistory = false;
       ui.confirmMonth = false;
     }
+    else if (a === 'battle-auto-toggle') {
+      if (autoBattleEnabled) {
+        stopAutoBattle();
+        if (ui.battleAnimating) {
+          t.textContent = '停止中…';
+          t.disabled = true;
+        } else {
+          const selected = ui.game?.battle?.units.find(unit => unit.id === ui.unitId && unit.side === 'player' && alive(unit) && !unit.acted);
+          if (selected) ui.battleMenuOpen = true;
+          render();
+        }
+      } else if (!ui.battleAnimating && ui.game?.battle) {
+        autoBattleEnabled = true;
+        ui.battleMenuOpen = false;
+        render();
+        queueAutoBattleStep(120);
+      }
+      return;
+    }
     else if (a === 'unit') { if (selectBattleUnit(t.dataset.id, true)) return; }
     else if (a === 'battle-focus-player') { const unit = ui.game.battle?.units.find(item => item.side === 'player' && alive(item) && !item.acted) || ui.game.battle?.units.find(item => item.side === 'player' && alive(item)); if (unit) ui.battleFocus = unit; }
     else if (a === 'battle-focus-city') ui.battleFocus = ui.game.battle?.map.objective;
     else if (a === 'battle-overview') ui.battleOverviewOpen = true;
     else if (a === 'battle-overview-close') ui.battleOverviewOpen = false;
-    else if (a === 'battle-overview-pick') { const bounds = t.getBoundingClientRect(); ui.battleFocus = { x: Math.max(0, Math.min(ui.game.battle.map.width - 1, Math.floor((event.clientX - bounds.left) / bounds.width * ui.game.battle.map.width))), y: Math.max(0, Math.min(ui.game.battle.map.height - 1, Math.floor((event.clientY - bounds.top) / bounds.height * ui.game.battle.map.height))) }; ui.battleOverviewOpen = false; }
+    else if (a === 'battle-overview-pick' || a === 'battle-minimap-pick') { const bounds = t.getBoundingClientRect(); const pickX = event.detail ? event.clientX : bounds.left + bounds.width / 2, pickY = event.detail ? event.clientY : bounds.top + bounds.height / 2; ui.battleFocus = { x: Math.max(0, Math.min(ui.game.battle.map.width - 1, Math.floor((pickX - bounds.left) / bounds.width * ui.game.battle.map.width))), y: Math.max(0, Math.min(ui.game.battle.map.height - 1, Math.floor((pickY - bounds.top) / bounds.height * ui.game.battle.map.height))) }; if (a === 'battle-overview-pick') ui.battleOverviewOpen = false; }
     else if (a === 'tile') {
       const battle = ui.game.battle;
       const x = Number(t.dataset.x), y = Number(t.dataset.y), occupant = occupantAt(battle, x, y);

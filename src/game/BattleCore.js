@@ -1,9 +1,9 @@
 import { CLASSIC_ATTACK_ROWS, CLASSIC_SKILL_ROWS } from './ClassicBattleRanges.js';
-import { makeLargeBattleMap, MAP_NAMES } from './BattleMaps.js';
+import { makeLargeBattleMap, MAP_NAMES, MAX_BATTLE_GENERALS } from './BattleMaps.js?v=20260929-expedition-ten';
 
 export const BATTLE_WIDTH = 32;
 export const BATTLE_HEIGHT = 32;
-export { MAP_NAMES };
+export { MAP_NAMES, MAX_BATTLE_GENERALS };
 export const WEATHER = ['晴', '阴', '风', '雨', '冰雹'];
 export const TERRAIN = {
   plain: { name: '平原', defense: 1 }, grass: { name: '草地', defense: 1 },
