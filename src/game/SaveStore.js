@@ -20,22 +20,40 @@ function normalizeState(snapshot) {
       state.cities.length !== 38 || !Array.isArray(state.orders) || !Array.isArray(state.reports)) {
     throw new Error('存档内容不完整');
   }
-  const ids = new Set(), names = new Set(), personIds = new Set();
+  const ids = new Set(), names = new Set(), personIds = new Set(), itemIds = new Set();
+  if (!Array.isArray(state.goods) || typeof state.itemSystemInitialized !== 'boolean' || state.goods.some(good => typeof good.name !== 'string' || !good.name || !['装备', '使用'].includes(good.type))) throw new Error('道具数据损坏');
+  const goodNames = new Set(state.goods.map(good => good.name));
+  const validItem = item => {
+    if (!item || typeof item.id !== 'string' || !item.id || itemIds.has(item.id) || !goodNames.has(item.name)) throw new Error('道具归属数据损坏');
+    itemIds.add(item.id);
+  };
   for (const city of state.cities) {
     if (!Number.isInteger(city.id) || city.id < 0 || city.id >= 38 || ids.has(city.id) || names.has(city.name) || !CITY_POSITIONS[city.name] ||
         !Array.isArray(city.generals) || !Number.isFinite(city.troops) || city.troops < 0 ||
-        !Number.isFinite(city.money) || !Number.isFinite(city.food)) throw new Error('城池数据损坏');
+        !Number.isFinite(city.money) || !Number.isFinite(city.food) || !Array.isArray(city.items)) throw new Error('城池数据损坏');
     ids.add(city.id);
     names.add(city.name);
+    city.items.forEach(item => { validItem(item); if (typeof item.found !== 'boolean') throw new Error('城池道具状态损坏'); });
     for (const general of city.generals) {
       if (typeof general.id !== 'string' || personIds.has(general.id) || typeof general.name !== 'string' ||
           !Number.isFinite(general.troops) || general.troops < 0 ||
           !['active', 'free', 'captive'].includes(general.status) ||
           (general.status === 'active' && !general.owner) ||
           (general.status !== 'active' && (general.owner || general.troops !== 0)) ||
-          !Number.isFinite(general.force) || !Number.isFinite(general.intelligence)) throw new Error('武将数据损坏');
+          !Number.isFinite(general.force) || !Number.isFinite(general.intelligence) || !Array.isArray(general.equipment) || general.equipment.length > 2) throw new Error('武将数据损坏');
       personIds.add(general.id);
+      general.equipment.forEach(validItem);
     }
+  }
+  for (const order of state.orders) {
+    if (order.type !== 'move' || order.resolved) continue;
+    const general = order.traveler;
+    if (!general || typeof general.id !== 'string' || general.id !== order.personId || personIds.has(general.id) ||
+        general.status !== 'active' || !general.owner || !Number.isFinite(general.troops) || general.troops < 0 ||
+        !Array.isArray(general.equipment) || general.equipment.length > 2 ||
+        !state.cities.some(city => city.id === order.cityId) || !state.cities.some(city => city.id === order.targetId)) throw new Error('移动武将数据损坏');
+    personIds.add(general.id);
+    general.equipment.forEach(validItem);
   }
   return state;
 }

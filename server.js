@@ -8,10 +8,10 @@ const root = __dirname;
 const port = Number(process.env.PORT || 8080);
 const host = process.env.HOST || '127.0.0.1';
 const files = new Set(['/index.html', '/styles.css', '/data/dat.xml']);
-const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.xml': 'application/xml' };
+const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.xml': 'application/xml', '.svg': 'image/svg+xml' };
 
 function allowed(pathname) {
-  return files.has(pathname) || /^\/src\/(?:main\.js|game\/[\w-]+\.js)$/.test(pathname);
+  return files.has(pathname) || /^\/src\/(?:main\.js|game\/[\w-]+\.js|assets\/images\/(?:terrain|army)\/[\w-]+\.svg)$/.test(pathname);
 }
 
 const server = http.createServer((request, response) => {

@@ -1,0 +1,189 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="450" viewBox="0 0 860 450">
+<rect width="860" height="450" fill="#172a24"/>
+<text x="24" y="31" fill="#f1d29e" font-size="20" font-weight="700">战场士兵形象 · 六兵种视觉评审</text>
+<g transform="translate(24 54)">
+<rect width="254" height="174" rx="13" fill="#263c35" stroke="#b79763" stroke-width="2"/>
+<rect x="12" y="12" width="108" height="108" rx="7" fill="#789167"/>
+<path d="M12 91h108v29H12" fill="#647d59"/>
+<g transform="translate(21 16) scale(1.38)"><ellipse cx="32" cy="59" rx="24" ry="3" fill="#132621" opacity=".28"/>
+<path d="M13 43L5 34l5-2 9 9" fill="#614a3d" stroke="#253638" stroke-width="2"/>
+<path d="M15 39l1 17h5l3-14m14 0 2 14h5l3-18" fill="#77533e" stroke="#253638" stroke-width="2" stroke-linejoin="round"/>
+<path d="M12 35l7-7 22 1 8 8-5 9H20l-8-5z" fill="#926747" stroke="#253638" stroke-width="2" stroke-linejoin="round"/>
+<path d="M42 32l6-12 7-3 5 8-3 10-9 2" fill="#a97953" stroke="#253638" stroke-width="2" stroke-linejoin="round"/>
+<path d="M50 18l-1-7 4 2 2 5m1 0 2-7 3 5-1 7" fill="#684838" stroke="#253638" stroke-width="1.5"/>
+<path d="M54 27h6m-6 4h5" stroke="#253638" stroke-width="2"/><circle cx="55" cy="22" r="1.8" fill="#253638"/>
+<path d="M23 27h20v8H21z" fill="#b44f46" stroke="#253638" stroke-width="2"/>
+<path d="M30 19l-3 14 8 3 5-13-5-5" fill="#497c78" stroke="#253638" stroke-width="2"/>
+<path d="M30 22l-8 11 4 2 9-8m5-6 5 14-4 2-8-12" fill="#edc99f" stroke="#253638" stroke-width="2"/>
+<path d="M28 15l-1-5 6-5 7 3 1 8-5 5-5-2" fill="#edc99f" stroke="#253638" stroke-width="2"/>
+<path d="M25 11l7-8 9 4 2 7-17-1" fill="#c7d5c6" stroke="#253638" stroke-width="2"/>
+<path d="M41 9l7-4m-6 30 13-27" stroke="#e7bd72" stroke-width="3" stroke-linecap="square"/>
+</g>
+<rect x="178" y="38" width="43" height="43" rx="5" fill="#789167"/>
+<g transform="translate(184 44) scale(.5)"><ellipse cx="32" cy="59" rx="24" ry="3" fill="#132621" opacity=".28"/>
+<path d="M13 43L5 34l5-2 9 9" fill="#614a3d" stroke="#253638" stroke-width="2"/>
+<path d="M15 39l1 17h5l3-14m14 0 2 14h5l3-18" fill="#77533e" stroke="#253638" stroke-width="2" stroke-linejoin="round"/>
+<path d="M12 35l7-7 22 1 8 8-5 9H20l-8-5z" fill="#926747" stroke="#253638" stroke-width="2" stroke-linejoin="round"/>
+<path d="M42 32l6-12 7-3 5 8-3 10-9 2" fill="#a97953" stroke="#253638" stroke-width="2" stroke-linejoin="round"/>
+<path d="M50 18l-1-7 4 2 2 5m1 0 2-7 3 5-1 7" fill="#684838" stroke="#253638" stroke-width="1.5"/>
+<path d="M54 27h6m-6 4h5" stroke="#253638" stroke-width="2"/><circle cx="55" cy="22" r="1.8" fill="#253638"/>
+<path d="M23 27h20v8H21z" fill="#b44f46" stroke="#253638" stroke-width="2"/>
+<path d="M30 19l-3 14 8 3 5-13-5-5" fill="#497c78" stroke="#253638" stroke-width="2"/>
+<path d="M30 22l-8 11 4 2 9-8m5-6 5 14-4 2-8-12" fill="#edc99f" stroke="#253638" stroke-width="2"/>
+<path d="M28 15l-1-5 6-5 7 3 1 8-5 5-5-2" fill="#edc99f" stroke="#253638" stroke-width="2"/>
+<path d="M25 11l7-8 9 4 2 7-17-1" fill="#c7d5c6" stroke="#253638" stroke-width="2"/>
+<path d="M41 9l7-4m-6 30 13-27" stroke="#e7bd72" stroke-width="3" stroke-linecap="square"/>
+</g>
+<text x="136" y="26" fill="#f1d29e" font-size="16" font-weight="700">骑兵</text>
+<text x="135" y="102" fill="#dce6d0" font-size="11">右侧为地图格实际大小</text>
+<text x="14" y="149" fill="#dce6d0" font-size="13">骑士与战马</text>
+</g><g transform="translate(300 54)">
+<rect width="254" height="174" rx="13" fill="#263c35" stroke="#b79763" stroke-width="2"/>
+<rect x="12" y="12" width="108" height="108" rx="7" fill="#789167"/>
+<path d="M12 91h108v29H12" fill="#647d59"/>
+<g transform="translate(21 16) scale(1.38)"><ellipse cx="32" cy="59" rx="24" ry="3" fill="#132621" opacity=".28"/>
+<path d="M28 43l-3 15h7l4-14m2-1 4 15h7l-3-17" fill="#565b5b" stroke="#253638" stroke-width="2"/>
+<path d="M24 26l6-6 15 2 5 21-7 5H26l-4-8z" fill="#497c78" stroke="#253638" stroke-width="2"/>
+<path d="M29 21l-1-8 5-6h8l5 6-2 8-8 4z" fill="#edc99f" stroke="#253638" stroke-width="2"/>
+<path d="M27 14l3-10 13 1 5 10-8-2-5 4z" fill="#c7d5c6" stroke="#253638" stroke-width="2"/>
+<path d="M26 28l-8 8m26-8 7 8" stroke="#edc99f" stroke-width="6" stroke-linecap="square"/>
+<path d="M7 27l10-5 11 5v15c0 9-6 14-11 16-6-2-11-7-11-16z" fill="#b6c3b6" stroke="#253638" stroke-width="2"/>
+<path d="M17 25v28m-8-16h17" stroke="#688b88" stroke-width="3"/>
+<path d="M52 11v47" stroke="#8a6349" stroke-width="3"/><path d="M48 11l4-8 4 8z" fill="#c7d5c6" stroke="#253638" stroke-width="1.5"/>
+</g>
+<rect x="178" y="38" width="43" height="43" rx="5" fill="#789167"/>
+<g transform="translate(184 44) scale(.5)"><ellipse cx="32" cy="59" rx="24" ry="3" fill="#132621" opacity=".28"/>
+<path d="M28 43l-3 15h7l4-14m2-1 4 15h7l-3-17" fill="#565b5b" stroke="#253638" stroke-width="2"/>
+<path d="M24 26l6-6 15 2 5 21-7 5H26l-4-8z" fill="#497c78" stroke="#253638" stroke-width="2"/>
+<path d="M29 21l-1-8 5-6h8l5 6-2 8-8 4z" fill="#edc99f" stroke="#253638" stroke-width="2"/>
+<path d="M27 14l3-10 13 1 5 10-8-2-5 4z" fill="#c7d5c6" stroke="#253638" stroke-width="2"/>
+<path d="M26 28l-8 8m26-8 7 8" stroke="#edc99f" stroke-width="6" stroke-linecap="square"/>
+<path d="M7 27l10-5 11 5v15c0 9-6 14-11 16-6-2-11-7-11-16z" fill="#b6c3b6" stroke="#253638" stroke-width="2"/>
+<path d="M17 25v28m-8-16h17" stroke="#688b88" stroke-width="3"/>
+<path d="M52 11v47" stroke="#8a6349" stroke-width="3"/><path d="M48 11l4-8 4 8z" fill="#c7d5c6" stroke="#253638" stroke-width="1.5"/>
+</g>
+<text x="136" y="26" fill="#f1d29e" font-size="16" font-weight="700">步兵</text>
+<text x="135" y="102" fill="#dce6d0" font-size="11">右侧为地图格实际大小</text>
+<text x="14" y="149" fill="#dce6d0" font-size="13">盾与长矛</text>
+</g><g transform="translate(576 54)">
+<rect width="254" height="174" rx="13" fill="#263c35" stroke="#b79763" stroke-width="2"/>
+<rect x="12" y="12" width="108" height="108" rx="7" fill="#789167"/>
+<path d="M12 91h108v29H12" fill="#647d59"/>
+<g transform="translate(21 16) scale(1.38)"><ellipse cx="32" cy="59" rx="24" ry="3" fill="#132621" opacity=".28"/>
+<path d="M28 43l-4 15h7l5-14m3-1 4 15h7l-4-18" fill="#6b5a45" stroke="#253638" stroke-width="2"/>
+<path d="M26 25l7-6 13 5 3 19-8 5H27l-4-9z" fill="#60805c" stroke="#253638" stroke-width="2"/>
+<path d="M40 22l5-4 6 10-7 5" fill="#a9764b" stroke="#253638" stroke-width="2"/><path d="M44 16l2-8m0 11 5-9" stroke="#e7bd72" stroke-width="2"/>
+<path d="M29 20l-1-8 6-6 8 2 4 6-2 9-8 3z" fill="#edc99f" stroke="#253638" stroke-width="2"/>
+<path d="M26 13l6-10 11 3 4 7-8 2-5-2z" fill="#6b724d" stroke="#253638" stroke-width="2"/>
+<path d="M27 29L17 30m22-3-13 4" stroke="#edc99f" stroke-width="5" stroke-linecap="square"/>
+<path d="M15 7C4 14 4 48 15 57" fill="none" stroke="#9b643e" stroke-width="5"/>
+<path d="M15 7l1 50" stroke="#c7d5c6" stroke-width="1.5"/>
+<path d="M14 31h39m-8-5 8 5-8 5" fill="none" stroke="#e7bd72" stroke-width="3" stroke-linejoin="round"/>
+</g>
+<rect x="178" y="38" width="43" height="43" rx="5" fill="#789167"/>
+<g transform="translate(184 44) scale(.5)"><ellipse cx="32" cy="59" rx="24" ry="3" fill="#132621" opacity=".28"/>
+<path d="M28 43l-4 15h7l5-14m3-1 4 15h7l-4-18" fill="#6b5a45" stroke="#253638" stroke-width="2"/>
+<path d="M26 25l7-6 13 5 3 19-8 5H27l-4-9z" fill="#60805c" stroke="#253638" stroke-width="2"/>
+<path d="M40 22l5-4 6 10-7 5" fill="#a9764b" stroke="#253638" stroke-width="2"/><path d="M44 16l2-8m0 11 5-9" stroke="#e7bd72" stroke-width="2"/>
+<path d="M29 20l-1-8 6-6 8 2 4 6-2 9-8 3z" fill="#edc99f" stroke="#253638" stroke-width="2"/>
+<path d="M26 13l6-10 11 3 4 7-8 2-5-2z" fill="#6b724d" stroke="#253638" stroke-width="2"/>
+<path d="M27 29L17 30m22-3-13 4" stroke="#edc99f" stroke-width="5" stroke-linecap="square"/>
+<path d="M15 7C4 14 4 48 15 57" fill="none" stroke="#9b643e" stroke-width="5"/>
+<path d="M15 7l1 50" stroke="#c7d5c6" stroke-width="1.5"/>
+<path d="M14 31h39m-8-5 8 5-8 5" fill="none" stroke="#e7bd72" stroke-width="3" stroke-linejoin="round"/>
+</g>
+<text x="136" y="26" fill="#f1d29e" font-size="16" font-weight="700">弓兵</text>
+<text x="135" y="102" fill="#dce6d0" font-size="11">右侧为地图格实际大小</text>
+<text x="14" y="149" fill="#dce6d0" font-size="13">挽弓射手</text>
+</g><g transform="translate(24 248)">
+<rect width="254" height="174" rx="13" fill="#263c35" stroke="#b79763" stroke-width="2"/>
+<rect x="12" y="12" width="108" height="108" rx="7" fill="#789167"/>
+<path d="M12 91h108v29H12" fill="#647d59"/>
+<g transform="translate(21 16) scale(1.38)"><ellipse cx="32" cy="59" rx="24" ry="3" fill="#132621" opacity=".28"/>
+<path d="M7 41h50l-6 15H17z" fill="#916443" stroke="#253638" stroke-width="2" stroke-linejoin="round"/>
+<path d="M12 46h42M19 52h30" stroke="#d0a773" stroke-width="2"/>
+<path d="M31 25l-5 17h20l-3-16-6-7" fill="#497c78" stroke="#253638" stroke-width="2"/>
+<path d="M29 18l1-8 6-5 9 3 2 7-5 9-8 2z" fill="#edc99f" stroke="#253638" stroke-width="2"/>
+<path d="M27 12l8-10 12 5 2 7-13-1-7 3z" fill="#536d71" stroke="#253638" stroke-width="2"/>
+<path d="M29 30l-15 8m27-7 14 4" stroke="#edc99f" stroke-width="5" stroke-linecap="square"/>
+<path d="M14 36L3 58m47-30 11 27" stroke="#e7bd72" stroke-width="3"/>
+<path d="M2 59c4-2 8-2 12 0 4-2 8-2 12 0 4-2 8-2 12 0 4-2 8-2 12 0 4-2 8-2 12 0" fill="none" stroke="#87c9c9" stroke-width="2"/>
+</g>
+<rect x="178" y="38" width="43" height="43" rx="5" fill="#789167"/>
+<g transform="translate(184 44) scale(.5)"><ellipse cx="32" cy="59" rx="24" ry="3" fill="#132621" opacity=".28"/>
+<path d="M7 41h50l-6 15H17z" fill="#916443" stroke="#253638" stroke-width="2" stroke-linejoin="round"/>
+<path d="M12 46h42M19 52h30" stroke="#d0a773" stroke-width="2"/>
+<path d="M31 25l-5 17h20l-3-16-6-7" fill="#497c78" stroke="#253638" stroke-width="2"/>
+<path d="M29 18l1-8 6-5 9 3 2 7-5 9-8 2z" fill="#edc99f" stroke="#253638" stroke-width="2"/>
+<path d="M27 12l8-10 12 5 2 7-13-1-7 3z" fill="#536d71" stroke="#253638" stroke-width="2"/>
+<path d="M29 30l-15 8m27-7 14 4" stroke="#edc99f" stroke-width="5" stroke-linecap="square"/>
+<path d="M14 36L3 58m47-30 11 27" stroke="#e7bd72" stroke-width="3"/>
+<path d="M2 59c4-2 8-2 12 0 4-2 8-2 12 0 4-2 8-2 12 0 4-2 8-2 12 0 4-2 8-2 12 0" fill="none" stroke="#87c9c9" stroke-width="2"/>
+</g>
+<text x="136" y="26" fill="#f1d29e" font-size="16" font-weight="700">水军</text>
+<text x="135" y="102" fill="#dce6d0" font-size="11">右侧为地图格实际大小</text>
+<text x="14" y="149" fill="#dce6d0" font-size="13">船上士兵</text>
+</g><g transform="translate(300 248)">
+<rect width="254" height="174" rx="13" fill="#263c35" stroke="#b79763" stroke-width="2"/>
+<rect x="12" y="12" width="108" height="108" rx="7" fill="#789167"/>
+<path d="M12 91h108v29H12" fill="#647d59"/>
+<g transform="translate(21 16) scale(1.38)"><ellipse cx="32" cy="59" rx="24" ry="3" fill="#132621" opacity=".28"/>
+<path d="M18 25l-8 22 12 10h25l10-12-10-24" fill="#9e4d4d" stroke="#253638" stroke-width="2"/>
+<path d="M26 43l-3 15h8l4-14m6-1 4 15h8l-4-16" fill="#485057" stroke="#253638" stroke-width="2"/>
+<path d="M22 24l10-5 13 4 6 21-9 5H27l-9-8z" fill="#9aaeb0" stroke="#253638" stroke-width="2"/>
+<path d="M29 27h14m-13 7h14m-12 7h10" stroke="#e8d49e" stroke-width="2"/>
+<path d="M29 18l-2-9 8-7 9 6 1 10-8 7z" fill="#edc99f" stroke="#253638" stroke-width="2"/>
+<path d="M25 12l5-10h14l5 11-5 5-17-1z" fill="#c7d5c6" stroke="#253638" stroke-width="2"/>
+<path d="M34 5l-2-5h10l-2 5" fill="#e7bd72"/>
+<path d="M22 27L9 36m39-9 9 9" stroke="#edc99f" stroke-width="5"/>
+<path d="M10 8v50M56 8v50" stroke="#a8794e" stroke-width="3"/>
+<path d="M4 6l6-5 6 5-2 9-4-4-4 4zM50 6l6-5 6 5-2 9-4-4-4 4z" fill="#c7d5c6" stroke="#253638" stroke-width="1.5"/>
+</g>
+<rect x="178" y="38" width="43" height="43" rx="5" fill="#789167"/>
+<g transform="translate(184 44) scale(.5)"><ellipse cx="32" cy="59" rx="24" ry="3" fill="#132621" opacity=".28"/>
+<path d="M18 25l-8 22 12 10h25l10-12-10-24" fill="#9e4d4d" stroke="#253638" stroke-width="2"/>
+<path d="M26 43l-3 15h8l4-14m6-1 4 15h8l-4-16" fill="#485057" stroke="#253638" stroke-width="2"/>
+<path d="M22 24l10-5 13 4 6 21-9 5H27l-9-8z" fill="#9aaeb0" stroke="#253638" stroke-width="2"/>
+<path d="M29 27h14m-13 7h14m-12 7h10" stroke="#e8d49e" stroke-width="2"/>
+<path d="M29 18l-2-9 8-7 9 6 1 10-8 7z" fill="#edc99f" stroke="#253638" stroke-width="2"/>
+<path d="M25 12l5-10h14l5 11-5 5-17-1z" fill="#c7d5c6" stroke="#253638" stroke-width="2"/>
+<path d="M34 5l-2-5h10l-2 5" fill="#e7bd72"/>
+<path d="M22 27L9 36m39-9 9 9" stroke="#edc99f" stroke-width="5"/>
+<path d="M10 8v50M56 8v50" stroke="#a8794e" stroke-width="3"/>
+<path d="M4 6l6-5 6 5-2 9-4-4-4 4zM50 6l6-5 6 5-2 9-4-4-4 4z" fill="#c7d5c6" stroke="#253638" stroke-width="1.5"/>
+</g>
+<text x="136" y="26" fill="#f1d29e" font-size="16" font-weight="700">极兵</text>
+<text x="135" y="102" fill="#dce6d0" font-size="11">右侧为地图格实际大小</text>
+<text x="14" y="149" fill="#dce6d0" font-size="13">双戟重甲</text>
+</g><g transform="translate(576 248)">
+<rect width="254" height="174" rx="13" fill="#263c35" stroke="#b79763" stroke-width="2"/>
+<rect x="12" y="12" width="108" height="108" rx="7" fill="#789167"/>
+<path d="M12 91h108v29H12" fill="#647d59"/>
+<g transform="translate(21 16) scale(1.38)"><ellipse cx="32" cy="59" rx="24" ry="3" fill="#132621" opacity=".28"/>
+<path d="M16 27L9 57h46l-8-31-12-8z" fill="#6a6780" stroke="#253638" stroke-width="2"/>
+<path d="M20 28l-4 26m28-27 6 27M22 45h28" stroke="#b9a37a" stroke-width="2"/>
+<path d="M25 20l-2-9 8-8 11 5 3 10-7 9z" fill="#edc99f" stroke="#253638" stroke-width="2"/>
+<path d="M20 20l3-14 10-6 13 6 4 15-10 1-7-13-5 13z" fill="#4d596d" stroke="#253638" stroke-width="2"/>
+<path d="M22 29L9 37m36-8 11 8" stroke="#edc99f" stroke-width="5"/>
+<path d="M7 30v27m-4-28h8m-6 10h5" stroke="#e7bd72" stroke-width="3"/>
+<circle cx="7" cy="23" r="6" fill="#83b7b0" stroke="#253638" stroke-width="2"/>
+<path d="M48 31h13v15H48z" fill="#dbc28e" stroke="#253638" stroke-width="2"/>
+<path d="M51 34h7m-7 4h7" stroke="#7c6658" stroke-width="1.5"/>
+</g>
+<rect x="178" y="38" width="43" height="43" rx="5" fill="#789167"/>
+<g transform="translate(184 44) scale(.5)"><ellipse cx="32" cy="59" rx="24" ry="3" fill="#132621" opacity=".28"/>
+<path d="M16 27L9 57h46l-8-31-12-8z" fill="#6a6780" stroke="#253638" stroke-width="2"/>
+<path d="M20 28l-4 26m28-27 6 27M22 45h28" stroke="#b9a37a" stroke-width="2"/>
+<path d="M25 20l-2-9 8-8 11 5 3 10-7 9z" fill="#edc99f" stroke="#253638" stroke-width="2"/>
+<path d="M20 20l3-14 10-6 13 6 4 15-10 1-7-13-5 13z" fill="#4d596d" stroke="#253638" stroke-width="2"/>
+<path d="M22 29L9 37m36-8 11 8" stroke="#edc99f" stroke-width="5"/>
+<path d="M7 30v27m-4-28h8m-6 10h5" stroke="#e7bd72" stroke-width="3"/>
+<circle cx="7" cy="23" r="6" fill="#83b7b0" stroke="#253638" stroke-width="2"/>
+<path d="M48 31h13v15H48z" fill="#dbc28e" stroke="#253638" stroke-width="2"/>
+<path d="M51 34h7m-7 4h7" stroke="#7c6658" stroke-width="1.5"/>
+</g>
+<text x="136" y="26" fill="#f1d29e" font-size="16" font-weight="700">玄兵</text>
+<text x="135" y="102" fill="#dce6d0" font-size="11">右侧为地图格实际大小</text>
+<text x="14" y="149" fill="#dce6d0" font-size="13">阵法术士</text>
+</g>
+</svg>
