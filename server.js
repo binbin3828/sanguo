@@ -1,117 +1,59 @@
-/**
- * Simple HTTP Server for Local Testing
- * Run: node server.js
- */
+/** Local development server. The allowlist keeps workspace files off the LAN. */
+const http = require('node:http');
+const fs = require('node:fs');
+const path = require('node:path');
+const os = require('node:os');
 
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
-const url = require('url');
+const root = __dirname;
+const port = Number(process.env.PORT || 8080);
+const host = process.env.HOST || '127.0.0.1';
+const files = new Set(['/index.html', '/styles.css', '/data/dat.xml']);
+const mime = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.xml': 'application/xml' };
 
-const PORT = 8080;
-const MIME_TYPES = {
-  '.html': 'text/html',
-  '.js': 'application/javascript',
-  '.css': 'text/css',
-  '.json': 'application/json',
-  '.png': 'image/png',
-  '.jpg': 'image/jpeg',
-  '.svg': 'image/svg+xml',
-  '.xml': 'application/xml',
-  '.txt': 'text/plain'
-};
+function allowed(pathname) {
+  return files.has(pathname) || /^\/src\/(?:main\.js|game\/[\w-]+\.js)$/.test(pathname);
+}
 
-const server = http.createServer((req, res) => {
-  console.log(`${req.method} ${req.url}`);
-  
-  // Parse URL
-  const parsedUrl = url.parse(req.url);
-  let pathname = parsedUrl.pathname;
-  
-  // Default to index.html
-  if (pathname === '/') {
-    pathname = '/index.html';
-  }
-  
-  // Remove leading slash
-  let filePath = path.join(__dirname, pathname.substring(1));
-  
-  // Security check: prevent directory traversal
-  if (!filePath.startsWith(__dirname)) {
-    res.writeHead(403);
-    res.end('Forbidden');
+const server = http.createServer((request, response) => {
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    response.writeHead(405).end();
     return;
   }
-  
-  // Check if file exists
-  fs.stat(filePath, (err, stats) => {
-    if (err || !stats.isFile()) {
-      // Try with .html extension
-      if (!path.extname(filePath)) {
-        filePath += '.html';
-        fs.stat(filePath, (err2, stats2) => {
-          if (err2 || !stats2.isFile()) {
-            serve404(res, pathname);
-          } else {
-            serveFile(res, filePath);
-          }
-        });
-      } else {
-        serve404(res, pathname);
-      }
-    } else {
-      serveFile(res, filePath);
+  let pathname;
+  try {
+    pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
+  } catch {
+    response.writeHead(400).end();
+    return;
+  }
+  if (pathname === '/') pathname = '/index.html';
+  if (!allowed(pathname)) {
+    response.writeHead(404).end('Not found');
+    return;
+  }
+  const file = path.join(root, pathname.slice(1));
+  fs.readFile(file, (error, content) => {
+    if (error) {
+      response.writeHead(404).end('Not found');
+      return;
     }
+    response.writeHead(200, {
+      'Content-Type': `${mime[path.extname(file)]}; charset=utf-8`,
+      'Cache-Control': 'no-store'
+    });
+    response.end(request.method === 'HEAD' ? undefined : content);
   });
 });
 
-function serveFile(res, filePath) {
-  const ext = path.extname(filePath).toLowerCase();
-  const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-  
-  fs.readFile(filePath, (err, content) => {
-    if (err) {
-      res.writeHead(500);
-      res.end('Server Error');
-    } else {
-      res.writeHead(200, {
-        'Content-Type': contentType,
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type'
-      });
-      res.end(content);
+server.listen(port, host, () => {
+  console.log(`电脑预览：http://localhost:${port}/`);
+  if (host === '0.0.0.0') {
+    const addresses = Object.values(os.networkInterfaces()).flat()
+      .filter(item => item && item.family === 'IPv4' && !item.internal)
+      .map(item => item.address);
+    for (const address of [...new Set(addresses)]) {
+      console.log(`手机同一 Wi-Fi 可尝试：http://${address}:${port}/`);
     }
-  });
-}
-
-function serve404(res, pathname) {
-  res.writeHead(404, { 'Content-Type': 'text/html' });
-  res.end(`
-    <html>
-      <head><title>404 Not Found</title></head>
-      <body>
-        <h1>404 Not Found</h1>
-        <p>The requested URL ${pathname} was not found on this server.</p>
-        <hr>
-        <p>三国霸业-重置版 Local Server</p>
-      </body>
-    </html>
-  `);
-}
-
-server.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}/`);
-  console.log(`Test runner: http://localhost:${PORT}/tests/test-runner.html`);
-  console.log(`Main game: http://localhost:${PORT}/index.html`);
-  console.log('Press Ctrl+C to stop the server');
-});
-
-// Handle graceful shutdown
-process.on('SIGINT', () => {
-  console.log('\nShutting down server...');
-  server.close(() => {
-    console.log('Server stopped.');
-    process.exit(0);
-  });
+  }
+  console.log('按 Ctrl+C 停止服务');
 });
