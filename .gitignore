@@ -104,5 +104,8 @@ logs
 tmp/
 temp/
 
+# Local reference repositories
+/refer/
+
 # Test output
 test-results/

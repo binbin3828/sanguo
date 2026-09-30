@@ -16,15 +16,31 @@ export const ORDER_RULES = Object.freeze({
   recruit: { label: '征兵', money: 0, stamina: 12 },
   scout: { label: '侦察', money: 20, stamina: 10 },
   raid: { label: '掠夺', money: 0, stamina: 12 },
+  alienate: { label: '离间', money: 50, stamina: 20 },
+  canvass: { label: '招揽', money: 50, stamina: 20 },
+  counterespionage: { label: '策反', money: 50, stamina: 20 },
+  induce: { label: '劝降', money: 0, stamina: 10 },
   battle: { label: '出征', money: 0, stamina: 20 }
 });
+
+const DIPLOMACY_TYPES = new Set(['alienate', 'canvass', 'counterespionage', 'induce']);
+const DIPLOMACY_CHARACTER_ODDS = Object.freeze({
+  alienate: [50, 30, 40, 30, 5],
+  canvass: [15, 40, 30, 20, 5],
+  counterespionage: [30, 10, 20, 60, 5],
+  induce: [10, 1, 20, 5, 15]
+});
+const CHARACTER_NAMES = ['卤莽', '怕死', '贪财', '大志', '忠义'];
+
+// iBaye FgtCount.c::CountProvUse: integer square root of living troops / 3.
+export const battleFoodConsumption = troops => Math.floor(Math.floor(Math.sqrt(Math.max(0, troops))) / 3);
 
 export class GameModel {
   constructor(catalog, scenarioId, player) {
     const scenario = catalog.scenarios[scenarioId];
     if (!scenario || !scenario.rulers.includes(player)) throw new Error('无效的剧本或君主');
     this.state = {
-      version: 7, scenarioId, player, year: scenario.year, month: 1,
+      version: 8, scenarioId, player, year: scenario.year, month: 1,
       cities: copy(scenario.cities), goods: copy(catalog.goods), itemSystemInitialized: true,
       orders: [], reports: [], worldHistory: [], battle: null, messages: [], winner: null
     };
@@ -33,7 +49,7 @@ export class GameModel {
   }
 
   static restore(snapshot, catalog = null) {
-    if (!snapshot || ![2, 3, 4, 5, 6, 7].includes(snapshot.version) || !Array.isArray(snapshot.cities)) {
+    if (!snapshot || ![2, 3, 4, 5, 6, 7, 8].includes(snapshot.version) || !Array.isArray(snapshot.cities)) {
       throw new Error('存档版本不兼容');
     }
     const game = Object.create(GameModel.prototype);
@@ -52,6 +68,7 @@ export class GameModel {
       city.generals.forEach(general => {
         general.stamina ??= 100;
         general.level ??= 1;
+        general.experience ??= 0;
         if (game.state.version >= 4) general.troops ??= 0;
         general.status ??= general.owner ? 'active' : 'free';
         general.formerOwner ??= null;
@@ -78,8 +95,12 @@ export class GameModel {
     if (game.state.battle && (game.state.battle.version !== 2 ||
       !Array.isArray(game.state.battle.units) || !Array.isArray(game.state.battle.map.tiles) ||
       !game.state.battle.map.objective || !game.state.battle.supplies)) throw new Error('战斗存档数据损坏');
-    if (game.state.battle) game.state.battle.rangeRule ||= 'modern';
-    game.state.version = 7;
+    if (game.state.battle) {
+      game.state.battle.rangeRule ||= 'modern';
+      game.state.battle.money ||= { player: 0, enemy: 0 };
+      game.state.battle.initialSupplies ||= copy(game.state.battle.supplies);
+    }
+    game.state.version = 8;
     return game;
   }
 
@@ -168,6 +189,7 @@ export class GameModel {
     const share = generals.length ? Math.floor(city.troops / generals.length) : 0;
     for (const general of city.generals) {
       general.level ??= 1;
+      general.experience ??= 0;
       general.troops ??= 0;
     }
     for (const general of generals) {
@@ -216,6 +238,78 @@ export class GameModel {
     captive.formerOwner = null;
     captive.loyalty = 40 + Math.floor(Math.random() * 40);
     return true;
+  }
+  diplomacyChance(officer, target, type) {
+    const intelligenceDifference = this.intelligence(officer) - this.intelligence(target);
+    const iqThreshold = (intelligenceDifference + (type === 'canvass' ? 0 : 50)) & 0xff;
+    const iqChance = Math.min(100, iqThreshold + 1);
+    const loyaltyChance = type === 'induce' ? 100 : 100 - clamp(target.loyalty || 0, 0, 100);
+    const characterChance = Math.min(100, (DIPLOMACY_CHARACTER_ODDS[type]?.[target.character] ?? 0) + 1);
+    return Math.round(iqChance * loyaltyChance * characterChance / 10000);
+  }
+  rollDiplomacy(officer, target, type) {
+    const difference = this.intelligence(officer) - this.intelligence(target);
+    const threshold = (difference + (type === 'canvass' ? 0 : 50)) & 0xff;
+    if (Math.floor(Math.random() * 100) > threshold) return false;
+    if (type !== 'induce' && Math.floor(Math.random() * 100) < (target.loyalty || 0)) return false;
+    return Math.floor(Math.random() * 100) <= (DIPLOMACY_CHARACTER_ODDS[type]?.[target.character] ?? 0);
+  }
+  resolveDiplomacy(order, officer, target, targetCity, targetOwner) {
+    const type = order.type;
+    if (type === 'induce') {
+      const ourCities = this.cities.filter(city => city.owner === officer.owner);
+      const enemyCities = this.cities.filter(city => city.owner === targetOwner);
+      const enoughPower = ourCities.length >= enemyCities.length * 2;
+      const succeeded = enoughPower && this.rollDiplomacy(officer, target, type);
+      if (!succeeded) return enoughPower
+        ? `劝降${targetOwner}失败（我方 ${ourCities.length} 城，对方 ${enemyCities.length} 城；${target.name}性格：${CHARACTER_NAMES[target.character] || '未知'}）。`
+        : `劝降失败：需我方城池数至少为${targetOwner}的两倍（我方 ${ourCities.length} 城，对方 ${enemyCities.length} 城）。`;
+      for (const city of enemyCities) {
+        city.owner = officer.owner;
+        for (const general of city.generals) {
+          if (general.owner === targetOwner && general.status === 'active') general.owner = officer.owner;
+        }
+      }
+      for (const city of this.cities) for (const general of city.generals) {
+        if (general.owner === targetOwner && general.status === 'free') {
+          general.owner = null;
+          general.formerOwner = null;
+        }
+      }
+      this.checkWinner();
+      return `${targetOwner}接受劝降，${enemyCities.length} 座城池及其在城武将归顺${officer.owner}。`;
+    }
+    if (!targetCity || target.status !== 'active' || target.owner !== targetOwner) {
+      return '外交目标已变动，行动未能生效。';
+    }
+    if (type === 'alienate' && this.rollDiplomacy(officer, target, type)) {
+      const before = target.loyalty || 0;
+      target.loyalty = Math.max(0, before - 4);
+      return `离间成功：${target.name}对${targetOwner}的忠诚 ${before} → ${target.loyalty}。`;
+    }
+    if (type === 'canvass' && this.rollDiplomacy(officer, target, type)) {
+      if (target.name === targetOwner) return '招揽未成：此人是该势力君主，需使用劝降。';
+      const sourceCity = targetCity;
+      sourceCity.generals.splice(sourceCity.generals.indexOf(target), 1);
+      if (sourceCity.governor === target.name) sourceCity.governor = sourceCity.generals.find(person => person.owner === targetOwner && person.status === 'active')?.name || targetOwner;
+      target.owner = officer.owner;
+      target.formerOwner = null;
+      target.status = 'active';
+      target.loyalty = 40 + Math.floor(Math.random() * 40);
+      target.cityId = order.cityId;
+      this.city(order.cityId).generals.push(target);
+      return `招揽成功：${target.name}离开${targetOwner}，加入${officer.owner}，忠诚 ${target.loyalty}。`;
+    }
+    if (type === 'counterespionage' && this.rollDiplomacy(officer, target, type)) {
+      if (target.name === targetOwner || targetCity.governor !== target.name) return '策反未成：目标不是敌方城池太守。';
+      targetCity.owner = target.name;
+      targetCity.governor = target.name;
+      for (const general of targetCity.generals) {
+        if (general.owner === targetOwner && general.status === 'active') general.owner = target.name;
+      }
+      return `策反成功：${target.name}反叛${targetOwner}，在${targetCity.name}自立。该城守将转而效忠新主。`;
+    }
+    return `${order.type === 'alienate' ? '离间' : order.type === 'canvass' ? '招揽' : '策反'}${target.name}未能成功（智力差、忠诚及性格影响成功率；目标性格：${CHARACTER_NAMES[target.character] || '未知'}）。`;
   }
   treatGeneral(cityId, personId) {
     const city = this.city(cityId);
@@ -284,6 +378,13 @@ export class GameModel {
         const chance = captive ? this.surrenderChance(general, captive) : 0;
         score = chance * 100 + this.intelligence(general);
         reason = captive ? `预计招降成功率 ${chance}% · 智力 ${this.intelligence(general)}` : `智力 ${this.intelligence(general)}`;
+      } else if (DIPLOMACY_TYPES.has(type)) {
+        const targetCity = this.city(options.targetCityId);
+        const target = type === 'induce'
+          ? targetCity?.generals.find(person => person.name === options.targetOwner && person.owner === options.targetOwner && person.status === 'active')
+          : targetCity?.generals.find(person => person.id === options.targetId);
+        score = target ? this.diplomacyChance(general, target, type) : 0;
+        reason = target ? `预计成功率 ${score}% · 智力 ${this.intelligence(general)}` : `智力 ${this.intelligence(general)}`;
       } else if (type === 'raid') {
         score = this.force(general) + this.intelligence(general);
         reason = `武力 + 智力 ${score} · 月末获得 ${score * 2} 金、${score * 5} 粮`;
@@ -296,10 +397,10 @@ export class GameModel {
         reason = '指令收益固定 · 优先使用非专精武将';
       }
       const order = this.orderFor(general.id);
-      const unavailableReason = order ? `本月已执行${ORDER_RULES[order.type]?.label || '指令'}`
-        : city.acted ? '旧存档本月已行动'
-          : general.stamina < ORDER_RULES[type].stamina ? `体力不足，需 ${ORDER_RULES[type].stamina} 点`
-            : type === 'battle' && !general.troops ? '尚未分配兵力' : '当前不可接令';
+      const unavailableReason = order ? '本月已接令'
+        : city.acted ? '本月已行动'
+          : general.stamina < ORDER_RULES[type].stamina ? '体力不足'
+            : type === 'battle' && !general.troops ? '尚未带兵' : '当前不可接令';
       return { general, available, score, reason: available ? reason : unavailableReason };
     });
     return ranked.sort((a, b) => Number(b.available) - Number(a.available) || b.score - a.score || b.general.stamina - a.general.stamina || a.general.id.localeCompare(b.general.id));
@@ -321,7 +422,7 @@ export class GameModel {
     const city = this.city(cityId);
     if (!city || city.owner !== this.player || this.battle || this.state.winner) throw new Error('当前无法在该城分配兵力');
     const general = city.generals.find(person => person.id === personId && person.owner === this.player && person.status === 'active');
-    if (!general || city.acted || this.orderFor(personId)) throw new Error('这名武将本月正在执行其他指令');
+    if (!general) throw new Error('请选择本城的己方在职武将');
     const max = Math.min(this.maxTroops(general), city.troops + general.troops);
     if (!Number.isSafeInteger(amount) || amount < 0 || amount > max) throw new Error(`可设置的带兵数为 0 至 ${max}`);
     const before = general.troops;
@@ -347,7 +448,7 @@ export class GameModel {
     if (selected.some(general => !general)) throw new Error('所选武将本月无法执行该指令');
     const captive = type === 'surrender' ? city.generals.find(general => general.id === options.targetId && general.status === 'captive') : null;
     if (type === 'surrender' && (selected.length !== 1 || !captive)) throw new Error('请选择一名执行武将和本城俘虏');
-    if (['exchange', 'transport', 'move', 'scout'].includes(type) && selected.length !== 1) throw new Error(`${rule.label}只能选择一名执行武将`);
+    if ((['exchange', 'transport', 'move', 'scout'].includes(type) || DIPLOMACY_TYPES.has(type)) && selected.length !== 1) throw new Error(`${rule.label}只能选择一名执行武将`);
     if (captive && this.orders.some(order => order.type === 'surrender' && order.targetId === captive.id)) throw new Error('这名俘虏本月已有人招降');
     const exchangeAmount = type === 'exchange' ? Number(options.amount) : 0;
     const exchangeDirection = options.direction;
@@ -362,6 +463,18 @@ export class GameModel {
     if (type === 'move' && !moveTarget) throw new Error('请选择道路可达的己方城池');
     const scoutTarget = type === 'scout' ? this.city(options.targetId) : null;
     if (type === 'scout' && (!scoutTarget || scoutTarget.id === city.id || scoutTarget.owner === this.player)) throw new Error('请选择一座非己方目标城池');
+    const diplomacyTargetCity = DIPLOMACY_TYPES.has(type) ? this.city(options.targetCityId) : null;
+    const diplomacyTargetOwner = type === 'induce' ? options.targetOwner : diplomacyTargetCity?.owner;
+    const diplomacyTarget = DIPLOMACY_TYPES.has(type)
+      ? type === 'induce'
+        ? diplomacyTargetCity?.generals.find(person => person.name === diplomacyTargetOwner && person.owner === diplomacyTargetOwner && person.status === 'active')
+        : diplomacyTargetCity?.generals.find(person => person.id === options.targetId)
+      : null;
+    if (DIPLOMACY_TYPES.has(type)) {
+      if (!diplomacyTarget || diplomacyTarget.status !== 'active' || !diplomacyTargetOwner ||
+        diplomacyTargetOwner === this.player || diplomacyTarget.owner !== diplomacyTargetOwner) throw new Error('外交目标已不符合行动条件');
+      if (type === 'counterespionage' && (diplomacyTarget.name === diplomacyTargetOwner || diplomacyTargetCity.governor !== diplomacyTarget.name)) throw new Error('策反目标必须是敌方城池的太守');
+    }
     if (type === 'transport' && (!transportTarget || Object.values(cargo).some(amount => !Number.isSafeInteger(amount) || amount < 0) ||
       !Object.values(cargo).some(Boolean) || cargo.food > city.food || cargo.money > city.money || cargo.troops > city.troops)) {
       throw new Error('请选择道路可达的己方城池，并输入不超过本城库存的粮、金或后备兵');
@@ -391,12 +504,27 @@ export class GameModel {
       general.stamina -= rule.stamina;
       const order = { type, cityId: city.id, personId: general.id, personName: general.name, resolved: !['search', 'surrender', 'transport', 'move', 'raid'].includes(type) };
       if (captive) order.targetId = captive.id;
+      if (DIPLOMACY_TYPES.has(type)) {
+        order.targetId = type === 'induce' ? diplomacyTargetOwner : diplomacyTarget.id;
+        order.targetCityId = diplomacyTargetCity.id;
+        order.targetOwner = diplomacyTargetOwner;
+        order.targetName = diplomacyTarget.name;
+      }
       if (type === 'transport') { order.targetId = transportTarget.city.id; order.cargo = cargo; }
       if (type === 'move') { order.targetId = moveTarget.city.id; order.traveler = general; city.generals.splice(city.generals.indexOf(general), 1); }
       if (type === 'scout') order.targetId = scoutTarget.id;
       this.orders.push(order);
       issued.push(order);
       switch (type) {
+        case 'alienate':
+        case 'canvass':
+        case 'counterespionage':
+        case 'induce': {
+          const result = this.resolveDiplomacy(order, general, diplomacyTarget, diplomacyTargetCity, diplomacyTargetOwner);
+          this.report(order, result);
+          this.log(`${general.name}在${city.name}执行${rule.label}：${result}`);
+          break;
+        }
         case 'scout': {
           const defenders = scoutTarget.generals.filter(person => person.status === 'active' && person.owner === scoutTarget.owner);
           const detail = `${scoutTarget.name}（${scoutTarget.owner || '无主'}）\n守军 ${this.totalTroops(scoutTarget)} 兵，其中后备 ${scoutTarget.troops} 兵\n金 ${scoutTarget.money} · 粮 ${scoutTarget.food}\n农业 ${scoutTarget.farming} · 商业 ${scoutTarget.commerce} · 人口 ${scoutTarget.population}\n民忠 ${scoutTarget.loyalty} · 防灾 ${scoutTarget.disaster}\n守将：${defenders.length ? defenders.map(person => `${person.name}（武 ${this.force(person)} / 智 ${this.intelligence(person)} / 兵 ${person.troops}）`).join('、') : '无'}。`;
@@ -646,7 +774,7 @@ export class GameModel {
       }
     }
     for (const ruler of rulers) {
-      const candidates = this.cities.filter(city => city.owner === ruler && this.availableGenerals(city.id, 'battle').some(person => person.troops >= 400))
+      const candidates = this.cities.filter(city => city.owner === ruler && city.food > 0 && this.availableGenerals(city.id, 'battle').some(person => person.troops >= 400))
         .sort((a, b) => this.totalTroops(b) - this.totalTroops(a));
       const source = candidates.find(city => {
         const strongest = Math.max(...this.availableGenerals(city.id, 'battle').map(person => person.troops));
@@ -661,7 +789,9 @@ export class GameModel {
       if (target.owner === this.player) {
         if (!this.battle) {
           this.startDefenseBattle(source, target, commander);
-          events.push({ type: 'siege', ruler, cityId: target.id, text: `${ruler}从${source.name}进攻${target.name}，我军必须守城。` });
+          events.push(this.battle
+            ? { type: 'siege', ruler, cityId: target.id, text: `${ruler}从${source.name}进攻${target.name}，我军必须守城。` }
+            : { type: 'capture', ruler, cityId: target.id, text: `${ruler}攻占${target.name}：我军粮草耗尽，守城失利。` });
         }
         continue;
       }
@@ -757,7 +887,7 @@ export class GameModel {
     return events;
   }
 
-  startBattle(fromId, toId, personIds) {
+  startBattle(fromId, toId, personIds, cargo = {}) {
     const source = this.city(fromId), target = this.city(toId);
     if (!source || !target || source.owner !== this.player || target.owner === this.player) throw new Error('出征目标无效');
     if (this.battle || this.state.winner) throw new Error('当前无法出征');
@@ -784,12 +914,14 @@ export class GameModel {
         troops: g.troops, initialTroops: g.troops, hp, maxHp: hp, mp, maxMp: mp,
         x: spawns[index].x, y: spawns[index].y, moved: false, acted: false, status: {} };
     });
-    const playerNeed = Math.max(1, Math.ceil(selected.reduce((sum, general) => sum + general.troops, 0) / 250));
-    if (source.food < playerNeed) throw new Error(`出征至少需要 ${playerNeed} 粮，请先补粮`);
-    const playerSupply = Math.min(source.food, playerNeed * 30);
-    const enemyNeed = Math.max(1, Math.ceil(defenderUnits.reduce((sum, general) => sum + general.troops, 0) / 250));
-    const enemySupply = Math.min(target.food, enemyNeed * 30);
+    const playerNeed = battleFoodConsumption(selected.reduce((sum, general) => sum + general.troops, 0));
+    const playerSupply = cargo.food ?? Math.min(source.food, Math.max(1, playerNeed * 30 + 1));
+    const playerMoney = cargo.money ?? 0;
+    if (!Number.isSafeInteger(playerSupply) || playerSupply < 1 || playerSupply > source.food) throw new Error(`携带粮食须为 1 至 ${source.food} 的整数，请先补粮或调整数量`);
+    if (!Number.isSafeInteger(playerMoney) || playerMoney < 0 || playerMoney > source.money) throw new Error(`携带金钱须为 0 至 ${source.money} 的整数`);
+    const enemySupply = target.food;
     source.food -= playerSupply;
+    source.money -= playerMoney;
     target.food -= enemySupply;
     for (const general of selected) {
       general.stamina -= ORDER_RULES.battle.stamina;
@@ -800,10 +932,13 @@ export class GameModel {
       map, turn: 1, turnLimit: 30, weather: WEATHER[(fromId + toId + this.state.month) % WEATHER.length],
       rngState: (Date.now() ^ fromId * 101 ^ toId * 65537) >>> 0,
       supplies: { player: playerSupply, enemy: enemySupply },
+      initialSupplies: { player: playerSupply, enemy: enemySupply }, money: { player: playerMoney, enemy: 0 },
       units: [...makeUnits(selected, 'player', map.attackerSpawns, this.player), ...makeUnits(defenderUnits, 'enemy', map.defenderSpawns, target.owner)],
       message: `进攻${target.name}·${map.name}。夺取城池核心并守过敌军回合，或击溃守军。`
     };
     this.battle.forecast = nextWeather(this.battle);
+    this.battleLog(`出征携带 ${playerSupply} 粮、${playerMoney} 金；当前兵力每回合耗粮 ${playerNeed}。`);
+    if (!enemySupply) this.finishBattle('player', '敌军粮草耗尽');
   }
 
   startDefenseBattle(source, target, commander) {
@@ -812,9 +947,7 @@ export class GameModel {
     if (target.troops > 0) defenders.push({ id: null, name: '守城军', force: 55, intelligence: 45, level: 1, armsType: '步兵', troops: target.troops });
     if (!defenders.length) defenders.push({ id: null, name: '守城军', force: 40, intelligence: 35, level: 1, armsType: '步兵', troops: 200 });
     const attackers = [commander];
-    const playerNeed = Math.max(1, Math.ceil(defenders.reduce((sum, g) => sum + g.troops, 0) / 250));
-    const enemyNeed = Math.max(1, Math.ceil(commander.troops / 250));
-    const playerSupply = Math.min(target.food, playerNeed * 30), enemySupply = Math.min(source.food, enemyNeed * 30);
+    const playerSupply = target.food, enemySupply = source.food;
     target.food -= playerSupply; source.food -= enemySupply;
     commander.stamina = Math.max(0, commander.stamina - ORDER_RULES.battle.stamina);
     this.orders.push({ type: 'battle', cityId: source.id, personId: commander.id, personName: commander.name, resolved: true });
@@ -835,9 +968,12 @@ export class GameModel {
     this.state.battle = { version: 2, mode: 'defend', rangeRule: 'modern', fromId: source.id, toId: target.id, attackerOwner: source.owner, targetOwner: target.owner,
       map, turn: 1, turnLimit: 30, weather: WEATHER[(source.id + target.id + this.state.month) % WEATHER.length],
       rngState: (Date.now() ^ source.id * 101 ^ target.id * 65537) >>> 0,
-      supplies: { player: playerSupply, enemy: enemySupply }, units,
+      supplies: { player: playerSupply, enemy: enemySupply },
+      initialSupplies: { player: playerSupply, enemy: enemySupply }, money: { player: 0, enemy: 0 }, units,
       message: `${source.owner}来犯${target.name}！守住城池核心三十回合，或击溃敌军。` };
     this.battle.forecast = nextWeather(this.battle);
+    if (!playerSupply) this.finishBattle('enemy', '我军粮草耗尽');
+    else if (!enemySupply) this.finishBattle('player', '敌军粮草耗尽');
   }
 
   battleAction(unitId, x, y) {
@@ -871,6 +1007,34 @@ export class GameModel {
     this.battle.log.length = Math.min(30, this.battle.log.length);
   }
 
+  battleExperience(attacker, targetLevel, losses, defeated = false) {
+    if (!attacker?.personId || losses <= 0) return 0;
+    const level = attacker.level || 1;
+    const base = Math.floor(Math.sqrt(losses) / 4);
+    const gain = (level < targetLevel ? base + targetLevel - level : Math.max(0, base - (level - targetLevel))) + 2;
+    const bonus = defeated
+      ? level < targetLevel && targetLevel - level < 32 ? 24 : level === targetLevel ? 16 : 8
+      : 0;
+    const total = gain + bonus;
+    const cityId = this.battle.mode === 'defend'
+      ? attacker.side === 'player' ? this.battle.toId : this.battle.fromId
+      : attacker.side === 'player' ? this.battle.fromId : this.battle.toId;
+    const general = this.city(cityId)?.generals.find(person => person.id === attacker.personId);
+    if (!general) return total;
+    general.experience = (general.experience || 0) + total;
+    let leveled = false;
+    if (general.experience >= 100) {
+      general.experience -= 100;
+      if (general.level < 20) {
+        general.level++;
+        attacker.level = general.level;
+        leveled = true;
+      }
+    }
+    this.battleLog(`${general.name}获得战场经验 ${total}${leveled ? `，升至 ${general.level} 级` : ''}（${general.experience}/100）。`);
+    return total;
+  }
+
   beginBattleEffects() { this.battleEffects = []; }
 
   takeBattleEffects() {
@@ -895,6 +1059,7 @@ export class GameModel {
     target.troops = Math.max(0, target.troops - damage);
     target.hp = Math.max(0, target.hp - Math.max(2, Math.floor(damage / 45)));
     this.recordBattleHit(unit, target, before);
+    this.battleExperience(unit, target.level || 1, before - target.troops, target.troops <= 0);
     unit.acted = true;
     const counter = this.battleCounterattack(target, unit);
     this.battleLog(`${unit.name}攻击${target.name}，伤兵 ${before - target.troops}${counter ? `；${target.name}反击伤兵 ${counter}` : ''}。`);
@@ -950,6 +1115,7 @@ export class GameModel {
       target.troops = Math.max(0, target.troops - damage);
       target.hp = Math.max(0, target.hp - Math.max(2, Math.floor(damage / 40)));
       this.recordBattleHit(unit, target, before, 'skill');
+      let totalLosses = before - target.troops;
       if (skillId === 'arrows') {
         for (const other of battle.units.filter(item => item.side !== unit.side && item.id !== target.id && alive(item) && Math.abs(item.x - target.x) + Math.abs(item.y - target.y) === 1)) {
           const splash = Math.floor(damage * .55);
@@ -957,9 +1123,11 @@ export class GameModel {
           other.troops = Math.max(0, other.troops - splash);
           other.hp = Math.max(0, other.hp - Math.max(1, Math.floor(splash / 45)));
           this.recordBattleHit(unit, other, otherBefore, 'skill');
+          totalLosses += otherBefore - other.troops;
         }
       }
       if (skillId === 'flood') target.status.bind = 2;
+      this.battleExperience(unit, target.level || 1, totalLosses);
       this.battleLog(`${unit.name}施展${skill.name}，${target.name}损失 ${before - target.troops} 兵。`);
     }
     this.finishBattleIfNeeded();
@@ -1018,6 +1186,7 @@ export class GameModel {
         victim.troops = Math.max(0, victim.troops - damage);
         victim.hp = Math.max(0, victim.hp - Math.max(2, Math.floor(damage / 45)));
         this.recordBattleHit(enemy, victim, before);
+        this.battleExperience(enemy, victim.level || 1, before - victim.troops, victim.troops <= 0);
         const counter = this.battleCounterattack(victim, enemy);
         this.battleLog(`${enemy.name}攻击${victim.name}，我军损失 ${before - victim.troops} 兵${counter ? `；${victim.name}反击伤兵 ${counter}` : ''}。`);
       }
@@ -1027,11 +1196,13 @@ export class GameModel {
     const core = occupantAt(battle, battle.map.objective.x, battle.map.objective.y);
     if (battle.mode === 'attack' && core?.side === 'player') { this.finishBattle('player', '攻占城池核心'); return; }
     for (const side of ['player', 'enemy']) {
-      const need = Math.max(1, Math.ceil(battle.units.filter(unit => unit.side === side && alive(unit)).reduce((sum, unit) => sum + unit.troops, 0) / 250));
+      const need = battleFoodConsumption(battle.units.filter(unit => unit.side === side && alive(unit)).reduce((sum, unit) => sum + unit.troops, 0));
+      const used = Math.min(battle.supplies[side], need);
       battle.supplies[side] = Math.max(0, battle.supplies[side] - need);
+      this.battleLog(`${side === 'player' ? '我军' : '敌军'}消耗 ${used} 粮，剩余 ${battle.supplies[side]} 粮。`);
     }
     if (!battle.supplies.player) { this.finishBattle('enemy', '我军粮草耗尽'); return; }
-    if (!battle.supplies.enemy) { this.finishBattle('player', '守军粮草耗尽'); return; }
+    if (!battle.supplies.enemy) { this.finishBattle('player', '敌军粮草耗尽'); return; }
     if (battle.turn >= (battle.turnLimit || 12)) { this.finishBattle(battle.mode === 'defend' ? 'player' : 'enemy', `守军坚守${battle.turnLimit || 12}回合`); return; }
     battle.turn++;
     battle.units.forEach(unit => {
@@ -1055,14 +1226,20 @@ export class GameModel {
     return false;
   }
 
-  finishBattle(winner, reason) {
+  finishBattle(winner, reason, { retreated = false } = {}) {
     const battle = this.battle;
     if (!battle) return true;
     const players = battle.units.filter(unit => unit.side === 'player' && alive(unit));
     const enemies = battle.units.filter(unit => unit.side === 'enemy' && alive(unit));
     const source = this.city(battle.fromId), target = this.city(battle.toId);
-    source.food += battle.supplies[battle.mode === 'defend' ? 'enemy' : 'player'];
-    target.food += battle.supplies[battle.mode === 'defend' ? 'player' : 'enemy'];
+    // iBaye citycmdd.c::FightResultDeal gives both armies' remaining food to the battle city.
+    const suppliesReport = {
+      foodUsed: Math.max(0, (battle.initialSupplies?.player ?? battle.supplies.player) - battle.supplies.player),
+      foodSettled: battle.supplies.player + battle.supplies.enemy,
+      moneySettled: (battle.money?.player || 0) + (battle.money?.enemy || 0), supplyCityId: target.id
+    };
+    target.food += suppliesReport.foodSettled;
+    target.money += suppliesReport.moneySettled;
     for (const unit of battle.units) {
       const city = unit.side === 'player' ? battle.mode === 'defend' ? target : source : battle.mode === 'defend' ? source : target;
       if (unit.personId) {
@@ -1081,13 +1258,15 @@ export class GameModel {
           const [general] = source.generals.splice(index, 1);
           general.cityId = target.id; target.generals.push(general); target.governor = general.name;
         } else target.governor = conqueror;
-        for (const general of target.generals.filter(g => g.owner === this.player)) {
+        const retreatIds = retreated ? new Set(battle.units.filter(unit => unit.side === 'player').map(unit => unit.personId)) : new Set();
+        for (const general of target.generals.filter(g => g.owner === this.player && !retreatIds.has(g.id))) {
           if (general.name === this.player || battle.units.some(unit => unit.personId === general.id && !alive(unit))) this.captureGeneral(general);
           else this.releaseGeneral(general);
         }
         this.log(`${conqueror}攻占${target.name}（${reason}），我军守城失利。`);
       }
-      this.state.lastBattleReport = { cityId: target.id, mode: 'defend', winner, reason, round: battle.turn,
+      const retreatResult = retreated ? this.resolveRetreat(battle, target, target) : {};
+      this.state.lastBattleReport = { cityId: target.id, mode: 'defend', winner, reason, retreated, ...retreatResult, round: battle.turn, ...suppliesReport,
         playerLoss: battle.units.filter(unit => unit.side === 'player').reduce((sum, unit) => sum + unit.initialTroops - unit.troops, 0),
         enemyLoss: battle.units.filter(unit => unit.side === 'enemy').reduce((sum, unit) => sum + unit.initialTroops - unit.troops, 0) };
       this.state.battle = null; this.checkWinner(); return true;
@@ -1108,7 +1287,7 @@ export class GameModel {
       const liberated = this.liberateCaptives(target, this.player);
       if (liberated.length) this.log(`在${target.name}救回${liberated.map(general => general.name).join('、')}。`);
       this.log(`我军攻占${target.name}（${reason}），参战武将余兵 ${players.reduce((sum, unit) => sum + unit.troops, 0)}。`);
-    } else {
+    } else if (!retreated) {
       for (const unit of battle.units.filter(item => item.side === 'player' && item.personId && !alive(item))) {
         const index = source.generals.findIndex(general => general.id === unit.personId);
         if (index < 0) continue;
@@ -1119,7 +1298,8 @@ export class GameModel {
       }
       this.log(`进攻${target.name}失利（${reason}），守军余兵 ${enemies.reduce((sum, unit) => sum + unit.troops, 0)}。`);
     }
-    this.state.lastBattleReport = { cityId: target.id, mode: 'attack', winner, reason, round: battle.turn,
+    const retreatResult = retreated ? this.resolveRetreat(battle, source, target) : {};
+    this.state.lastBattleReport = { cityId: target.id, mode: 'attack', winner, reason, retreated, ...retreatResult, round: battle.turn, ...suppliesReport,
       playerLoss: battle.units.filter(unit => unit.side === 'player').reduce((sum, unit) => sum + unit.initialTroops - unit.troops, 0),
       enemyLoss: battle.units.filter(unit => unit.side === 'enemy').reduce((sum, unit) => sum + unit.initialTroops - unit.troops, 0) };
     this.state.battle = null;
@@ -1127,26 +1307,39 @@ export class GameModel {
     return true;
   }
 
-  retreat() {
-    const battle = this.battle;
-    if (!battle) return;
-    if (battle.mode === 'defend') throw new Error('守城时不可撤军，可选择结束回合继续坚守');
-    const source = this.city(battle.fromId);
-    const target = this.city(battle.toId);
-    source.food += battle.supplies.player;
-    target.food += battle.supplies.enemy;
-    for (const unit of battle.units) {
-      const city = unit.side === 'player' ? source : target;
-      if (unit.personId) {
-        const general = city.generals.find(person => person.id === unit.personId);
-        if (general) general.troops = unit.side === 'player' && !this.itemBonus(general, 'speed') ? Math.floor(unit.troops * 0.8) : unit.troops;
-      } else if (unit.side === 'enemy') target.troops = unit.troops;
+  resolveRetreat(battle, origin, target) {
+    const escaped = [], captured = [];
+    const destinations = this.ownedCities();
+    // iBaye TheLoserDeal: rand()%100 > IQ means capture; otherwise LostEscape picks a friendly city.
+    for (const unit of battle.units.filter(item => item.side === 'player' && item.personId)) {
+      const index = origin.generals.findIndex(person => person.id === unit.personId);
+      if (index < 0) continue;
+      const [general] = origin.generals.splice(index, 1);
+      const roll = Math.floor(Math.random() * 100);
+      if (roll <= this.intelligence(general) && destinations.length) {
+        const destination = destinations[Math.floor(Math.random() * destinations.length)];
+        general.cityId = destination.id;
+        general.troops = unit.troops;
+        destination.generals.push(general);
+        if (origin.governor === general.name && origin.id !== destination.id) origin.governor = origin.generals.find(person => person.owner === origin.owner && person.status === 'active')?.name || origin.owner;
+        escaped.push({ name: general.name, cityId: destination.id });
+      } else {
+        unit.troops = 0;
+        this.captureGeneral(general);
+        general.cityId = target.id;
+        target.generals.push(general);
+        if (origin.governor === general.name && origin.id !== target.id) origin.governor = origin.generals.find(person => person.owner === origin.owner && person.status === 'active')?.name || origin.owner;
+        captured.push(general.name);
+      }
     }
-    this.state.battle = null;
-    this.state.lastBattleReport = { cityId: target.id, winner: 'retreat', reason: '主动撤军', round: battle.turn,
-      playerLoss: battle.units.filter(unit => unit.side === 'player').reduce((sum, unit) => sum + unit.initialTroops - (source.generals.find(general => general.id === unit.personId)?.troops || 0), 0),
-      enemyLoss: battle.units.filter(unit => unit.side === 'enemy').reduce((sum, unit) => sum + unit.initialTroops - unit.troops, 0) };
-    this.log(`我军从${target.name}撤退，回到${source.name}。`);
+    if (battle.mode === 'defend') battle.units.filter(unit => unit.side === 'player' && !unit.personId).forEach(unit => { unit.troops = 0; });
+    this.log(`我军从${target.name}撤军，${escaped.length} 将逃脱、${captured.length} 将被俘；余粮和随军金钱留给敌军。`);
+    return { escaped, captured };
+  }
+
+  retreat() {
+    if (!this.battle) throw new Error('当前没有可撤退的战斗');
+    return this.finishBattle('enemy', '主动撤军', { retreated: true });
   }
 
   checkWinner() {
